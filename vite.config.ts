@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
 
+/** SPA routes (with query strings) — excludes static files like /assets/*.js */
+const SPA_NAV_ALLOWLIST = [/^\/(?!.*\.[^/]+$).*$/];
+
 export default defineConfig({
   plugins: [
     react(),
@@ -38,6 +41,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,jpg,webp}"],
         navigateFallback: "/index.html",
+        navigateFallbackAllowlist: SPA_NAV_ALLOWLIST,
         navigateFallbackDenylist: [
           /^\/assets\//,
           /^\/api\//,
@@ -47,6 +51,7 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true,
+        navigateFallbackAllowlist: SPA_NAV_ALLOWLIST,
       },
     }),
   ],
