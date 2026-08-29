@@ -26,14 +26,16 @@ type SheetSelectProps = {
   value: string;
   onChange: (value: string) => void;
   options: readonly { value: string; label: string }[];
+  disabled?: boolean;
 };
 
-export function SheetSelect({ value, onChange, options }: SheetSelectProps) {
+export function SheetSelect({ value, onChange, options, disabled }: SheetSelectProps) {
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full appearance-none bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none"
+      disabled={disabled}
+      className="w-full appearance-none bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none disabled:opacity-50"
     >
       {options.map((opt) => (
         <option key={opt.value} value={opt.value}>

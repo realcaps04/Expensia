@@ -9,6 +9,7 @@
  */
 
 import type * as credits from "../credits.js";
+import type * as events from "../events.js";
 import type * as finance from "../finance.js";
 import type * as lib_helpers from "../lib/helpers.js";
 import type * as passwordReset from "../passwordReset.js";
@@ -24,6 +25,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   credits: typeof credits;
+  events: typeof events;
   finance: typeof finance;
   "lib/helpers": typeof lib_helpers;
   passwordReset: typeof passwordReset;

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Check, CreditCard, Landmark, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
@@ -35,6 +35,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
   const createCredit = useMutation(api.credits.create);
   const updateCredit = useMutation(api.credits.update);
   const removeCredit = useMutation(api.credits.remove);
+  const events = useQuery(api.events.list, userId ? { userId } : "skip");
 
   const isEdit = editCredit !== null;
 
@@ -49,6 +50,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
   const [lastFour, setLastFour] = useState("");
   const [note, setNote] = useState("");
   const [addAsIncome, setAddAsIncome] = useState(false);
+  const [eventId, setEventId] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -65,6 +67,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
         editCredit.startDate ? toDateInputValue(new Date(editCredit.startDate)) : toDateInputValue(),
       );
       setNote(editCredit.note ?? "");
+      setEventId(editCredit.eventId ?? "");
       setLastFour(editCredit.lastFour ?? "");
 
       if (editMode === "loan") {
@@ -85,6 +88,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       setBalance("");
       setLastFour("");
       setNote("");
+      setEventId("");
       setAddAsIncome(false);
     }
 
@@ -120,6 +124,8 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           throw new Error("Remaining balance cannot exceed the loan amount.");
         }
 
+        const parsedEventId = eventId ? (eventId as Id<"events">) : undefined;
+
         const payload = {
           userId,
           name: name.trim(),
@@ -128,6 +134,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           balance: owed,
           note: note.trim() || undefined,
           startDate: parseDateInputToMs(startDate),
+          eventId: parsedEventId,
         };
 
         if (isEdit && editCredit) {
@@ -152,6 +159,8 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           throw new Error("Balance cannot exceed the credit limit.");
         }
 
+        const parsedEventId = eventId ? (eventId as Id<"events">) : undefined;
+
         const payload = {
           userId,
           name: name.trim(),
@@ -161,6 +170,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           balance: owed,
           lastFour: lastFour.trim() || undefined,
           note: note.trim() || undefined,
+          eventId: parsedEventId,
         };
 
         if (isEdit && editCredit) {
@@ -403,6 +413,22 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
               rows={3}
               className={`${inputClass} resize-none py-3`}
             />
+          </Field>
+
+          <Field label="Event (Optional)">
+            <select
+              value={eventId}
+              onChange={(e) => setEventId(e.target.value)}
+              disabled={!userId || events === undefined}
+              className={inputClass}
+            >
+              <option value="">No event</option>
+              {(events ?? []).map((event) => (
+                <option key={event._id} value={event._id}>
+                  {event.name}
+                </option>
+              ))}
+            </select>
           </Field>
         </div>
       </BottomSheet>

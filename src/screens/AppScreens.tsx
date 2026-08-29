@@ -6,6 +6,7 @@ import { ProfilePreferencesScreen } from "./profile/ProfilePreferencesScreen";
 import { ProfileOverviewScreen } from "./profile/ProfileOverviewScreen";
 
 export { ActivityScreen } from "./ActivityScreen";
+export { EventsScreen } from "./EventsScreen";
 export { InsightsScreen } from "./InsightsScreen";
 export { ProfileScreen };
 

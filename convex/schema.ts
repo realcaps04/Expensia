@@ -28,13 +28,26 @@ export default defineSchema({
     category,
     paymentMethod,
     note: v.optional(v.string()),
+    eventId: v.optional(v.id("events")),
     occurredAt: v.number(),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_and_time", ["userId", "occurredAt"])
-    .index("by_user_and_type", ["userId", "type"]),
+    .index("by_user_and_type", ["userId", "type"])
+    .index("by_user_and_event", ["userId", "eventId"]),
+
+  events: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    note: v.optional(v.string()),
+    isArchived: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_archived", ["userId", "isArchived"]),
 
   budgets: defineTable({
     userId: v.id("users"),
@@ -73,6 +86,7 @@ export default defineSchema({
     tenureMonths: v.optional(v.number()),
     emiPaidCount: v.optional(v.number()),
     linkedIncomeId: v.optional(v.id("transactions")),
+    eventId: v.optional(v.id("events")),
     isArchived: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),

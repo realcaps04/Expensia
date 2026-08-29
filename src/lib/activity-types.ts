@@ -19,6 +19,7 @@ export type CreditActivityRowData = {
   startDate?: number;
   tenureMonths?: number;
   emiPaidCount?: number;
+  eventId?: string;
 };
 
 export type ActivityItem =

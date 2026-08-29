@@ -30,6 +30,7 @@ import {
 import type { TransactionRowData } from "../../lib/transaction-types";
 import { BottomSheet } from "./BottomSheet";
 import { ConfirmSheet, deleteItemMessage } from "./ConfirmSheet";
+import { EventPickerField, parseEventId } from "./EventPickerField";
 import { SheetFieldRow, SheetNativeInput, SheetSelect } from "./SheetFieldRow";
 
 type AddTransactionSheetProps = {
@@ -85,6 +86,7 @@ function resetForm(variant: "income" | "expense") {
     paymentMethod: cfg.defaultPayment,
     title: "",
     note: "",
+    eventId: "",
   };
 }
 
@@ -98,6 +100,7 @@ function formFromTransaction(tx: TransactionRowData) {
     paymentMethod: tx.paymentMethod,
     title: tx.title,
     note: tx.note ?? "",
+    eventId: tx.eventId ?? "",
   };
 }
 
@@ -121,6 +124,7 @@ export function AddTransactionSheet({
   const [paymentMethod, setPaymentMethod] = useState<string>(cfg.defaultPayment);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+  const [eventId, setEventId] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -137,6 +141,7 @@ export function AddTransactionSheet({
       setPaymentMethod(values.paymentMethod);
       setTitle(values.title);
       setNote(values.note);
+      setEventId(values.eventId);
     } else {
       const fresh = resetForm(variant);
       setAmount(fresh.amount);
@@ -146,6 +151,7 @@ export function AddTransactionSheet({
       setPaymentMethod(fresh.paymentMethod);
       setTitle(fresh.title);
       setNote(fresh.note);
+      setEventId(fresh.eventId);
     }
     setError("");
   }, [open, variant, editTransaction]);
@@ -174,6 +180,7 @@ export function AddTransactionSheet({
       category: category as Doc<"transactions">["category"],
       paymentMethod: paymentMethod as Doc<"transactions">["paymentMethod"],
       note: note.trim() || undefined,
+      eventId: parseEventId(eventId),
       occurredAt: combineDateAndTime(date, time),
     };
 
@@ -342,6 +349,8 @@ export function AddTransactionSheet({
             placeholder="Add a note"
           />
         </SheetFieldRow>
+
+        <EventPickerField userId={userId} value={eventId} onChange={setEventId} />
       </div>
     </BottomSheet>
 

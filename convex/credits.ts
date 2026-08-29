@@ -12,6 +12,7 @@ async function insertLinkedIncome(
     amount: number;
     note?: string;
     occurredAt: number;
+    eventId?: Id<"events">;
     now: number;
   },
 ) {
@@ -25,6 +26,7 @@ async function insertLinkedIncome(
     category: "other",
     paymentMethod: "bank_transfer",
     note: args.note?.trim() || "Added from credit account",
+    eventId: args.eventId,
     occurredAt: args.occurredAt,
     createdAt: args.now,
     updatedAt: args.now,
@@ -40,6 +42,7 @@ async function syncLinkedIncome(
     amount: number;
     note?: string;
     occurredAt: number;
+    eventId?: Id<"events">;
     now: number;
   },
 ) {
@@ -57,6 +60,7 @@ async function syncLinkedIncome(
     amount: args.amount,
     title: args.name.trim(),
     note: args.note?.trim() || "Added from credit account",
+    eventId: args.eventId,
     occurredAt: args.occurredAt,
     updatedAt: args.now,
   });
@@ -108,10 +112,18 @@ export const create = mutation({
     tenureMonths: v.optional(v.number()),
     emiPaidCount: v.optional(v.number()),
     addAsIncome: v.optional(v.boolean()),
+    eventId: v.optional(v.id("events")),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
     if (!user) throw new Error("User not found.");
+
+    if (args.eventId) {
+      const event = await ctx.db.get(args.eventId);
+      if (!event || event.userId !== args.userId) {
+        throw new Error("Event not found.");
+      }
+    }
 
     assertValidCredit(args);
 
@@ -124,6 +136,7 @@ export const create = mutation({
           amount: args.creditLimit,
           note: args.note,
           occurredAt,
+          eventId: args.eventId,
           now,
         })
       : undefined;
@@ -144,6 +157,7 @@ export const create = mutation({
       tenureMonths: args.tenureMonths,
       emiPaidCount: args.emiPaidCount ?? (args.type === "personal_loan" ? 0 : undefined),
       linkedIncomeId,
+      eventId: args.eventId,
       isArchived: false,
       createdAt: now,
       updatedAt: now,
@@ -220,11 +234,19 @@ export const update = mutation({
     tenureMonths: v.optional(v.number()),
     emiPaidCount: v.optional(v.number()),
     isArchived: v.optional(v.boolean()),
+    eventId: v.optional(v.id("events")),
   },
   handler: async (ctx, args) => {
     const credit = await ctx.db.get(args.creditId);
     if (!credit || credit.userId !== args.userId) {
       throw new Error("Credit account not found.");
+    }
+
+    if (args.eventId) {
+      const event = await ctx.db.get(args.eventId);
+      if (!event || event.userId !== args.userId) {
+        throw new Error("Event not found.");
+      }
     }
 
     const next = {
@@ -242,6 +264,7 @@ export const update = mutation({
     const nextNote = args.note !== undefined ? args.note.trim() || undefined : credit.note;
     const nextStartDate = args.startDate !== undefined ? args.startDate : credit.startDate;
     const occurredAt = nextStartDate ?? credit.createdAt;
+    const nextEventId = args.eventId !== undefined ? args.eventId : credit.eventId;
 
     let linkedIncomeId = credit.linkedIncomeId;
     if (linkedIncomeId) {
@@ -251,6 +274,7 @@ export const update = mutation({
         amount: nextLimit,
         note: nextNote,
         occurredAt,
+        eventId: nextEventId,
         now,
       });
     }
@@ -270,6 +294,7 @@ export const update = mutation({
       ...(args.tenureMonths !== undefined ? { tenureMonths: args.tenureMonths } : {}),
       ...(args.emiPaidCount !== undefined ? { emiPaidCount: args.emiPaidCount } : {}),
       ...(args.isArchived !== undefined ? { isArchived: args.isArchived } : {}),
+      ...(args.eventId !== undefined ? { eventId: args.eventId } : {}),
       linkedIncomeId,
       updatedAt: now,
     });

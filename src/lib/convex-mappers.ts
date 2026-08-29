@@ -94,6 +94,7 @@ export function mapTransactionRow(tx: Doc<"transactions">) {
     amount: tx.amount,
     paymentMethod: tx.paymentMethod,
     note: tx.note,
+    eventId: tx.eventId,
     occurredAt: tx.occurredAt,
     time: formatTransactionTime(tx.occurredAt),
     icon: categoryIcon(tx.category),
@@ -118,6 +119,7 @@ export function mapCreditRow(credit: Doc<"credits">) {
     tenureMonths: credit.tenureMonths,
     emiPaidCount: credit.emiPaidCount,
     isArchived: credit.isArchived,
+    eventId: credit.eventId,
     createdAt: credit.createdAt,
   };
 }
@@ -153,5 +155,6 @@ export function mapCreditActivityRow(credit: Doc<"credits">) {
     startDate: credit.startDate,
     tenureMonths: credit.tenureMonths,
     emiPaidCount: credit.emiPaidCount,
+    eventId: credit.eventId,
   };
 }

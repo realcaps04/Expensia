@@ -11,6 +11,7 @@ export const create = mutation({
     category,
     paymentMethod,
     note: v.optional(v.string()),
+    eventId: v.optional(v.id("events")),
     occurredAt: v.number(),
   },
   handler: async (ctx, args) => {
@@ -21,6 +22,13 @@ export const create = mutation({
     const user = await ctx.db.get(args.userId);
     if (!user) throw new Error("User not found.");
 
+    if (args.eventId) {
+      const event = await ctx.db.get(args.eventId);
+      if (!event || event.userId !== args.userId) {
+        throw new Error("Event not found.");
+      }
+    }
+
     const now = Date.now();
     const transactionId = await ctx.db.insert("transactions", {
       userId: args.userId,
@@ -30,6 +38,7 @@ export const create = mutation({
       category: args.category,
       paymentMethod: args.paymentMethod,
       note: args.note?.trim() || undefined,
+      eventId: args.eventId,
       occurredAt: args.occurredAt,
       createdAt: now,
       updatedAt: now,
@@ -110,6 +119,7 @@ export const update = mutation({
     category,
     paymentMethod,
     note: v.optional(v.string()),
+    eventId: v.optional(v.id("events")),
     occurredAt: v.number(),
   },
   handler: async (ctx, args) => {
@@ -122,6 +132,13 @@ export const update = mutation({
       throw new Error("Transaction not found.");
     }
 
+    if (args.eventId) {
+      const event = await ctx.db.get(args.eventId);
+      if (!event || event.userId !== args.userId) {
+        throw new Error("Event not found.");
+      }
+    }
+
     const now = Date.now();
     await ctx.db.patch(args.transactionId, {
       type: args.type,
@@ -130,6 +147,7 @@ export const update = mutation({
       category: args.category,
       paymentMethod: args.paymentMethod,
       note: args.note?.trim() || undefined,
+      eventId: args.eventId,
       occurredAt: args.occurredAt,
       updatedAt: now,
     });

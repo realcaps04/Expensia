@@ -10,6 +10,7 @@ export type TransactionRowData = {
   amount: number;
   paymentMethod: Doc<"transactions">["paymentMethod"];
   note?: string;
+  eventId?: string;
   occurredAt: number;
   time: string;
   icon: TransactionIcon;

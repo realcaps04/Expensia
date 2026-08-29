@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { CreditCard, PieChart, Receipt, Wallet } from "lucide-react";
+import { CalendarRange, CreditCard, Receipt, Wallet } from "lucide-react";
 
 export type QuickActionSheet = "income" | "expense" | "credit";
 
@@ -14,7 +14,7 @@ export type QuickActionItem =
       kind: "sheet";
     }
   | {
-      id: "insights";
+      id: "events";
       label: string;
       description: string;
       icon: LucideIcon;
@@ -53,13 +53,13 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     color: "text-sky-600",
   },
   {
-    id: "insights",
+    id: "events",
     kind: "route",
-    label: "Insights",
-    description: "Charts and spending breakdown",
-    icon: PieChart,
+    label: "Events",
+    description: "Group income, expenses & credit by occasion",
+    icon: CalendarRange,
     bg: "bg-violet-50",
     color: "text-violet-brand",
-    to: "/home/insights",
+    to: "/home/events",
   },
 ];
