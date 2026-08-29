@@ -9,6 +9,15 @@ import { getGoogleClientId } from "./lib/google-auth";
 import { getConvexUrl } from "./lib/convex-config";
 import "./index.css";
 
+/** Stale dev/prod service workers can serve old index.html without CSS. */
+if (import.meta.env.DEV && "serviceWorker" in navigator) {
+  void navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      void registration.unregister();
+    }
+  });
+}
+
 const googleClientId = getGoogleClientId();
 const convex = new ConvexReactClient(getConvexUrl());
 

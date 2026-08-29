@@ -50,8 +50,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
       },
       devOptions: {
-        enabled: true,
-        navigateFallbackAllowlist: SPA_NAV_ALLOWLIST,
+        // Dev SW caches index.html and breaks styling when asset hashes change.
+        enabled: false,
       },
     }),
   ],
