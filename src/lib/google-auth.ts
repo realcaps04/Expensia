@@ -2,8 +2,12 @@ import type { GoogleProfile } from "./types";
 
 const GOOGLE_STORAGE_KEY = "expensia-google-auth";
 
+/** Public OAuth client ID — safe to embed; used when VITE_GOOGLE_CLIENT_ID is unset at build time. */
+const DEFAULT_GOOGLE_CLIENT_ID =
+  "94364837967-3mf4qh158qk3d7irtlscrtptg60il2rb.apps.googleusercontent.com";
+
 export function getGoogleClientId() {
-  return import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() ?? "";
+  return import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || DEFAULT_GOOGLE_CLIENT_ID;
 }
 
 export function loadGoogleAuth() {

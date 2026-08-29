@@ -14,7 +14,7 @@ const convex = new ConvexReactClient(getConvexUrl());
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={googleClientId || "placeholder.apps.googleusercontent.com"}>
+    <GoogleOAuthProvider clientId={googleClientId}>
       <ConvexProvider client={convex}>
         <AuthProvider>
           <BrowserRouter>
