@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useCloseOnBack } from "../../hooks/useCloseOnBack";
 import {
   BALANCE_PERIOD_PRESETS,
   type BalancePeriod,
@@ -25,6 +26,8 @@ export function BalancePeriodMenu({ open, onClose, period, onChange }: BalancePe
   const menuRef = useRef<HTMLDivElement>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const monthInputRef = useRef<HTMLInputElement>(null);
+
+  useCloseOnBack(open, onClose);
 
   useEffect(() => {
     if (!open) return;

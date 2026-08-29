@@ -1,8 +1,8 @@
 import { Bell, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthProvider";
+import { useCloseOnBack } from "../../hooks/useCloseOnBack";
 import { getDisplayName } from "../../lib/session";
-import { getGreeting } from "../../lib/format";
 
 function Avatar({ name, picture }: { name: string; picture?: string }) {
   if (picture) {
@@ -29,6 +29,8 @@ export function HomeHeader() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
+  useCloseOnBack(notificationsOpen, () => setNotificationsOpen(false));
+
   useEffect(() => {
     if (!notificationsOpen) return;
 
@@ -52,14 +54,8 @@ export function HomeHeader() {
 
   return (
     <header className="flex items-center justify-between gap-4">
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 items-center">
         <Avatar name={firstName} picture={user?.picture} />
-        <div className="min-w-0">
-          <p className="text-[0.8125rem] text-ink-secondary">{getGreeting()},</p>
-          <p className="truncate font-display text-[1.125rem] font-semibold text-ink">
-            {firstName}
-          </p>
-        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-2">

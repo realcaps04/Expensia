@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useCloseOnBack } from "../../hooks/useCloseOnBack";
 
 type BottomSheetProps = {
   open: boolean;
@@ -13,6 +14,8 @@ type BottomSheetProps = {
 };
 
 export function BottomSheet({ open, onClose, title, children, footer, elevated = false }: BottomSheetProps) {
+  useCloseOnBack(open, onClose);
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
