@@ -35,28 +35,30 @@ export function TransactionListItem({
   const signedAmount = tx.type === "income" ? tx.amount : -tx.amount;
 
   return (
-    <div className="flex items-center gap-2 rounded-[16px] px-1 py-3">
+    <div className="flex items-start gap-2 rounded-[16px] px-1 py-3">
       <button
         type="button"
         onClick={() => onEdit(tx)}
-        className="flex min-w-0 flex-1 items-center gap-3 text-left transition-colors active:opacity-80"
+        className="flex min-w-0 flex-1 items-start gap-3 text-left transition-colors active:opacity-80"
       >
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
+          className={`mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
         >
           <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[0.9375rem] font-semibold text-ink">{tx.title}</p>
+          <p className="break-words text-[0.9375rem] font-semibold leading-snug text-ink">{tx.title}</p>
           {tx.note?.trim() ? (
-            <p className="mt-0.5 truncate text-[0.75rem] text-ink-secondary">{tx.note.trim()}</p>
+            <p className="mt-0.5 break-words text-[0.75rem] leading-snug text-ink-secondary">
+              {tx.note.trim()}
+            </p>
           ) : null}
           <p className="mt-0.5 text-[0.75rem] text-ink-muted">
             {tx.category} • {tx.time}
           </p>
         </div>
         <span
-          className={`shrink-0 text-[0.9375rem] font-semibold ${
+          className={`mt-0.5 shrink-0 text-[0.9375rem] font-semibold ${
             tx.type === "income" ? "text-income" : "text-expense"
           }`}
         >
@@ -65,7 +67,7 @@ export function TransactionListItem({
       </button>
 
       {showActions ? (
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-start gap-1 pt-0.5">
           <button
             type="button"
             aria-label={`Edit ${tx.title}`}
