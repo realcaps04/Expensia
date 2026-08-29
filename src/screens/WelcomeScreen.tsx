@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { markWelcomeSeen } from "../lib/onboarding";
 import { BrandLockup } from "../components/brand/ExpensiaLogo";
 import { WelcomeBackground } from "../components/brand/WelcomeBackground";
 import { Button } from "../components/ui/Button";
@@ -28,7 +29,13 @@ export function WelcomeScreen() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Button fullWidth onClick={() => navigate("/signup")}>
+          <Button
+            fullWidth
+            onClick={() => {
+              markWelcomeSeen();
+              navigate("/signup");
+            }}
+          >
             Get Started
           </Button>
         </motion.div>
