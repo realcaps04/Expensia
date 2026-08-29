@@ -29,6 +29,7 @@ import {
 } from "../../lib/transaction-options";
 import type { TransactionRowData } from "../../lib/transaction-types";
 import { BottomSheet } from "./BottomSheet";
+import { ConfirmSheet, deleteItemMessage } from "./ConfirmSheet";
 import { SheetFieldRow, SheetNativeInput, SheetSelect } from "./SheetFieldRow";
 
 type AddTransactionSheetProps = {
@@ -122,6 +123,7 @@ export function AddTransactionSheet({
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -194,9 +196,13 @@ export function AddTransactionSheet({
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!userId || !editTransaction) return;
-    if (!window.confirm("Delete this transaction?")) return;
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userId || !editTransaction) return;
 
     setBusy(true);
     setError("");
@@ -205,6 +211,7 @@ export function AddTransactionSheet({
         userId,
         transactionId: editTransaction.id as Id<"transactions">,
       });
+      setDeleteConfirmOpen(false);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not delete.");
@@ -218,10 +225,11 @@ export function AddTransactionSheet({
   const saveLabel = isEdit ? cfg.editSaveLabel : cfg.saveLabel;
 
   return (
-    <BottomSheet
-      open={open}
-      onClose={onClose}
-      title={sheetTitle}
+    <>
+      <BottomSheet
+        open={open}
+        onClose={onClose}
+        title={sheetTitle}
       footer={
         <div className="space-y-2">
           {error ? <p className="text-center text-[0.8125rem] text-rose-500">{error}</p> : null}
@@ -336,5 +344,16 @@ export function AddTransactionSheet({
         </SheetFieldRow>
       </div>
     </BottomSheet>
+
+      <ConfirmSheet
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete item?"
+        message={editTransaction ? deleteItemMessage(editTransaction.title) : ""}
+        confirmLabel="Delete"
+        busy={busy}
+      />
+    </>
   );
 }

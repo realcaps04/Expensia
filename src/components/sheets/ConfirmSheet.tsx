@@ -27,6 +27,7 @@ export function ConfirmSheet({
       open={open}
       onClose={onClose}
       title={title}
+      elevated
       footer={
         <div className="flex flex-col gap-2">
           <button

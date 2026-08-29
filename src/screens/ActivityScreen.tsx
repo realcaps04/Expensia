@@ -196,6 +196,24 @@ export function ActivityScreen() {
         variant={editingTransaction?.type ?? "expense"}
         editTransaction={editingTransaction}
       />
+
+      <ConfirmSheet
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Delete item?"
+        message={
+          deleteTarget
+            ? deleteItemMessage(
+                deleteTarget.kind === "transaction"
+                  ? deleteTarget.item.title
+                  : deleteTarget.item.name,
+              )
+            : ""
+        }
+        confirmLabel="Delete"
+        busy={deleteBusy}
+      />
     </>
   );
 }

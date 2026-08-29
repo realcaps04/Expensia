@@ -9,9 +9,10 @@ type BottomSheetProps = {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  elevated?: boolean;
 };
 
-export function BottomSheet({ open, onClose, title, children, footer }: BottomSheetProps) {
+export function BottomSheet({ open, onClose, title, children, footer, elevated = false }: BottomSheetProps) {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -26,7 +27,7 @@ export function BottomSheet({ open, onClose, title, children, footer }: BottomSh
   return createPortal(
     <AnimatePresence>
       {open ? (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center">
+        <div className={`fixed inset-0 flex items-end justify-center ${elevated ? "z-[110]" : "z-[100]"}`}>
           <motion.button
             type="button"
             aria-label="Close"
