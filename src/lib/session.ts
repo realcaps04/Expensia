@@ -1,5 +1,5 @@
 import type { Id } from "../../convex/_generated/dataModel";
-import type { GoogleProfile, UserProfile } from "./types";
+import type { UserProfile } from "./types";
 
 const SESSION_KEY = "expensia-session";
 

@@ -33,7 +33,7 @@ export function HomeHeader() {
         <div className="min-w-0">
           <p className="text-[0.8125rem] text-ink-secondary">{getGreeting()},</p>
           <p className="truncate font-display text-[1.125rem] font-semibold text-ink">
-            {firstName} <span aria-hidden>👋</span>
+            {firstName}
           </p>
         </div>
       </div>
