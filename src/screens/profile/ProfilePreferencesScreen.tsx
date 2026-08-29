@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import {
   ProfileSubScreen,
+  ProfileSelect,
   ProfileToggle,
 } from "../../components/profile/ProfileSubScreen";
 import { ProfileMenuDivider, ProfileMenuSection } from "../../components/profile/ProfileMenuRow";
 import { useAuth } from "../../context/AuthProvider";
+import { useTheme } from "../../context/ThemeProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { convexUserToProfile } from "../../lib/convex-mappers";
 import { formatLastSeen } from "../../lib/profile-achievements";
@@ -17,11 +19,11 @@ type Theme = Doc<"users">["settings"]["theme"];
 
 export function ProfilePreferencesScreen() {
   const { syncUser } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { userId, convexUser } = useProfileStats();
   const updateProfile = useMutation(api.users.updateProfile);
 
   const settings = convexUser?.settings;
-  const [theme, setTheme] = useState<Theme>("light");
   const [currency, setCurrency] = useState("INR");
   const [language, setLanguage] = useState("en");
   const [showBalance, setShowBalance] = useState(true);
@@ -31,7 +33,6 @@ export function ProfilePreferencesScreen() {
 
   useEffect(() => {
     if (!settings) return;
-    setTheme(settings.theme);
     setCurrency(settings.currency);
     setLanguage(settings.language ?? "en");
     setShowBalance(settings.showBalance ?? true);
@@ -53,6 +54,18 @@ export function ProfilePreferencesScreen() {
     { id: "system", label: "System" },
   ];
 
+  const currencyOptions = [
+    { value: "INR", label: "INR (₹)" },
+    { value: "USD", label: "USD ($)" },
+    { value: "EUR", label: "EUR (€)" },
+    { value: "GBP", label: "GBP (£)" },
+  ] as const;
+
+  const languageOptions = [
+    { value: "en", label: "English" },
+    { value: "hi", label: "Hindi" },
+  ] as const;
+
   return (
     <ProfileSubScreen title="Preferences">
       <ProfileMenuSection title="Display">
@@ -70,7 +83,7 @@ export function ProfilePreferencesScreen() {
                 className={`rounded-[12px] py-2.5 text-[0.8125rem] font-semibold transition-colors ${
                   theme === id
                     ? "bg-teal-brand text-white shadow-sm"
-                    : "bg-slate-50 text-ink-secondary"
+                    : "bg-slate-50 text-ink-secondary dark:bg-slate-700 dark:text-slate-200"
                 }`}
               >
                 {label}
@@ -84,19 +97,14 @@ export function ProfilePreferencesScreen() {
             <Wallet className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Currency</span>
-          <select
+          <ProfileSelect
             value={currency}
-            onChange={(e) => {
-              setCurrency(e.target.value);
-              void persistSettings({ currency: e.target.value });
+            onChange={(value) => {
+              setCurrency(value);
+              void persistSettings({ currency: value });
             }}
-            className="rounded-lg border border-surface-border bg-white px-2 py-1.5 text-[0.8125rem] font-medium text-ink"
-          >
-            <option value="INR">INR (₹)</option>
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </select>
+            options={currencyOptions}
+          />
         </label>
         <ProfileMenuDivider />
         <label className="flex items-center gap-3 px-4 py-3.5">
@@ -104,17 +112,14 @@ export function ProfilePreferencesScreen() {
             <Languages className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Language</span>
-          <select
+          <ProfileSelect
             value={language}
-            onChange={(e) => {
-              setLanguage(e.target.value);
-              void persistSettings({ language: e.target.value });
+            onChange={(value) => {
+              setLanguage(value);
+              void persistSettings({ language: value });
             }}
-            className="rounded-lg border border-surface-border bg-white px-2 py-1.5 text-[0.8125rem] font-medium text-ink"
-          >
-            <option value="en">English</option>
-            <option value="hi">Hindi</option>
-          </select>
+            options={languageOptions}
+          />
         </label>
       </ProfileMenuSection>
 

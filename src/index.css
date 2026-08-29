@@ -5,6 +5,8 @@
 :root {
   --bg-primary: #fafaf8;
   --bg-card: #ffffff;
+  --bg-muted: #f8fafc;
+  --bg-elevated: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
@@ -12,6 +14,18 @@
   --teal: #14b8a6;
   --violet: #6366f1;
   color-scheme: light;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-card: #1e293b;
+  --bg-muted: #334155;
+  --bg-elevated: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-subtle: #334155;
+  color-scheme: dark;
 }
 
 * {
@@ -72,4 +86,77 @@ a:focus-visible {
   .app-frame {
     box-shadow: 0 24px 80px rgba(30, 41, 59, 0.08);
   }
+
+  .dark .app-frame {
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.dark .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+.dark .bg-surface {
+  background-color: var(--bg-primary) !important;
+}
+
+.dark .bg-\[\#F4F6F8\] {
+  background-color: var(--bg-primary) !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: var(--bg-muted) !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #475569 !important;
+}
+
+.dark .text-ink {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-ink-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-ink-muted {
+  color: var(--text-muted) !important;
+}
+
+.dark .border-surface-border {
+  border-color: var(--border-subtle) !important;
+}
+
+.dark .border-white\/70 {
+  border-color: rgb(255 255 255 / 0.12) !important;
+}
+
+.dark .bg-white\/50 {
+  background-color: rgb(30 41 59 / 0.72) !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.dark select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.dark .hover\:bg-slate-50:hover {
+  background-color: var(--bg-muted) !important;
+}
+
+.dark .hover\:bg-slate-100:hover {
+  background-color: #475569 !important;
+}
+
+.dark .active\:bg-slate-50:active {
+  background-color: var(--bg-muted) !important;
 }

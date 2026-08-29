@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type ProfileSubScreenProps = {
@@ -95,5 +95,38 @@ export function ProfileToggle({
 export function ProfileCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`overflow-hidden rounded-card bg-white shadow-soft ${className}`}>{children}</div>
+  );
+}
+
+export function ProfileSelect({
+  value,
+  onChange,
+  options,
+  className = "",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: readonly { value: string; label: string }[];
+  className?: string;
+}) {
+  return (
+    <div className={`relative shrink-0 ${className}`}>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="min-w-[7.25rem] appearance-none rounded-[12px] border border-surface-border bg-white py-2 pl-3 pr-9 text-[0.8125rem] font-semibold text-ink shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors focus:border-teal-brand/40 focus:outline-none focus:ring-2 focus:ring-teal-brand/15"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"
+        strokeWidth={2.5}
+        aria-hidden
+      />
+    </div>
   );
 }

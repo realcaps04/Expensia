@@ -16,6 +16,15 @@
       content="Expensia — Track daily income and expenses. Understand your cash flow. Grow your money with clarity."
     />
     <title>Expensia — Track. Understand. Grow.</title>
+    <script>
+      try {
+        var theme = localStorage.getItem("expensia-theme");
+        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (theme === "dark" || (theme === "system" && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
