@@ -3,9 +3,9 @@ import { Bell, Database, Download, Eye, Languages, Sparkles, Wallet } from "luci
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import {
+  ProfilePreferenceRow,
   ProfileSubScreen,
   ProfileSelect,
-  ProfileToggle,
 } from "../../components/profile/ProfileSubScreen";
 import { ProfileMenuDivider, ProfileMenuSection } from "../../components/profile/ProfileMenuRow";
 import { useAuth } from "../../context/AuthProvider";
@@ -13,6 +13,7 @@ import { useTheme } from "../../context/ThemeProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { convexUserToProfile } from "../../lib/convex-mappers";
 import { formatLastSeen } from "../../lib/profile-achievements";
+import { resolveUserSettings } from "../../lib/user-settings";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type Theme = Doc<"users">["settings"]["theme"];
@@ -23,26 +24,18 @@ export function ProfilePreferencesScreen() {
   const { userId, convexUser } = useProfileStats();
   const updateProfile = useMutation(api.users.updateProfile);
 
-  const settings = convexUser?.settings;
-  const [currency, setCurrency] = useState("INR");
-  const [language, setLanguage] = useState("en");
-  const [showBalance, setShowBalance] = useState(true);
-  const [showPreview, setShowPreview] = useState(true);
-  const [autoCategorize, setAutoCategorize] = useState(true);
-  const [notifications, setNotifications] = useState(true);
+  const settings = resolveUserSettings(convexUser?.settings);
+  const [currency, setCurrency] = useState(settings.currency);
+  const [language, setLanguage] = useState(settings.language ?? "en");
 
   useEffect(() => {
-    if (!settings) return;
-    setCurrency(settings.currency);
-    setLanguage(settings.language ?? "en");
-    setShowBalance(settings.showBalance ?? true);
-    setShowPreview(settings.showNotificationPreview ?? true);
-    setAutoCategorize(settings.autoCategorize ?? true);
-    setNotifications(settings.notifications);
-  }, [settings]);
+    if (!convexUser?.settings) return;
+    setCurrency(convexUser.settings.currency);
+    setLanguage(convexUser.settings.language ?? "en");
+  }, [convexUser?.settings?.currency, convexUser?.settings?.language]);
 
-  const persistSettings = async (patch: Partial<NonNullable<typeof settings>>) => {
-    if (!userId || !settings) return;
+  const persistSettings = async (patch: Partial<typeof settings>) => {
+    if (!userId) return;
     const next = { ...settings, ...patch };
     const updated = await updateProfile({ userId, settings: next });
     syncUser(convexUserToProfile(updated));
@@ -64,6 +57,33 @@ export function ProfilePreferencesScreen() {
   const languageOptions = [
     { value: "en", label: "English" },
     { value: "hi", label: "Hindi" },
+  ] as const;
+
+  const preferenceItems = [
+    {
+      label: "Show Account Balance",
+      icon: Eye,
+      checked: settings.showBalance ?? true,
+      key: "showBalance" as const,
+    },
+    {
+      label: "Show Notifications Preview",
+      icon: Bell,
+      checked: settings.showNotificationPreview ?? true,
+      key: "showNotificationPreview" as const,
+    },
+    {
+      label: "Auto-categorize Transactions",
+      icon: Sparkles,
+      checked: settings.autoCategorize ?? true,
+      key: "autoCategorize" as const,
+    },
+    {
+      label: "Push Notifications",
+      icon: Bell,
+      checked: settings.notifications,
+      key: "notifications" as const,
+    },
   ] as const;
 
   return (
@@ -93,7 +113,7 @@ export function ProfilePreferencesScreen() {
         </div>
         <ProfileMenuDivider />
         <label className="flex items-center gap-3 px-4 py-3.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary dark:bg-slate-700/60">
             <Wallet className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Currency</span>
@@ -108,7 +128,7 @@ export function ProfilePreferencesScreen() {
         </label>
         <ProfileMenuDivider />
         <label className="flex items-center gap-3 px-4 py-3.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary dark:bg-slate-700/60">
             <Languages className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Language</span>
@@ -124,51 +144,15 @@ export function ProfilePreferencesScreen() {
       </ProfileMenuSection>
 
       <ProfileMenuSection title="App Preferences">
-        {[
-          {
-            label: "Show Account Balance",
-            icon: Eye,
-            checked: showBalance,
-            key: "showBalance" as const,
-            setter: setShowBalance,
-          },
-          {
-            label: "Show Notifications Preview",
-            icon: Bell,
-            checked: showPreview,
-            key: "showNotificationPreview" as const,
-            setter: setShowPreview,
-          },
-          {
-            label: "Auto-categorize Transactions",
-            icon: Sparkles,
-            checked: autoCategorize,
-            key: "autoCategorize" as const,
-            setter: setAutoCategorize,
-          },
-          {
-            label: "Push Notifications",
-            icon: Bell,
-            checked: notifications,
-            key: "notifications" as const,
-            setter: setNotifications,
-          },
-        ].map((item, index, arr) => (
+        {preferenceItems.map((item, index) => (
           <div key={item.key}>
-            <div className="flex items-center gap-3 px-4 py-3.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
-                <item.icon className="h-[18px] w-[18px]" strokeWidth={2} />
-              </span>
-              <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">{item.label}</span>
-              <ProfileToggle
-                checked={item.checked}
-                onChange={(value) => {
-                  item.setter(value);
-                  void persistSettings({ [item.key]: value });
-                }}
-              />
-            </div>
-            {index < arr.length - 1 ? <ProfileMenuDivider /> : null}
+            <ProfilePreferenceRow
+              icon={item.icon}
+              label={item.label}
+              checked={item.checked}
+              onChange={(value) => void persistSettings({ [item.key]: value })}
+            />
+            {index < preferenceItems.length - 1 ? <ProfileMenuDivider /> : null}
           </div>
         ))}
       </ProfileMenuSection>
@@ -177,9 +161,9 @@ export function ProfilePreferencesScreen() {
         <button
           type="button"
           onClick={() => window.alert("Last backup: Today")}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
+          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-slate-50 dark:active:bg-slate-700/40"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary dark:bg-slate-700/60">
             <Database className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1">
@@ -193,9 +177,9 @@ export function ProfilePreferencesScreen() {
         <button
           type="button"
           onClick={() => window.alert("Export to CSV/PDF coming soon.")}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
+          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-slate-50 dark:active:bg-slate-700/40"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary dark:bg-slate-700/60">
             <Download className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span className="text-[0.9375rem] font-medium text-ink">Export Data</span>

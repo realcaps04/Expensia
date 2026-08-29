@@ -1,8 +1,11 @@
 import { Bell } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { useAuth } from "../../context/AuthProvider";
 import { useCloseOnBack } from "../../hooks/useCloseOnBack";
-import { getDisplayName } from "../../lib/session";
+import { getDisplayName, getConvexUserId } from "../../lib/session";
+import { resolveUserSettings } from "../../lib/user-settings";
 import type { CreditActivityRowData } from "../../lib/activity-types";
 import type { TransactionRowData } from "../../lib/transaction-types";
 import { AppSearchBar } from "./AppSearchBar";
@@ -34,6 +37,10 @@ export function HomeHeader({
   onSelectCredit?: (credit: CreditActivityRowData) => void;
 }) {
   const { user } = useAuth();
+  const userId = getConvexUserId(user);
+  const convexUser = useQuery(api.users.getUser, userId ? { userId } : "skip");
+  const showNotificationPreview =
+    resolveUserSettings(convexUser?.settings).showNotificationPreview ?? true;
   const firstName = user ? getDisplayName(user).split(" ")[0] : "there";
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
@@ -82,7 +89,9 @@ export function HomeHeader({
             className="relative flex h-10 w-10 items-center justify-center rounded-full border border-surface-border bg-white text-ink-secondary shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors hover:text-ink"
           >
             <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
-            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-teal-brand ring-2 ring-white" />
+            {showNotificationPreview ? (
+              <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-teal-brand ring-2 ring-white" />
+            ) : null}
           </button>
           {notificationsOpen ? (
             <div

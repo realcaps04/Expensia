@@ -64,9 +64,40 @@ export function ProfileField({
 
 export function ProfileToggle({
   checked,
-  onChange,
-  disabled,
+  disabled = false,
 }: {
+  checked: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`relative h-7 w-12 shrink-0 rounded-pill transition-colors ${
+        disabled
+          ? "bg-slate-200 opacity-60 dark:bg-slate-600"
+          : checked
+            ? "bg-teal-brand"
+            : "bg-slate-200 dark:bg-slate-600"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+          checked && !disabled ? "translate-x-[22px]" : "translate-x-0.5"
+        }`}
+      />
+    </div>
+  );
+}
+
+export function ProfilePreferenceRow({
+  icon: Icon,
+  label,
+  checked,
+  onChange,
+  disabled = false,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
@@ -74,20 +105,16 @@ export function ProfileToggle({
   return (
     <button
       type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-disabled={disabled}
       disabled={disabled}
+      aria-pressed={checked}
       onClick={() => onChange(!checked)}
-      className={`relative h-7 w-12 shrink-0 rounded-pill transition-colors ${
-        disabled ? "cursor-not-allowed bg-slate-200 opacity-60" : checked ? "bg-teal-brand" : "bg-slate-200"
-      }`}
+      className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors enabled:active:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:enabled:active:bg-slate-700/40"
     >
-      <span
-        className={`pointer-events-none absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-          checked && !disabled ? "translate-x-[22px]" : "translate-x-0.5"
-        }`}
-      />
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary dark:bg-slate-700/60">
+        <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+      </span>
+      <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">{label}</span>
+      <ProfileToggle checked={checked} disabled={disabled} />
     </button>
   );
 }
