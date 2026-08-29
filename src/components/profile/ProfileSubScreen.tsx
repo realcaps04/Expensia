@@ -76,15 +76,16 @@ export function ProfileToggle({
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-disabled={disabled}
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative h-7 w-12 shrink-0 rounded-pill transition-colors ${
-        checked ? "bg-teal-brand" : "bg-slate-200"
-      } disabled:opacity-50`}
+        disabled ? "cursor-not-allowed bg-slate-200 opacity-60" : checked ? "bg-teal-brand" : "bg-slate-200"
+      }`}
     >
       <span
-        className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-          checked ? "translate-x-[22px]" : "translate-x-0.5"
+        className={`pointer-events-none absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+          checked && !disabled ? "translate-x-[22px]" : "translate-x-0.5"
         }`}
       />
     </button>

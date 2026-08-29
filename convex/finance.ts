@@ -31,6 +31,45 @@ function sumByType(transactions: { type: "income" | "expense"; amount: number }[
   return { income, expenses, net: income - expenses };
 }
 
+const MAX_TREND_POINTS = 90;
+const MS_PER_DAY = 86_400_000;
+
+function buildPeriodTrend(
+  periodTx: { type: "income" | "expense"; amount: number; occurredAt: number }[],
+  rangeStart: number,
+  end: number,
+) {
+  const start = startOfDayMs(new Date(rangeStart));
+  const totalDays = Math.max(1, Math.ceil((end - start) / MS_PER_DAY));
+  const stepDays = Math.max(1, Math.ceil(totalDays / MAX_TREND_POINTS));
+  const points: { date: string; balance: number }[] = [];
+
+  for (let ms = start; ms <= end; ms = addDays(new Date(ms), stepDays).getTime()) {
+    const bucketEnd = Math.min(endOfDayMs(new Date(ms)), end);
+    let net = 0;
+    for (const tx of periodTx) {
+      if (tx.occurredAt <= bucketEnd) {
+        net += tx.type === "income" ? tx.amount : -tx.amount;
+      }
+    }
+    points.push({ date: dateKeyFromMs(bucketEnd), balance: net });
+  }
+
+  const lastDate = dateKeyFromMs(end);
+  const lastPoint = points[points.length - 1];
+  if (!lastPoint || lastPoint.date !== lastDate) {
+    let net = 0;
+    for (const tx of periodTx) {
+      if (tx.occurredAt <= end) {
+        net += tx.type === "income" ? tx.amount : -tx.amount;
+      }
+    }
+    points.push({ date: lastDate, balance: net });
+  }
+
+  return points.length > MAX_TREND_POINTS + 1 ? points.slice(-(MAX_TREND_POINTS + 1)) : points;
+}
+
 export const getDashboard = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
@@ -201,19 +240,11 @@ export const getPeriodDashboard = query({
         : [];
     const prior = sumByType(priorTx);
 
-    const rangeStart = startOfDayMs(new Date(args.start));
-    const points: { date: string; balance: number }[] = [];
-
-    for (let ms = rangeStart; ms <= args.end; ms = addDays(new Date(ms), 1).getTime()) {
-      const dayEnd = Math.min(endOfDayMs(new Date(ms)), args.end);
-      let net = 0;
-      for (const tx of periodTx) {
-        if (tx.occurredAt <= dayEnd) {
-          net += tx.type === "income" ? tx.amount : -tx.amount;
-        }
-      }
-      points.push({ date: dateKeyFromMs(ms), balance: net });
-    }
+    const rangeStart =
+      args.start === 0 && all.length > 0
+        ? startOfDayMs(new Date(Math.min(...all.map((tx) => tx.occurredAt))))
+        : startOfDayMs(new Date(args.start));
+    const points = buildPeriodTrend(periodTx, rangeStart, args.end);
 
     const credits = await ctx.db
       .query("credits")

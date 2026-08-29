@@ -8,6 +8,7 @@ type ProfileMenuRowProps = {
   onClick?: () => void;
   trailing?: React.ReactNode;
   danger?: boolean;
+  disabled?: boolean;
 };
 
 export function ProfileMenuRow({
@@ -17,10 +18,11 @@ export function ProfileMenuRow({
   onClick,
   trailing,
   danger = false,
+  disabled = false,
 }: ProfileMenuRowProps) {
-  const className = `flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-slate-50 ${
+  const className = `flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors ${
     danger ? "text-expense" : "text-ink"
-  }`;
+  } ${disabled ? "cursor-not-allowed opacity-50" : "active:bg-slate-50"}`;
 
   const content = (
     <>
@@ -38,7 +40,7 @@ export function ProfileMenuRow({
     </>
   );
 
-  if (to) {
+  if (to && !disabled) {
     return (
       <Link to={to} className={className}>
         {content}
@@ -47,7 +49,7 @@ export function ProfileMenuRow({
   }
 
   return (
-    <button type="button" onClick={onClick} className={className}>
+    <button type="button" onClick={onClick} disabled={disabled} className={className}>
       {content}
     </button>
   );

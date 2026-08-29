@@ -6,13 +6,9 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ProfileCard,
-  ProfileSubScreen,
-  ProfileToggle,
-} from "../../components/profile/ProfileSubScreen";
+import { ProfileCard, ProfileSubScreen } from "../../components/profile/ProfileSubScreen";
 import {
   ProfileMenuDivider,
   ProfileMenuRow,
@@ -22,25 +18,16 @@ import { ConfirmSheet } from "../../components/sheets/ConfirmSheet";
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { formatLastSeen } from "../../lib/profile-achievements";
-import { loadProfileExtras, saveProfileExtras } from "../../lib/profile-extras";
+
+const comingSoon = (
+  <span className="text-[0.75rem] font-medium text-ink-muted">Coming soon</span>
+);
 
 export function ProfileSecurityScreen() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { convexUser } = useProfileStats();
-  const [biometric, setBiometric] = useState(false);
-  const [twoFactor, setTwoFactor] = useState(false);
   const [signOutOpen, setSignOutOpen] = useState(false);
-
-  useEffect(() => {
-    const extras = loadProfileExtras();
-    setBiometric(extras.biometricLogin ?? false);
-    setTwoFactor(extras.twoFactorAuth ?? false);
-  }, []);
-
-  const persistToggle = (patch: { biometricLogin?: boolean; twoFactorAuth?: boolean }) => {
-    saveProfileExtras({ ...loadProfileExtras(), ...patch });
-  };
 
   const isEmailAccount = user?.provider === "email";
 
@@ -53,46 +40,31 @@ export function ProfileSecurityScreen() {
               <ProfileMenuRow
                 icon={KeyRound}
                 label="Change Password"
-                onClick={() => window.alert("Password change will be available in a future update.")}
+                trailing={comingSoon}
+                disabled
               />
               <ProfileMenuDivider />
             </>
           ) : null}
-          <div className="flex items-center gap-3 px-4 py-3.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
-              <Shield className="h-[18px] w-[18px]" strokeWidth={2} />
-            </span>
-            <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Biometric Login</span>
-            <ProfileToggle
-              checked={biometric}
-              onChange={(value) => {
-                setBiometric(value);
-                persistToggle({ biometricLogin: value });
-              }}
-            />
-          </div>
+          <ProfileMenuRow
+            icon={Shield}
+            label="Biometric Login"
+            trailing={comingSoon}
+            disabled
+          />
           <ProfileMenuDivider />
-          <div className="flex items-center gap-3 px-4 py-3.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-ink-secondary">
-              <ShieldCheck className="h-[18px] w-[18px]" strokeWidth={2} />
-            </span>
-            <span className="min-w-0 flex-1 text-[0.9375rem] font-medium text-ink">Two-Factor Authentication</span>
-            <ProfileToggle
-              checked={twoFactor}
-              onChange={(value) => {
-                setTwoFactor(value);
-                persistToggle({ twoFactorAuth: value });
-              }}
-            />
-          </div>
+          <ProfileMenuRow
+            icon={ShieldCheck}
+            label="Two-Factor Authentication"
+            trailing={comingSoon}
+            disabled
+          />
           <ProfileMenuDivider />
           <ProfileMenuRow
             icon={MonitorSmartphone}
             label="Active Sessions"
-            trailing={
-              <span className="text-[0.75rem] font-medium text-ink-muted">This device</span>
-            }
-            onClick={() => window.alert("You are signed in on this device.")}
+            trailing={comingSoon}
+            disabled
           />
         </ProfileMenuSection>
 
@@ -112,19 +84,22 @@ export function ProfileSecurityScreen() {
 
         <ProfileMenuSection title="Danger Zone">
           <ProfileMenuRow
-            icon={LogOut}
-            label="Sign Out"
-            danger
-            onClick={() => setSignOutOpen(true)}
-          />
-          <ProfileMenuDivider />
-          <ProfileMenuRow
             icon={Trash2}
             label="Delete Account"
+            trailing={comingSoon}
             danger
-            onClick={() => window.alert("Account deletion will be available in a future update.")}
+            disabled
           />
         </ProfileMenuSection>
+
+        <button
+          type="button"
+          onClick={() => setSignOutOpen(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-card border border-rose-200 bg-white py-3.5 text-[0.9375rem] font-semibold text-expense shadow-soft transition-colors hover:bg-rose-50 active:scale-[0.99]"
+        >
+          <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
+          Sign Out
+        </button>
       </ProfileSubScreen>
 
       <ConfirmSheet
