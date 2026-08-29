@@ -89,6 +89,45 @@ export const listByRange = query({
   },
 });
 
+export const update = mutation({
+  args: {
+    userId: v.id("users"),
+    transactionId: v.id("transactions"),
+    type: transactionType,
+    amount: v.number(),
+    title: v.string(),
+    category,
+    paymentMethod,
+    note: v.optional(v.string()),
+    occurredAt: v.number(),
+  },
+  handler: async (ctx, args) => {
+    if (args.amount <= 0) {
+      throw new Error("Amount must be greater than zero.");
+    }
+
+    const tx = await ctx.db.get(args.transactionId);
+    if (!tx || tx.userId !== args.userId) {
+      throw new Error("Transaction not found.");
+    }
+
+    const now = Date.now();
+    await ctx.db.patch(args.transactionId, {
+      type: args.type,
+      amount: args.amount,
+      title: args.title.trim(),
+      category: args.category,
+      paymentMethod: args.paymentMethod,
+      note: args.note?.trim() || undefined,
+      occurredAt: args.occurredAt,
+      updatedAt: now,
+    });
+
+    await ctx.db.patch(args.userId, { updatedAt: now, lastSeenAt: now });
+    return args.transactionId;
+  },
+});
+
 export const remove = mutation({
   args: {
     userId: v.id("users"),

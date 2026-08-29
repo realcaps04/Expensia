@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import type { TransactionIcon } from "../../lib/convex-mappers";
 import { formatCurrency } from "../../lib/format";
 
@@ -21,20 +22,31 @@ export type TransactionRowData = {
   id: string;
   title: string;
   category: string;
+  categoryKey: Doc<"transactions">["category"];
   type: "income" | "expense";
   amount: number;
+  paymentMethod: Doc<"transactions">["paymentMethod"];
+  note?: string;
+  occurredAt: number;
   time: string;
   icon: TransactionIcon;
 };
 
-function TransactionRow({ tx }: { tx: TransactionRowData }) {
+function TransactionRow({
+  tx,
+  onEdit,
+}: {
+  tx: TransactionRowData;
+  onEdit: (tx: TransactionRowData) => void;
+}) {
   const { Icon, bg, color } = ICONS[tx.icon];
   const signedAmount = tx.type === "income" ? tx.amount : -tx.amount;
 
   return (
     <button
       type="button"
-      className="flex w-full items-center gap-3 rounded-[16px] px-1 py-3 text-left transition-colors hover:bg-slate-50"
+      onClick={() => onEdit(tx)}
+      className="flex w-full items-center gap-3 rounded-[16px] px-1 py-3 text-left transition-colors hover:bg-slate-50 active:bg-slate-100"
     >
       <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}>
         <Icon className="h-5 w-5" strokeWidth={2} />
@@ -61,9 +73,10 @@ function TransactionRow({ tx }: { tx: TransactionRowData }) {
 
 type RecentTransactionsProps = {
   transactions: TransactionRowData[];
+  onEditTransaction: (tx: TransactionRowData) => void;
 };
 
-export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+export function RecentTransactions({ transactions, onEditTransaction }: RecentTransactionsProps) {
   return (
     <section>
       <div className="mb-1 flex items-center justify-between gap-3 px-1">
@@ -85,7 +98,9 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
             </p>
           </div>
         ) : (
-          transactions.map((tx) => <TransactionRow key={tx.id} tx={tx} />)
+          transactions.map((tx) => (
+            <TransactionRow key={tx.id} tx={tx} onEdit={onEditTransaction} />
+          ))
         )}
       </div>
     </section>

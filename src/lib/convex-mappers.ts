@@ -89,8 +89,12 @@ export function mapTransactionRow(tx: Doc<"transactions">) {
     id: tx._id,
     title: tx.title,
     category: typeLabel,
+    categoryKey: tx.category,
     type: tx.type,
     amount: tx.amount,
+    paymentMethod: tx.paymentMethod,
+    note: tx.note,
+    occurredAt: tx.occurredAt,
     time: formatTransactionTime(tx.occurredAt),
     icon: categoryIcon(tx.category),
   };
@@ -110,6 +114,9 @@ export function mapCreditRow(credit: Doc<"credits">) {
     apr: credit.apr,
     lastFour: credit.lastFour,
     note: credit.note,
+    startDate: credit.startDate,
+    tenureMonths: credit.tenureMonths,
+    emiPaidCount: credit.emiPaidCount,
     isArchived: credit.isArchived,
   };
 }

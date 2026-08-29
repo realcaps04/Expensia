@@ -1,4 +1,4 @@
-import { ChevronDown, CreditCard, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Sparkline } from "../charts/Sparkline";
 import type { DashboardSummary } from "../../lib/types";
@@ -20,10 +20,9 @@ function dayChangeLabel(todayNet: number, yesterdayNet: number) {
 type BalanceCardProps = {
   summary: DashboardSummary;
   sparkline?: number[];
-  creditOutstanding?: number;
 };
 
-export function BalanceCard({ summary, sparkline = [], creditOutstanding = 0 }: BalanceCardProps) {
+export function BalanceCard({ summary, sparkline = [] }: BalanceCardProps) {
   const [hidden, setHidden] = useState(false);
   const change = dayChangeLabel(summary.todayNet, summary.yesterdayNet ?? 0);
   const showSparkline = !hidden && sparkline.length >= 2;
@@ -86,37 +85,26 @@ export function BalanceCard({ summary, sparkline = [], creditOutstanding = 0 }: 
         ) : null}
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-3 border-t border-surface-border pt-4">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-income">
-            <TrendingDown className="h-3.5 w-3.5 rotate-180" strokeWidth={2.5} />
+      <div className="mt-5 grid grid-cols-2 gap-4 border-t border-surface-border pt-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-income">
+            <TrendingDown className="h-4 w-4 rotate-180" strokeWidth={2.5} />
           </div>
-          <div className="min-w-0">
-            <p className="text-[0.6875rem] text-ink-muted">Income</p>
-            <p className="truncate text-[0.8125rem] font-semibold text-income">
+          <div>
+            <p className="text-[0.75rem] text-ink-muted">Income</p>
+            <p className="text-[0.9375rem] font-semibold text-income">
               {formatCurrency(summary.monthIncome, { signed: true, hide: hidden })}
             </p>
           </div>
         </div>
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-expense">
-            <TrendingUp className="h-3.5 w-3.5 rotate-180" strokeWidth={2.5} />
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-expense">
+            <TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />
           </div>
-          <div className="min-w-0">
-            <p className="text-[0.6875rem] text-ink-muted">Expenses</p>
-            <p className="truncate text-[0.8125rem] font-semibold text-expense">
+          <div>
+            <p className="text-[0.75rem] text-ink-muted">Expenses</p>
+            <p className="text-[0.9375rem] font-semibold text-expense">
               {formatCurrency(-summary.monthExpenses, { signed: true, hide: hidden })}
-            </p>
-          </div>
-        </div>
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600">
-            <CreditCard className="h-3.5 w-3.5" strokeWidth={2.5} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[0.6875rem] text-ink-muted">Credit</p>
-            <p className="truncate text-[0.8125rem] font-semibold text-sky-600">
-              {formatCurrency(-creditOutstanding, { signed: true, hide: hidden })}
             </p>
           </div>
         </div>

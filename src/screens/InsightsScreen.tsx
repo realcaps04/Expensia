@@ -1,10 +1,11 @@
+import { CreditCard, Landmark } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { categoryColor, DonutChart } from "../components/charts/DonutChart";
 import { LineChart } from "../components/charts/LineChart";
 import { useAuth } from "../context/AuthProvider";
-import { categoryLabel } from "../lib/convex-mappers";
+import { categoryLabel, mapCreditRow } from "../lib/convex-mappers";
 import { formatCurrency } from "../lib/format";
 import { getConvexUserId } from "../lib/session";
 
@@ -48,8 +49,17 @@ export function InsightsScreen() {
     api.finance.getDailyExpenseTrend,
     userId ? { userId, ...range } : "skip",
   );
+  const creditSummary = useQuery(api.credits.getSummary, userId ? { userId } : "skip");
+  const creditAccounts = useQuery(api.credits.list, userId ? { userId } : "skip");
 
-  const isLoading = userId !== null && (byCategory === undefined || dailyTrend === undefined);
+  const isLoading =
+    userId !== null &&
+    (byCategory === undefined ||
+      dailyTrend === undefined ||
+      creditSummary === undefined ||
+      creditAccounts === undefined);
+
+  const credits = (creditAccounts ?? []).map(mapCreditRow);
 
   const totalSpent = (byCategory ?? []).reduce((sum, row) => sum + row.amount, 0);
   const donutSegments = (byCategory ?? []).map((row) => ({
@@ -71,6 +81,69 @@ export function InsightsScreen() {
             Understand where your money goes
           </p>
         </div>
+
+        <section className="rounded-card bg-gradient-to-br from-violet-brand to-violet-deep p-5 text-white shadow-soft">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.8125rem] font-medium text-white/80">Credit</p>
+              <p className="mt-2 font-display text-[1.75rem] font-bold tracking-tight">
+                {formatCurrency(-(creditSummary?.totalBalance ?? 0), { signed: true })}
+              </p>
+              <p className="mt-1.5 text-[0.8125rem] text-white/75">
+                {creditSummary?.accountCount
+                  ? `Across ${creditSummary.accountCount} account${creditSummary.accountCount === 1 ? "" : "s"}`
+                  : "No credit or loan accounts yet"}
+              </p>
+            </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white/15">
+              <CreditCard className="h-6 w-6" strokeWidth={1.75} />
+            </div>
+          </div>
+
+          {credits.length > 0 ? (
+            <ul className="mt-5 space-y-3 border-t border-white/15 pt-4">
+              {credits.map((account) => {
+                const Icon = account.type === "personal_loan" ? Landmark : CreditCard;
+                const utilization =
+                  account.creditLimit > 0
+                    ? Math.round((account.balance / account.creditLimit) * 100)
+                    : 0;
+
+                return (
+                  <li key={account.id} className="rounded-[14px] bg-white/10 px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+                          <Icon className="h-4 w-4" strokeWidth={2} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-[0.9375rem] font-semibold">{account.name}</p>
+                          <p className="mt-0.5 truncate text-[0.75rem] text-white/70">
+                            {account.issuer ?? (account.type === "personal_loan" ? "Loan" : "Credit card")}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="shrink-0 text-[0.9375rem] font-semibold">
+                        {formatCurrency(-account.balance, { signed: true })}
+                      </p>
+                    </div>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-pill bg-white/15">
+                      <div
+                        className="h-full rounded-pill bg-white/85"
+                        style={{ width: `${Math.min(utilization, 100)}%` }}
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[0.6875rem] text-white/70">
+                      {account.type === "personal_loan" && account.tenureMonths
+                        ? `${account.emiPaidCount ?? 0} of ${account.tenureMonths} EMIs`
+                        : `${utilization}% utilization`}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+        </section>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
           {TIMEFRAMES.map(({ id }) => (

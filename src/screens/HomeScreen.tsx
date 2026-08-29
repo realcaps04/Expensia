@@ -4,7 +4,7 @@ import { HomeHeader } from "../components/home/HomeHeader";
 import { BalanceCard } from "../components/home/BalanceCard";
 import { QuickActions, type QuickActionSheet } from "../components/home/QuickActions";
 import { TodayOverview } from "../components/home/TodayOverview";
-import { RecentTransactions } from "../components/home/RecentTransactions";
+import { RecentTransactions, type TransactionRowData } from "../components/home/RecentTransactions";
 import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
 import { useFinanceDashboard } from "../hooks/useFinanceDashboard";
@@ -24,13 +24,26 @@ const EMPTY_SUMMARY: DashboardSummary = {
 };
 
 export function HomeScreen() {
-  const { userId, dashboard, transactions, balanceSparkline, creditOutstanding, isLoading } =
-    useFinanceDashboard();
+  const { userId, dashboard, transactions, balanceSparkline, isLoading } = useFinanceDashboard();
   const [activeSheet, setActiveSheet] = useState<QuickActionSheet | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
   const summary = dashboard ?? EMPTY_SUMMARY;
   const rows = (transactions ?? []).map(mapTransactionRow);
 
-  const closeSheet = () => setActiveSheet(null);
+  const closeSheet = () => {
+    setActiveSheet(null);
+    setEditingTransaction(null);
+  };
+
+  const openAddSheet = (sheet: QuickActionSheet) => {
+    setEditingTransaction(null);
+    setActiveSheet(sheet);
+  };
+
+  const openEditTransaction = (tx: TransactionRowData) => {
+    setActiveSheet(null);
+    setEditingTransaction(tx);
+  };
 
   return (
     <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
@@ -49,14 +62,10 @@ export function HomeScreen() {
           </div>
         ) : (
           <>
-            <BalanceCard
-              summary={summary}
-              sparkline={balanceSparkline}
-              creditOutstanding={creditOutstanding}
-            />
-            <QuickActions onOpenSheet={setActiveSheet} />
+            <BalanceCard summary={summary} sparkline={balanceSparkline} />
+            <QuickActions onOpenSheet={openAddSheet} />
             <TodayOverview summary={summary} />
-            <RecentTransactions transactions={rows} />
+            <RecentTransactions transactions={rows} onEditTransaction={openEditTransaction} />
           </>
         )}
       </motion.div>
@@ -74,6 +83,13 @@ export function HomeScreen() {
         variant="expense"
       />
       <AddCreditSheet open={activeSheet === "credit"} onClose={closeSheet} userId={userId} />
+      <AddTransactionSheet
+        open={editingTransaction !== null}
+        onClose={closeSheet}
+        userId={userId}
+        variant={editingTransaction?.type ?? "expense"}
+        editTransaction={editingTransaction}
+      />
     </div>
   );
 }
