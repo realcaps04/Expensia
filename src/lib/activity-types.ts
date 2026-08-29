@@ -13,6 +13,12 @@ export type CreditActivityRowData = {
   occurredAt: number;
   time: string;
   lastFour?: string;
+  minimumPayment?: number;
+  dueDay?: number;
+  apr?: number;
+  startDate?: number;
+  tenureMonths?: number;
+  emiPaidCount?: number;
 };
 
 export type ActivityItem =

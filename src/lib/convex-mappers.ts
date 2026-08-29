@@ -147,5 +147,11 @@ export function mapCreditActivityRow(credit: Doc<"credits">) {
     occurredAt,
     time: formatTransactionTime(occurredAt),
     lastFour: credit.lastFour,
+    minimumPayment: credit.minimumPayment,
+    dueDay: credit.dueDay,
+    apr: credit.apr,
+    startDate: credit.startDate,
+    tenureMonths: credit.tenureMonths,
+    emiPaidCount: credit.emiPaidCount,
   };
 }

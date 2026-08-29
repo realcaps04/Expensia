@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import { ActivityFilterBar } from "../components/activity/ActivityFilterBar";
 import { ActivityListItem } from "../components/activity/ActivityListItem";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
+import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
 import { ConfirmSheet, deleteItemMessage } from "../components/sheets/ConfirmSheet";
 import { useAuth } from "../context/AuthProvider";
 import {
@@ -35,6 +36,7 @@ export function ActivityScreen() {
   const { user } = useAuth();
   const userId = getConvexUserId(user);
   const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
+  const [editingCredit, setEditingCredit] = useState<CreditActivityRowData | null>(null);
   const [filters, setFilters] = useState(DEFAULT_ACTIVITY_FILTERS);
   const [deleteTarget, setDeleteTarget] = useState<
     | { kind: "transaction"; item: TransactionRowData }
@@ -103,6 +105,9 @@ export function ActivityScreen() {
           userId,
           creditId: deleteTarget.item.id as Id<"credits">,
         });
+        if (editingCredit?.id === deleteTarget.item.id) {
+          setEditingCredit(null);
+        }
       }
       setDeleteTarget(null);
     } catch {
@@ -177,7 +182,14 @@ export function ActivityScreen() {
                       key={`${item.kind}-${item.data.id}`}
                       item={item}
                       showActions
-                      onEditTransaction={setEditingTransaction}
+                      onEditTransaction={(tx) => {
+                        setEditingCredit(null);
+                        setEditingTransaction(tx);
+                      }}
+                      onEditCredit={(credit) => {
+                        setEditingTransaction(null);
+                        setEditingCredit(credit);
+                      }}
                       onDeleteTransaction={handleDeleteTransaction}
                       onDeleteCredit={handleDeleteCredit}
                     />
@@ -195,6 +207,13 @@ export function ActivityScreen() {
         userId={userId}
         variant={editingTransaction?.type ?? "expense"}
         editTransaction={editingTransaction}
+      />
+
+      <AddCreditSheet
+        open={editingCredit !== null}
+        onClose={() => setEditingCredit(null)}
+        userId={userId}
+        editCredit={editingCredit}
       />
 
       <ConfirmSheet

@@ -140,6 +140,9 @@ export const update = mutation({
     apr: v.optional(v.number()),
     lastFour: v.optional(v.string()),
     note: v.optional(v.string()),
+    startDate: v.optional(v.number()),
+    tenureMonths: v.optional(v.number()),
+    emiPaidCount: v.optional(v.number()),
     isArchived: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
@@ -169,6 +172,9 @@ export const update = mutation({
       ...(args.apr !== undefined ? { apr: args.apr } : {}),
       ...(args.lastFour !== undefined ? { lastFour: args.lastFour.trim() || undefined } : {}),
       ...(args.note !== undefined ? { note: args.note.trim() || undefined } : {}),
+      ...(args.startDate !== undefined ? { startDate: args.startDate } : {}),
+      ...(args.tenureMonths !== undefined ? { tenureMonths: args.tenureMonths } : {}),
+      ...(args.emiPaidCount !== undefined ? { emiPaidCount: args.emiPaidCount } : {}),
       ...(args.isArchived !== undefined ? { isArchived: args.isArchived } : {}),
       updatedAt: now,
     });

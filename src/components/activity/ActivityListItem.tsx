@@ -7,6 +7,7 @@ import { TransactionListItem } from "../transactions/TransactionListItem";
 type ActivityListItemProps = {
   item: ActivityItem;
   onEditTransaction: (tx: TransactionRowData) => void;
+  onEditCredit?: (credit: CreditActivityRowData) => void;
   onDeleteTransaction?: (tx: TransactionRowData) => void;
   onDeleteCredit?: (credit: CreditActivityRowData) => void;
   showActions?: boolean;
@@ -15,6 +16,7 @@ type ActivityListItemProps = {
 export function ActivityListItem({
   item,
   onEditTransaction,
+  onEditCredit,
   onDeleteTransaction,
   onDeleteCredit,
   showActions = false,
@@ -24,6 +26,7 @@ export function ActivityListItem({
       <CreditListItem
         credit={item.data}
         showActions={showActions}
+        onEdit={onEditCredit}
         onDelete={onDeleteCredit}
       />
     );
