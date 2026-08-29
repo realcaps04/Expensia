@@ -11,7 +11,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ProfileAvatar, profileDisplayName } from "../../components/profile/ProfileAvatar";
 import {
   ProfileMenuDivider,
@@ -26,6 +26,7 @@ import { formatCurrency } from "../../lib/format";
 import { formatMemberSince } from "../../lib/profile-extras";
 
 export function ProfileScreen() {
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { stats, convexUser, isLoading } = useProfileStats();
   const [signOutOpen, setSignOutOpen] = useState(false);
@@ -159,6 +160,7 @@ export function ProfileScreen() {
         onConfirm={() => {
           setSignOutOpen(false);
           signOut();
+          navigate("/login", { replace: true });
         }}
         title="Sign out?"
         message="You will need to sign in again to access your account."

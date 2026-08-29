@@ -7,6 +7,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ProfileCard,
   ProfileSubScreen,
@@ -24,6 +25,7 @@ import { formatLastSeen } from "../../lib/profile-achievements";
 import { loadProfileExtras, saveProfileExtras } from "../../lib/profile-extras";
 
 export function ProfileSecurityScreen() {
+  const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { convexUser } = useProfileStats();
   const [biometric, setBiometric] = useState(false);
@@ -131,6 +133,7 @@ export function ProfileSecurityScreen() {
         onConfirm={() => {
           setSignOutOpen(false);
           signOut();
+          navigate("/login", { replace: true });
         }}
         title="Sign out?"
         message="You will need to sign in again to access your account."

@@ -1,10 +1,11 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { hasActiveSession } from "../../lib/session";
+import { useAuth } from "../../context/AuthProvider";
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const location = useLocation();
 
-  if (!hasActiveSession()) {
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
@@ -12,7 +13,9 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 }
 
 export function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
-  if (hasActiveSession()) {
+  const { user } = useAuth();
+
+  if (user) {
     return <Navigate to="/home" replace />;
   }
 
