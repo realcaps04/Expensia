@@ -118,5 +118,34 @@ export function mapCreditRow(credit: Doc<"credits">) {
     tenureMonths: credit.tenureMonths,
     emiPaidCount: credit.emiPaidCount,
     isArchived: credit.isArchived,
+    createdAt: credit.createdAt,
+  };
+}
+
+const CREDIT_TYPE_LABELS: Record<string, string> = {
+  credit_card: "Credit Card",
+  personal_loan: "Personal Loan",
+  line_of_credit: "Line of Credit",
+  other: "Credit",
+};
+
+export function creditTypeLabel(type: string) {
+  return CREDIT_TYPE_LABELS[type] ?? "Credit";
+}
+
+export function mapCreditActivityRow(credit: Doc<"credits">) {
+  const occurredAt = credit.startDate ?? credit.createdAt;
+  return {
+    id: credit._id,
+    name: credit.name,
+    type: credit.type,
+    typeLabel: creditTypeLabel(credit.type),
+    balance: credit.balance,
+    creditLimit: credit.creditLimit,
+    issuer: credit.issuer,
+    note: credit.note,
+    occurredAt,
+    time: formatTransactionTime(occurredAt),
+    lastFour: credit.lastFour,
   };
 }

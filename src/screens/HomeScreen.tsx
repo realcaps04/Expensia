@@ -2,11 +2,10 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { HomeHeader } from "../components/home/HomeHeader";
 import { BalanceCard } from "../components/home/BalanceCard";
-import { QuickActions, type QuickActionSheet } from "../components/home/QuickActions";
+import { QuickActions } from "../components/home/QuickActions";
 import { TodayOverview } from "../components/home/TodayOverview";
 import { RecentTransactions } from "../components/home/RecentTransactions";
 import type { TransactionRowData } from "../lib/transaction-types";
-import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
 import { useFinanceDashboard } from "../hooks/useFinanceDashboard";
 import { mapTransactionRow } from "../lib/convex-mappers";
@@ -25,24 +24,16 @@ const EMPTY_SUMMARY: DashboardSummary = {
 };
 
 export function HomeScreen() {
-  const { userId, dashboard, transactions, balanceSparkline, isLoading } = useFinanceDashboard();
-  const [activeSheet, setActiveSheet] = useState<QuickActionSheet | null>(null);
+  const { userId, dashboard, transactions, isLoading } = useFinanceDashboard();
   const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
   const summary = dashboard ?? EMPTY_SUMMARY;
   const rows = (transactions ?? []).map(mapTransactionRow);
 
-  const closeSheet = () => {
-    setActiveSheet(null);
+  const closeEditSheet = () => {
     setEditingTransaction(null);
-  };
-
-  const openAddSheet = (sheet: QuickActionSheet) => {
-    setEditingTransaction(null);
-    setActiveSheet(sheet);
   };
 
   const openEditTransaction = (tx: TransactionRowData) => {
-    setActiveSheet(null);
     setEditingTransaction(tx);
   };
 
@@ -63,8 +54,8 @@ export function HomeScreen() {
           </div>
         ) : (
           <>
-            <BalanceCard summary={summary} sparkline={balanceSparkline} />
-            <QuickActions onOpenSheet={openAddSheet} />
+            <BalanceCard userId={userId} />
+            <QuickActions />
             <TodayOverview summary={summary} />
             <RecentTransactions transactions={rows} onEditTransaction={openEditTransaction} />
           </>
@@ -72,21 +63,8 @@ export function HomeScreen() {
       </motion.div>
 
       <AddTransactionSheet
-        open={activeSheet === "income"}
-        onClose={closeSheet}
-        userId={userId}
-        variant="income"
-      />
-      <AddTransactionSheet
-        open={activeSheet === "expense"}
-        onClose={closeSheet}
-        userId={userId}
-        variant="expense"
-      />
-      <AddCreditSheet open={activeSheet === "credit"} onClose={closeSheet} userId={userId} />
-      <AddTransactionSheet
         open={editingTransaction !== null}
-        onClose={closeSheet}
+        onClose={closeEditSheet}
         userId={userId}
         variant={editingTransaction?.type ?? "expense"}
         editTransaction={editingTransaction}

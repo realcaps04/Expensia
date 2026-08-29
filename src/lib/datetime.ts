@@ -69,3 +69,17 @@ export function formatActivityDateHeader(ms: number) {
     year: "numeric",
   }).format(new Date(ms));
 }
+
+export function formatMonthHeader(monthKey: string) {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" }).format(
+    new Date(year, month - 1, 1),
+  );
+}
+
+export function monthKeyFromMs(ms: number) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}`;
+}

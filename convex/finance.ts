@@ -113,6 +113,100 @@ export const getSpendingByCategory = query({
   },
 });
 
+export const getPeriodDashboard = query({
+  args: {
+    userId: v.id("users"),
+    start: v.number(),
+    end: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const all = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const inRange = (occurredAt: number, start: number, end: number) =>
+      occurredAt >= start && occurredAt <= end;
+
+    const periodTx = all.filter((tx) => inRange(tx.occurredAt, args.start, args.end));
+    const stats = sumByType(periodTx);
+
+    const duration = Math.max(args.end - args.start, 0);
+    const prevEnd = args.start - 1;
+    const prevStart = Math.max(0, prevEnd - duration);
+    const priorTx =
+      args.start > 0
+        ? all.filter((tx) => inRange(tx.occurredAt, prevStart, prevEnd))
+        : [];
+    const prior = sumByType(priorTx);
+
+    const rangeStart = startOfDayMs(new Date(args.start));
+    const points: { date: string; balance: number }[] = [];
+
+    for (let ms = rangeStart; ms <= args.end; ms = addDays(new Date(ms), 1).getTime()) {
+      const dayEnd = Math.min(endOfDayMs(new Date(ms)), args.end);
+      let net = 0;
+      for (const tx of periodTx) {
+        if (tx.occurredAt <= dayEnd) {
+          net += tx.type === "income" ? tx.amount : -tx.amount;
+        }
+      }
+      points.push({ date: dateKeyFromMs(ms), balance: net });
+    }
+
+    const credits = await ctx.db
+      .query("credits")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const creditTotal = credits
+      .filter((credit) => {
+        if (credit.isArchived) return false;
+        const creditAt = credit.startDate ?? credit.createdAt;
+        return inRange(creditAt, args.start, args.end);
+      })
+      .reduce((sum, credit) => sum + credit.balance, 0);
+
+    return {
+      income: stats.income,
+      expenses: stats.expenses,
+      net: stats.net,
+      priorNet: prior.net,
+      creditTotal,
+      trend: points,
+    };
+  },
+});
+
+export const getMonthNetTrend = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const all = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const now = new Date();
+    const monthStart = startOfMonthMs(now);
+    const todayEnd = endOfDayMs(now);
+    const monthTx = all.filter((tx) => tx.occurredAt >= monthStart && tx.occurredAt <= todayEnd);
+
+    const points: { date: string; balance: number }[] = [];
+    for (let ms = monthStart; ms <= todayEnd; ms = addDays(new Date(ms), 1).getTime()) {
+      const dayEnd = endOfDayMs(new Date(ms));
+      let net = 0;
+      for (const tx of monthTx) {
+        if (tx.occurredAt <= dayEnd) {
+          net += tx.type === "income" ? tx.amount : -tx.amount;
+        }
+      }
+      points.push({ date: dateKeyFromMs(ms), balance: net });
+    }
+
+    return points;
+  },
+});
+
 export const getBalanceTrend = query({
   args: {
     userId: v.id("users"),
