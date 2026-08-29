@@ -98,7 +98,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       return;
     }
     if (!name.trim()) {
-      setError(mode === "loan" ? "Enter a loan name." : "Enter a card name.");
+      setError(mode === "loan" ? "Enter a loan provider name." : "Enter a card name.");
       return;
     }
 
@@ -124,7 +124,6 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           userId,
           name: name.trim(),
           type: "personal_loan" as const,
-          issuer: issuer.trim() || undefined,
           creditLimit: amount,
           balance: owed,
           note: note.trim() || undefined,
@@ -276,23 +275,25 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
         ) : null}
 
         <div className="space-y-4 rounded-[20px] bg-white p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-          <Field label={mode === "loan" ? "Loan Name" : "Card Name"}>
+          <Field label={mode === "loan" ? "Loan Provider Name" : "Card Name"}>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={mode === "loan" ? "Personal Loan" : "Platinum Card"}
+              placeholder={mode === "loan" ? "HDFC Bank" : "Platinum Card"}
               className={inputClass}
             />
           </Field>
 
-          <Field label="Lender / Bank">
-            <input
-              value={issuer}
-              onChange={(e) => setIssuer(e.target.value)}
-              placeholder="Select lender"
-              className={inputClass}
-            />
-          </Field>
+          {mode === "credit_card" ? (
+            <Field label="Lender / Bank">
+              <input
+                value={issuer}
+                onChange={(e) => setIssuer(e.target.value)}
+                placeholder="Select lender"
+                className={inputClass}
+              />
+            </Field>
+          ) : null}
 
           {mode === "loan" ? (
             <>

@@ -7,8 +7,10 @@ import { TodayOverview } from "../components/home/TodayOverview";
 import { RecentTransactions } from "../components/home/RecentTransactions";
 import type { TransactionRowData } from "../lib/transaction-types";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
+import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
 import { useFinanceDashboard } from "../hooks/useFinanceDashboard";
 import { mapTransactionRow } from "../lib/convex-mappers";
+import type { CreditActivityRowData } from "../lib/activity-types";
 import type { DashboardSummary } from "../lib/types";
 
 const EMPTY_SUMMARY: DashboardSummary = {
@@ -27,6 +29,7 @@ const EMPTY_SUMMARY: DashboardSummary = {
 export function HomeScreen() {
   const { userId, dashboard, transactions, isLoading } = useFinanceDashboard();
   const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
+  const [editingCredit, setEditingCredit] = useState<CreditActivityRowData | null>(null);
   const summary = dashboard ?? EMPTY_SUMMARY;
   const rows = (transactions ?? []).map(mapTransactionRow);
 
@@ -46,7 +49,10 @@ export function HomeScreen() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto flex max-w-[390px] flex-col gap-5"
       >
-        <HomeHeader />
+        <HomeHeader
+          onSelectTransaction={openEditTransaction}
+          onSelectCredit={setEditingCredit}
+        />
         {isLoading ? (
           <div className="space-y-5">
             {[1, 2, 3].map((i) => (
@@ -69,6 +75,12 @@ export function HomeScreen() {
         userId={userId}
         variant={editingTransaction?.type ?? "expense"}
         editTransaction={editingTransaction}
+      />
+      <AddCreditSheet
+        open={editingCredit !== null}
+        onClose={() => setEditingCredit(null)}
+        userId={userId}
+        editCredit={editingCredit}
       />
     </div>
   );
