@@ -27,6 +27,7 @@ export type DashboardSummary = {
   todayIncome: number;
   todayExpenses: number;
   todayNet: number;
+  todayCredit: number;
   yesterdayNet: number;
   transactionCount: number;
   monthlyBudget?: number;

@@ -66,6 +66,15 @@ export const getDashboard = query({
       )
       .unique();
 
+    const credits = await ctx.db
+      .query("credits")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const todayCredit = credits
+      .filter((credit) => !credit.isArchived)
+      .reduce((sum, credit) => sum + credit.balance, 0);
+
     return {
       totalBalance: lifetime.net,
       monthIncome: month.income,
@@ -74,6 +83,7 @@ export const getDashboard = query({
       todayIncome: today.income,
       todayExpenses: today.expenses,
       todayNet: today.net,
+      todayCredit,
       yesterdayNet: yesterdayStats.net,
       transactionCount: all.length,
       monthlyBudget: budget?.totalLimit,

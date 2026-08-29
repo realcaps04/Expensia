@@ -31,7 +31,7 @@ type TodayOverviewProps = {
 };
 
 export function TodayOverview({ summary }: TodayOverviewProps) {
-  const max = Math.max(summary.todayIncome, summary.todayExpenses, Math.abs(summary.todayNet), 1);
+  const max = Math.max(summary.todayIncome, summary.todayExpenses, summary.todayCredit, 1);
 
   return (
     <section className="rounded-card bg-white p-5 shadow-soft">
@@ -59,11 +59,11 @@ export function TodayOverview({ summary }: TodayOverviewProps) {
           pct={(summary.todayExpenses / max) * 100}
         />
         <MetricBar
-          label="Net"
-          value={formatCurrency(summary.todayNet, { signed: true })}
-          fillClass="bg-violet-brand"
-          textClass={summary.todayNet >= 0 ? "text-income" : "text-expense"}
-          pct={(Math.abs(summary.todayNet) / max) * 100}
+          label="Credit"
+          value={formatCurrency(summary.todayCredit)}
+          fillClass="bg-sky-500"
+          textClass="text-sky-600"
+          pct={(summary.todayCredit / max) * 100}
         />
       </div>
     </section>

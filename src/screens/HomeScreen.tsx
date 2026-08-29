@@ -19,6 +19,7 @@ const EMPTY_SUMMARY: DashboardSummary = {
   todayIncome: 0,
   todayExpenses: 0,
   todayNet: 0,
+  todayCredit: 0,
   yesterdayNet: 0,
   transactionCount: 0,
 };
