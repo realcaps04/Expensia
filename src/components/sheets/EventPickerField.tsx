@@ -10,10 +10,14 @@ type EventPickerFieldProps = {
   userId: Id<"users"> | null;
   value: string;
   onChange: (value: string) => void;
+  enabled?: boolean;
 };
 
-export function EventPickerField({ userId, value, onChange }: EventPickerFieldProps) {
-  const events = useQuery(api.events.list, userId ? { userId } : "skip");
+export function EventPickerField({ userId, value, onChange, enabled = true }: EventPickerFieldProps) {
+  const events = useQuery(
+    api.events.list,
+    userId && enabled ? { userId } : "skip",
+  );
 
   const options = [
     { value: NONE, label: "No event" },

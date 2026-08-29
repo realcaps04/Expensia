@@ -39,6 +39,7 @@ type AddTransactionSheetProps = {
   userId: Doc<"users">["_id"] | null;
   variant: "income" | "expense";
   editTransaction?: TransactionRowData | null;
+  defaultEventId?: Id<"events">;
 };
 
 const CONFIG = {
@@ -110,6 +111,7 @@ export function AddTransactionSheet({
   userId,
   variant,
   editTransaction = null,
+  defaultEventId,
 }: AddTransactionSheetProps) {
   const isEdit = editTransaction !== null;
   const cfg = CONFIG[variant];
@@ -151,10 +153,10 @@ export function AddTransactionSheet({
       setPaymentMethod(fresh.paymentMethod);
       setTitle(fresh.title);
       setNote(fresh.note);
-      setEventId(fresh.eventId);
+      setEventId(defaultEventId ?? fresh.eventId);
     }
     setError("");
-  }, [open, variant, editTransaction]);
+  }, [open, variant, editTransaction, defaultEventId]);
 
   const handleSave = async () => {
     if (!userId) {
@@ -350,7 +352,7 @@ export function AddTransactionSheet({
           />
         </SheetFieldRow>
 
-        <EventPickerField userId={userId} value={eventId} onChange={setEventId} />
+        <EventPickerField userId={userId} value={eventId} onChange={setEventId} enabled={open} />
       </div>
     </BottomSheet>
 

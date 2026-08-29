@@ -14,6 +14,7 @@ type AddCreditSheetProps = {
   onClose: () => void;
   userId: Doc<"users">["_id"] | null;
   editCredit?: CreditActivityRowData | null;
+  defaultEventId?: Id<"events">;
 };
 
 type CreditMode = "loan" | "credit_card";
@@ -31,11 +32,11 @@ function creditModeFromType(type: CreditActivityRowData["type"]): CreditMode {
   return type === "credit_card" ? "credit_card" : "loan";
 }
 
-export function AddCreditSheet({ open, onClose, userId, editCredit = null }: AddCreditSheetProps) {
+export function AddCreditSheet({ open, onClose, userId, editCredit = null, defaultEventId }: AddCreditSheetProps) {
   const createCredit = useMutation(api.credits.create);
   const updateCredit = useMutation(api.credits.update);
   const removeCredit = useMutation(api.credits.remove);
-  const events = useQuery(api.events.list, userId ? { userId } : "skip");
+  const events = useQuery(api.events.list, userId && open ? { userId } : "skip");
 
   const isEdit = editCredit !== null;
 
@@ -88,13 +89,13 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       setBalance("");
       setLastFour("");
       setNote("");
-      setEventId("");
+      setEventId(defaultEventId ?? "");
       setAddAsIncome(false);
     }
 
     setError("");
     setDeleteConfirmOpen(false);
-  }, [open, editCredit]);
+  }, [open, editCredit, defaultEventId]);
 
   const handleSave = async () => {
     if (!userId) {

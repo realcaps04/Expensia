@@ -18,7 +18,12 @@ type AddEventSheetProps = {
   onClose: () => void;
   userId: Doc<"users">["_id"] | null;
   editEvent?: EventRowData | null;
-  onSaved?: (eventId: Id<"events">) => void;
+  onSaved?: (payload: {
+    eventId: Id<"events">;
+    name: string;
+    note?: string;
+    isNew: boolean;
+  }) => void;
 };
 
 export function AddEventSheet({
@@ -72,14 +77,24 @@ export function AddEventSheet({
           name: name.trim(),
           note: note.trim() || undefined,
         });
-        onSaved?.(editEvent.id as Id<"events">);
+        onSaved?.({
+          eventId: editEvent.id as Id<"events">,
+          name: name.trim(),
+          note: note.trim() || undefined,
+          isNew: false,
+        });
       } else {
         const eventId = await createEvent({
           userId,
           name: name.trim(),
           note: note.trim() || undefined,
         });
-        onSaved?.(eventId);
+        onSaved?.({
+          eventId,
+          name: name.trim(),
+          note: note.trim() || undefined,
+          isNew: true,
+        });
       }
       onClose();
     } catch (err) {
