@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { ChevronDown, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { BalanceTrendChart } from "../charts/BalanceTrendChart";
@@ -12,7 +12,6 @@ import {
 } from "../../lib/balance-period";
 import { formatCurrency } from "../../lib/format";
 import { getConvexUserId } from "../../lib/session";
-import { resolveUserSettings } from "../../lib/user-settings";
 import { BalancePeriodMenu } from "./BalancePeriodMenu";
 
 type BalanceCardProps = {
@@ -22,15 +21,9 @@ type BalanceCardProps = {
 export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
   const { user } = useAuth();
   const userId = userIdProp ?? getConvexUserId(user);
-  const convexUser = useQuery(api.users.getUser, userId ? { userId } : "skip");
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [period, setPeriod] = useState<BalancePeriod>(DEFAULT_BALANCE_PERIOD);
-
-  useEffect(() => {
-    if (convexUser?.settings === undefined) return;
-    setHidden(!(resolveUserSettings(convexUser.settings).showBalance ?? true));
-  }, [convexUser?.settings?.showBalance]);
 
   const range = useMemo(() => balancePeriodRange(period), [period]);
   const periodData = useQuery(
