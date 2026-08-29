@@ -30,6 +30,11 @@ export function CreditListItem({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[0.9375rem] font-semibold text-ink">{credit.name}</p>
+          {credit.note?.trim() ? (
+            <p className="mt-0.5 truncate text-[0.75rem] text-ink-secondary">
+              {credit.note.trim()}
+            </p>
+          ) : null}
           <p className="mt-0.5 text-[0.75rem] text-ink-muted">{subtitle}</p>
         </div>
         <div className="shrink-0 text-right">

@@ -48,6 +48,9 @@ export function TransactionListItem({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[0.9375rem] font-semibold text-ink">{tx.title}</p>
+          {tx.note?.trim() ? (
+            <p className="mt-0.5 truncate text-[0.75rem] text-ink-secondary">{tx.note.trim()}</p>
+          ) : null}
           <p className="mt-0.5 text-[0.75rem] text-ink-muted">
             {tx.category} • {tx.time}
           </p>
