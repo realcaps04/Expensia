@@ -7,15 +7,11 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthProvider";
 import { getGoogleClientId } from "./lib/google-auth";
 import { getConvexUrl } from "./lib/convex-config";
+import { clearStaleServiceWorkers } from "./lib/clear-stale-service-worker";
 import "./index.css";
 
-/** Stale dev/prod service workers can serve old index.html without CSS. */
-if (import.meta.env.DEV && "serviceWorker" in navigator) {
-  void navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (const registration of registrations) {
-      void registration.unregister();
-    }
-  });
+if (import.meta.env.DEV) {
+  clearStaleServiceWorkers();
 }
 
 const googleClientId = getGoogleClientId();

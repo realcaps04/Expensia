@@ -97,6 +97,14 @@ function scheduleUpdateChecks(
 }
 
 export function PwaPrompts() {
+  if (import.meta.env.DEV) {
+    return null;
+  }
+
+  return <PwaPromptsProd />;
+}
+
+function PwaPromptsProd() {
   const [installOpen, setInstallOpen] = useState(false);
   const [iosGuide, setIosGuide] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
