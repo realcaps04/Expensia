@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as credits from "../credits.js";
 import type * as finance from "../finance.js";
 import type * as lib_helpers from "../lib/helpers.js";
 import type * as transactions from "../transactions.js";
@@ -21,6 +22,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  credits: typeof credits;
   finance: typeof finance;
   "lib/helpers": typeof lib_helpers;
   transactions: typeof transactions;

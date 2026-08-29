@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { category, paymentMethod, provider, transactionType, userSettings } from "./validators";
+import { category, creditType, paymentMethod, provider, transactionType, userSettings } from "./validators";
 
 export default defineSchema({
   users: defineTable({
@@ -56,4 +56,23 @@ export default defineSchema({
   })
     .index("by_user_and_month", ["userId", "monthKey"])
     .index("by_user_month_category", ["userId", "monthKey", "category"]),
+
+  credits: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    type: creditType,
+    issuer: v.optional(v.string()),
+    creditLimit: v.number(),
+    balance: v.number(),
+    minimumPayment: v.optional(v.number()),
+    dueDay: v.optional(v.number()),
+    apr: v.optional(v.number()),
+    lastFour: v.optional(v.string()),
+    note: v.optional(v.string()),
+    isArchived: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_archived", ["userId", "isArchived"]),
 });

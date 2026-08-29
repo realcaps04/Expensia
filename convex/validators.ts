@@ -24,6 +24,13 @@ export const paymentMethod = v.union(
   v.literal("other"),
 );
 
+export const creditType = v.union(
+  v.literal("credit_card"),
+  v.literal("personal_loan"),
+  v.literal("line_of_credit"),
+  v.literal("other"),
+);
+
 export const userSettings = v.object({
   currency: v.string(),
   theme: v.union(v.literal("light"), v.literal("dark"), v.literal("system")),

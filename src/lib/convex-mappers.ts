@@ -95,3 +95,21 @@ export function mapTransactionRow(tx: Doc<"transactions">) {
     icon: categoryIcon(tx.category),
   };
 }
+
+export function mapCreditRow(credit: Doc<"credits">) {
+  return {
+    id: credit._id,
+    name: credit.name,
+    type: credit.type,
+    issuer: credit.issuer,
+    creditLimit: credit.creditLimit,
+    balance: credit.balance,
+    available: Math.max(credit.creditLimit - credit.balance, 0),
+    minimumPayment: credit.minimumPayment,
+    dueDay: credit.dueDay,
+    apr: credit.apr,
+    lastFour: credit.lastFour,
+    note: credit.note,
+    isArchived: credit.isArchived,
+  };
+}
