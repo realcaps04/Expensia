@@ -52,7 +52,8 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
     return [];
   })();
 
-  const showSparkline = !hidden && sparkline.length >= 2;
+  const effectiveHidden = !showBalancePref || hidden;
+  const showSparkline = !effectiveHidden && sparkline.length >= 2;
   const hasActivity = income > 0 || expenses > 0 || creditTotal > 0;
 
   return (
@@ -106,7 +107,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-ink" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: hidden })}
+            {formatCurrency(net, { signed: true, hide: effectiveHidden })}
           </p>
         )}
 
@@ -115,7 +116,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         ) : creditTotal > 0 ? (
           <p className="mt-1 text-[0.75rem] text-ink-muted">
             <span className="font-medium text-sky-600">
-              {formatCurrency(creditTotal, { hide: hidden })}
+              {formatCurrency(creditTotal, { hide: effectiveHidden })}
             </span>{" "}
             credit {range.creditLabel}
           </p>
@@ -127,12 +128,12 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-income" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: hidden })} net {range.creditLabel}
+            {formatCurrency(net, { signed: true, hide: effectiveHidden })} net {range.creditLabel}
           </p>
         ) : (
           <p className="mt-1 text-[0.8125rem] text-ink-muted">
-            {formatCurrency(income, { signed: true, hide: hidden })} in ·{" "}
-            {formatCurrency(-expenses, { signed: true, hide: hidden })} out
+            {formatCurrency(income, { signed: true, hide: effectiveHidden })} in ·{" "}
+            {formatCurrency(-expenses, { signed: true, hide: effectiveHidden })} out
           </p>
         )}
       </div>
@@ -154,7 +155,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           <div>
             <p className="text-[0.75rem] text-ink-muted">Income</p>
             <p className="text-[0.9375rem] font-semibold text-income">
-              {formatCurrency(income, { signed: true, hide: hidden })}
+              {formatCurrency(income, { signed: true, hide: effectiveHidden })}
             </p>
           </div>
         </div>
@@ -165,7 +166,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           <div>
             <p className="text-[0.75rem] text-ink-muted">Expenses</p>
             <p className="text-[0.9375rem] font-semibold text-expense">
-              {formatCurrency(-expenses, { signed: true, hide: hidden })}
+              {formatCurrency(-expenses, { signed: true, hide: effectiveHidden })}
             </p>
           </div>
         </div>
