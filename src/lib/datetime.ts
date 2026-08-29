@@ -39,3 +39,33 @@ export function parseDateInputToMs(dateInput: string) {
   const [y, m, d] = dateInput.split("-").map(Number);
   return new Date(y, m - 1, d).getTime();
 }
+
+export function dateKeyFromMs(ms: number) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function startOfDayMs(date = new Date()) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+export function formatActivityDateHeader(ms: number) {
+  const day = startOfDayMs(new Date(ms));
+  const today = startOfDayMs();
+  const yesterday = startOfDayMs(new Date(Date.now() - 86_400_000));
+
+  if (day === today) return "Today";
+  if (day === yesterday) return "Yesterday";
+
+  return new Intl.DateTimeFormat("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(ms));
+}

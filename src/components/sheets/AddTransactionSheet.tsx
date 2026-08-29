@@ -27,7 +27,7 @@ import {
   INCOME_CATEGORIES,
   PAYMENT_METHODS,
 } from "../../lib/transaction-options";
-import type { TransactionRowData } from "../home/RecentTransactions";
+import type { TransactionRowData } from "../../lib/transaction-types";
 import { BottomSheet } from "./BottomSheet";
 import { SheetFieldRow, SheetNativeInput, SheetSelect } from "./SheetFieldRow";
 

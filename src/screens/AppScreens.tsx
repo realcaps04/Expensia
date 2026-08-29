@@ -1,24 +1,7 @@
 import { useAuth } from "../context/AuthProvider";
 import { getDisplayName } from "../lib/session";
 
-function PlaceholderPage({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="flex min-h-[60dvh] flex-col items-center justify-center px-6 text-center">
-      <h1 className="font-display text-xl font-semibold text-ink">{title}</h1>
-      <p className="mt-2 max-w-xs text-sm text-ink-secondary">{description}</p>
-    </div>
-  );
-}
-
-export function ActivityScreen() {
-  return (
-    <PlaceholderPage
-      title="Activity"
-      description="Your full transaction timeline will appear here."
-    />
-  );
-}
-
+export { ActivityScreen } from "./ActivityScreen";
 export { InsightsScreen } from "./InsightsScreen";
 
 export function ProfileScreen() {
