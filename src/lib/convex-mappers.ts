@@ -1,0 +1,97 @@
+import type { Doc } from "../../convex/_generated/dataModel";
+
+export type PublicUser = {
+  _id: Doc<"users">["_id"];
+  provider: Doc<"users">["provider"];
+  email: string;
+  firstName: string;
+  lastName: string;
+  pictureUrl?: string;
+  contactNumber?: string;
+  settings: Doc<"users">["settings"];
+  createdAt: number;
+  updatedAt: number;
+  lastSeenAt: number;
+};
+
+export function convexUserToProfile(user: PublicUser) {
+  return {
+    id: user._id,
+    convexId: user._id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    picture: user.pictureUrl,
+    provider: user.provider,
+  };
+}
+
+export function googleProfileToUpsertArgs(profile: {
+  sub: string;
+  email: string;
+  name: string;
+  picture?: string;
+  given_name?: string;
+  family_name?: string;
+}) {
+  return {
+    googleSub: profile.sub,
+    email: profile.email,
+    googleName: profile.name,
+    firstName: profile.given_name,
+    lastName: profile.family_name,
+    pictureUrl: profile.picture,
+  };
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  food: "Food & Dining",
+  transport: "Transport",
+  shopping: "Shopping",
+  bills: "Bills",
+  entertainment: "Entertainment",
+  health: "Health",
+  salary: "Salary",
+  freelance: "Freelance",
+  other: "Other",
+};
+
+export function categoryLabel(category: string) {
+  return CATEGORY_LABELS[category] ?? category;
+}
+
+export type TransactionIcon = "briefcase" | "food" | "transport" | "shopping";
+
+export function categoryIcon(category: string): TransactionIcon {
+  switch (category) {
+    case "food":
+      return "food";
+    case "transport":
+      return "transport";
+    case "shopping":
+      return "shopping";
+    default:
+      return "briefcase";
+  }
+}
+
+export function formatTransactionTime(ms: number) {
+  return new Intl.DateTimeFormat("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(ms));
+}
+
+export function mapTransactionRow(tx: Doc<"transactions">) {
+  const typeLabel = tx.type === "income" ? "Income" : categoryLabel(tx.category);
+  return {
+    id: tx._id,
+    title: tx.title,
+    category: typeLabel,
+    type: tx.type,
+    amount: tx.amount,
+    time: formatTransactionTime(tx.occurredAt),
+    icon: categoryIcon(tx.category),
+  };
+}

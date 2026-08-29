@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #fafaf8;
+  --bg-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-subtle: #f1f5f9;
+  --teal: #14b8a6;
+  --violet: #6366f1;
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 3px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #14b8a6 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-btn {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 45%, #6366f1 100%);
+}
+
+@media (min-width: 768px) {
+  .app-frame {
+    box-shadow: 0 24px 80px rgba(30, 41, 59, 0.08);
+  }
+}
