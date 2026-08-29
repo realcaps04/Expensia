@@ -1,7 +1,14 @@
 import { Download, Share, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
-import { UPDATE_DISMISS_SESSION_KEY } from "../../lib/app-updates";
+import {
+  clearDismissedUpdateWorker,
+  getDismissedUpdateWorker,
+  setDismissedUpdateWorker,
+  shouldPromptForUpdate,
+  UPDATE_CHECK_INTERVAL_MS,
+  waitingWorkerScriptUrl,
+} from "../../lib/app-updates";
 import {
   INSTALL_DISMISS_KEY,
   isIosSafari,
@@ -15,24 +22,75 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-function scheduleUpdateChecks(registration: ServiceWorkerRegistration) {
+function watchWaitingWorker(
+  registration: ServiceWorkerRegistration,
+  onWaiting: () => void,
+) {
+  const notifyIfWaiting = () => {
+    if (registration.waiting) {
+      onWaiting();
+    }
+  };
+
+  notifyIfWaiting();
+
+  registration.addEventListener("updatefound", () => {
+    const installing = registration.installing;
+    if (!installing) return;
+
+    installing.addEventListener("statechange", () => {
+      if (installing.state === "installed") {
+        notifyIfWaiting();
+      }
+    });
+  });
+}
+
+function scheduleUpdateChecks(
+  registration: ServiceWorkerRegistration,
+  onWaiting: () => void,
+) {
   const check = () => {
-    void registration.update();
+    void registration.update().finally(() => {
+      if (shouldPromptForUpdate(registration)) {
+        onWaiting();
+      }
+    });
   };
 
   check();
-  window.setInterval(check, 60 * 60 * 1000);
+
+  let intervalId: number | undefined;
+
+  const startPolling = () => {
+    if (intervalId !== undefined) return;
+    intervalId = window.setInterval(check, UPDATE_CHECK_INTERVAL_MS);
+  };
+
+  const stopPolling = () => {
+    if (intervalId === undefined) return;
+    window.clearInterval(intervalId);
+    intervalId = undefined;
+  };
 
   const onVisible = () => {
     if (document.visibilityState === "visible") {
       check();
+      startPolling();
+    } else {
+      stopPolling();
     }
   };
+
+  if (document.visibilityState === "visible") {
+    startPolling();
+  }
 
   document.addEventListener("visibilitychange", onVisible);
   window.addEventListener("focus", check);
 
   return () => {
+    stopPolling();
     document.removeEventListener("visibilitychange", onVisible);
     window.removeEventListener("focus", check);
   };
@@ -45,28 +103,54 @@ export function PwaPrompts() {
   const [updateOpen, setUpdateOpen] = useState(false);
   const iosTimerRef = useRef<number | null>(null);
   const cleanupChecksRef = useRef<(() => void) | null>(null);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+  const needRefreshRef = useRef(false);
+
+  const tryOpenUpdatePrompt = useCallback(() => {
+    const waitingUrl = waitingWorkerScriptUrl(registrationRef.current);
+    if (waitingUrl && getDismissedUpdateWorker() === waitingUrl) return;
+    if (waitingUrl || needRefreshRef.current) {
+      setUpdateOpen(true);
+    }
+  }, []);
 
   const {
-    needRefresh: [needRefresh, setNeedRefresh],
+    needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     immediate: true,
     onRegisteredSW(_swUrl, registration) {
       cleanupChecksRef.current?.();
       if (!registration) return;
-      cleanupChecksRef.current = scheduleUpdateChecks(registration);
+
+      registrationRef.current = registration;
+      watchWaitingWorker(registration, tryOpenUpdatePrompt);
+      cleanupChecksRef.current = scheduleUpdateChecks(registration, tryOpenUpdatePrompt);
+      tryOpenUpdatePrompt();
     },
     onNeedRefresh() {
-      if (sessionStorage.getItem(UPDATE_DISMISS_SESSION_KEY)) return;
-      setUpdateOpen(true);
+      tryOpenUpdatePrompt();
     },
   });
 
   useEffect(() => {
-    if (needRefresh && !sessionStorage.getItem(UPDATE_DISMISS_SESSION_KEY)) {
-      setUpdateOpen(true);
+    needRefreshRef.current = needRefresh;
+    if (needRefresh) {
+      tryOpenUpdatePrompt();
     }
-  }, [needRefresh]);
+  }, [needRefresh, tryOpenUpdatePrompt]);
+
+  useEffect(() => {
+    const onControllerChange = () => {
+      setUpdateOpen(false);
+      clearDismissedUpdateWorker();
+    };
+
+    navigator.serviceWorker?.addEventListener("controllerchange", onControllerChange);
+    return () => {
+      navigator.serviceWorker?.removeEventListener("controllerchange", onControllerChange);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -120,23 +204,22 @@ export function PwaPrompts() {
   };
 
   const dismissUpdate = () => {
+    const waitingUrl = waitingWorkerScriptUrl(registrationRef.current);
+    if (waitingUrl) {
+      setDismissedUpdateWorker(waitingUrl);
+    }
     setUpdateOpen(false);
-    setNeedRefresh(false);
-    sessionStorage.setItem(UPDATE_DISMISS_SESSION_KEY, "1");
   };
 
   const applyUpdate = async () => {
-    sessionStorage.removeItem(UPDATE_DISMISS_SESSION_KEY);
+    clearDismissedUpdateWorker();
+    setUpdateOpen(false);
     await updateServiceWorker(true);
   };
 
   return (
     <>
-      <AppUpdatePrompt
-        open={updateOpen && needRefresh}
-        onDismiss={dismissUpdate}
-        onUpdate={applyUpdate}
-      />
+      <AppUpdatePrompt open={updateOpen} onDismiss={dismissUpdate} onUpdate={applyUpdate} />
 
       {installOpen && !isStandaloneApp() ? (
         <div className="fixed inset-x-0 bottom-0 z-[60] px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

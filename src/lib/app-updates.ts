@@ -8,4 +8,42 @@ export const LATEST_UPDATES = [
   "Frosted glass bottom navigation",
 ] as const;
 
-export const UPDATE_DISMISS_SESSION_KEY = "expensia-update-dismissed";
+/** Session key — stores the script URL of the update the user dismissed. */
+export const UPDATE_DISMISS_WORKER_KEY = "expensia-update-dismissed-worker";
+
+export function getDismissedUpdateWorker() {
+  try {
+    return sessionStorage.getItem(UPDATE_DISMISS_WORKER_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setDismissedUpdateWorker(scriptUrl: string) {
+  try {
+    sessionStorage.setItem(UPDATE_DISMISS_WORKER_KEY, scriptUrl);
+  } catch {
+    // ignore storage failures
+  }
+}
+
+export function clearDismissedUpdateWorker() {
+  try {
+    sessionStorage.removeItem(UPDATE_DISMISS_WORKER_KEY);
+  } catch {
+    // ignore storage failures
+  }
+}
+
+export function waitingWorkerScriptUrl(registration: ServiceWorkerRegistration | null | undefined) {
+  return registration?.waiting?.scriptURL ?? null;
+}
+
+export function shouldPromptForUpdate(registration: ServiceWorkerRegistration | null | undefined) {
+  const waitingUrl = waitingWorkerScriptUrl(registration);
+  if (!waitingUrl) return false;
+  return getDismissedUpdateWorker() !== waitingUrl;
+}
+
+/** Poll interval while the app tab is visible (ms). */
+export const UPDATE_CHECK_INTERVAL_MS = import.meta.env.DEV ? 30_000 : 3 * 60_000;
