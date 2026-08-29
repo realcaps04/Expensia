@@ -48,10 +48,10 @@ export function SignUpScreen() {
   };
 
   return (
-    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-surface">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-surface">
       <AuthBackground />
 
-      <div className="relative z-10 flex min-h-dvh flex-col overflow-y-auto px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
