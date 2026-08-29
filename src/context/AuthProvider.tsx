@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -36,6 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerEmail = useMutation(api.users.registerEmailUser);
   const signInEmail = useMutation(api.users.signInEmailUser);
   const upsertGoogle = useMutation(api.users.upsertGoogleUser);
+
+  useEffect(() => {
+    const session = loadSession();
+    if (session && !session.convexId) {
+      clearSession();
+      setUser(null);
+    }
+  }, []);
 
   const signUp = useCallback(
     async (input: Parameters<AuthContextValue["signUp"]>[0]) => {

@@ -5,6 +5,8 @@ import { v } from "convex/values";
 import { hashPassword, verifyPassword } from "./lib/helpers";
 import { DEFAULT_SETTINGS, userSettings } from "./validators";
 
+export type PublicUser = ReturnType<typeof toPublicUser>;
+
 function toPublicUser(user: Doc<"users">) {
   return {
     _id: user._id,
@@ -213,5 +215,3 @@ export const updateProfile = mutation({
     return toPublicUser(updated);
   },
 });
-
-export type PublicUser = ReturnType<typeof toPublicUser>;

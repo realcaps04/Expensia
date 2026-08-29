@@ -18,12 +18,12 @@ export function LoginScreen() {
   const [error, setError] = useState("");
   const [googleError, setGoogleError] = useState("");
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
 
     try {
-      signIn(email, password);
+      await signIn(email, password);
       navigate("/home", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign in.");

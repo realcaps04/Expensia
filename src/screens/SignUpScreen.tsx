@@ -22,7 +22,7 @@ export function SignUpScreen() {
   const [error, setError] = useState("");
   const [googleError, setGoogleError] = useState("");
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
 
@@ -40,7 +40,7 @@ export function SignUpScreen() {
     }
 
     try {
-      signUp({ firstName, lastName, email, password });
+      await signUp({ firstName, lastName, email, password });
       navigate("/home", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create account.");

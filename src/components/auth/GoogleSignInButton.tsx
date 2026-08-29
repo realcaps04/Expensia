@@ -26,7 +26,7 @@ export function GoogleSignInButton({
       setBusy(true);
       try {
         const profile = await fetchGoogleProfile(response.access_token);
-        signInWithGoogle(profile);
+        await signInWithGoogle(profile);
         navigate(redirectTo, { replace: true });
       } catch {
         onError?.("Google sign-in failed. Please try again.");
