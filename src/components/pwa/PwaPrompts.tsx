@@ -1,34 +1,78 @@
-import { Download, RefreshCw, Share, X } from "lucide-react";
+import { Download, Share, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { UPDATE_DISMISS_SESSION_KEY } from "../../lib/app-updates";
 import {
   INSTALL_DISMISS_KEY,
   isIosSafari,
   isMobileDevice,
   isStandaloneApp,
 } from "../../lib/pwa";
+import { AppUpdatePrompt } from "./AppUpdatePrompt";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function scheduleUpdateChecks(registration: ServiceWorkerRegistration) {
+  const check = () => {
+    void registration.update();
+  };
+
+  check();
+  window.setInterval(check, 60 * 60 * 1000);
+
+  const onVisible = () => {
+    if (document.visibilityState === "visible") {
+      check();
+    }
+  };
+
+  document.addEventListener("visibilitychange", onVisible);
+  window.addEventListener("focus", check);
+
+  return () => {
+    document.removeEventListener("visibilitychange", onVisible);
+    window.removeEventListener("focus", check);
+  };
+}
+
 export function PwaPrompts() {
   const [installOpen, setInstallOpen] = useState(false);
   const [iosGuide, setIosGuide] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [updateOpen, setUpdateOpen] = useState(false);
   const iosTimerRef = useRef<number | null>(null);
+  const cleanupChecksRef = useRef<(() => void) | null>(null);
 
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
+    immediate: true,
     onRegisteredSW(_swUrl, registration) {
+      cleanupChecksRef.current?.();
       if (!registration) return;
-      registration.update();
-      window.setInterval(() => registration.update(), 60 * 60 * 1000);
+      cleanupChecksRef.current = scheduleUpdateChecks(registration);
+    },
+    onNeedRefresh() {
+      if (sessionStorage.getItem(UPDATE_DISMISS_SESSION_KEY)) return;
+      setUpdateOpen(true);
     },
   });
+
+  useEffect(() => {
+    if (needRefresh && !sessionStorage.getItem(UPDATE_DISMISS_SESSION_KEY)) {
+      setUpdateOpen(true);
+    }
+  }, [needRefresh]);
+
+  useEffect(() => {
+    return () => {
+      cleanupChecksRef.current?.();
+    };
+  }, []);
 
   useEffect(() => {
     if (isStandaloneApp() || !isMobileDevice()) return;
@@ -75,34 +119,24 @@ export function PwaPrompts() {
     dismissInstall();
   };
 
+  const dismissUpdate = () => {
+    setUpdateOpen(false);
+    setNeedRefresh(false);
+    sessionStorage.setItem(UPDATE_DISMISS_SESSION_KEY, "1");
+  };
+
+  const applyUpdate = async () => {
+    sessionStorage.removeItem(UPDATE_DISMISS_SESSION_KEY);
+    await updateServiceWorker(true);
+  };
+
   return (
     <>
-      {needRefresh ? (
-        <div className="fixed inset-x-0 top-0 z-[60] px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
-          <div className="mx-auto flex max-w-shell items-center justify-between gap-3 rounded-[16px] bg-white px-4 py-3 shadow-soft">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-teal-brand">
-                <RefreshCw className="h-4 w-4" />
-              </span>
-              <p className="text-sm text-ink-secondary">A new version of Expensia is ready.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setNeedRefresh(false)}
-              className="shrink-0 rounded-[12px] border border-surface-border px-3 py-2 text-sm font-semibold text-ink-secondary"
-            >
-              Later
-            </button>
-            <button
-              type="button"
-              onClick={() => void updateServiceWorker(true)}
-              className="shrink-0 rounded-[12px] bg-teal-brand px-3 py-2 text-sm font-semibold text-white"
-            >
-              Update
-            </button>
-          </div>
-        </div>
-      ) : null}
+      <AppUpdatePrompt
+        open={updateOpen && needRefresh}
+        onDismiss={dismissUpdate}
+        onUpdate={applyUpdate}
+      />
 
       {installOpen && !isStandaloneApp() ? (
         <div className="fixed inset-x-0 bottom-0 z-[60] px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
