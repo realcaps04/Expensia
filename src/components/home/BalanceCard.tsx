@@ -23,7 +23,6 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
   const { user } = useAuth();
   const userId = userIdProp ?? getConvexUserId(user);
   const convexUser = useQuery(api.users.getUser, userId ? { userId } : "skip");
-  const showBalancePref = resolveUserSettings(convexUser?.settings).showBalance ?? true;
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [period, setPeriod] = useState<BalancePeriod>(DEFAULT_BALANCE_PERIOD);
@@ -52,8 +51,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
     return [];
   })();
 
-  const effectiveHidden = !showBalancePref || hidden;
-  const showSparkline = !effectiveHidden && sparkline.length >= 2;
+  const showSparkline = !hidden && sparkline.length >= 2;
   const hasActivity = income > 0 || expenses > 0 || creditTotal > 0;
 
   return (
@@ -64,9 +62,9 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           <button
             type="button"
             onClick={() => setHidden((v) => !v)}
-            disabled={!showBalancePref}
-            className="rounded-lg p-1 text-ink-muted transition-colors hover:text-ink-secondary disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg p-1 text-ink-muted transition-colors hover:text-ink-secondary active:text-ink"
             aria-label={hidden ? "Show balance" : "Hide balance"}
+            aria-pressed={hidden}
           >
             {hidden ? (
               <EyeOff className="h-4 w-4" strokeWidth={2} />
@@ -107,7 +105,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-ink" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: effectiveHidden })}
+            {formatCurrency(net, { signed: true, hide: hidden })}
           </p>
         )}
 
@@ -116,7 +114,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         ) : creditTotal > 0 ? (
           <p className="mt-1 text-[0.75rem] text-ink-muted">
             <span className="font-medium text-sky-600">
-              {formatCurrency(creditTotal, { hide: effectiveHidden })}
+              {formatCurrency(creditTotal, { hide: hidden })}
             </span>{" "}
             credit {range.creditLabel}
           </p>
@@ -128,12 +126,12 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-income" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: effectiveHidden })} net {range.creditLabel}
+            {formatCurrency(net, { signed: true, hide: hidden })} net {range.creditLabel}
           </p>
         ) : (
           <p className="mt-1 text-[0.8125rem] text-ink-muted">
-            {formatCurrency(income, { signed: true, hide: effectiveHidden })} in ·{" "}
-            {formatCurrency(-expenses, { signed: true, hide: effectiveHidden })} out
+            {formatCurrency(income, { signed: true, hide: hidden })} in ·{" "}
+            {formatCurrency(-expenses, { signed: true, hide: hidden })} out
           </p>
         )}
       </div>
@@ -155,7 +153,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           <div>
             <p className="text-[0.75rem] text-ink-muted">Income</p>
             <p className="text-[0.9375rem] font-semibold text-income">
-              {formatCurrency(income, { signed: true, hide: effectiveHidden })}
+              {formatCurrency(income, { signed: true, hide: hidden })}
             </p>
           </div>
         </div>
@@ -166,7 +164,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           <div>
             <p className="text-[0.75rem] text-ink-muted">Expenses</p>
             <p className="text-[0.9375rem] font-semibold text-expense">
-              {formatCurrency(-expenses, { signed: true, hide: effectiveHidden })}
+              {formatCurrency(-expenses, { signed: true, hide: hidden })}
             </p>
           </div>
         </div>
