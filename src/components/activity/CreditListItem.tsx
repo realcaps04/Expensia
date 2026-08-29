@@ -1,4 +1,5 @@
 import { CreditCard, Landmark, Pencil, Trash2 } from "lucide-react";
+import { formatCompactDate } from "../../lib/datetime";
 import { formatCurrency } from "../../lib/format";
 import type { CreditActivityRowData } from "../../lib/activity-types";
 
@@ -7,6 +8,7 @@ type CreditListItemProps = {
   onEdit?: (credit: CreditActivityRowData) => void;
   onDelete?: (credit: CreditActivityRowData) => void;
   showActions?: boolean;
+  variant?: "default" | "activity";
 };
 
 export function CreditListItem({
@@ -14,9 +16,11 @@ export function CreditListItem({
   onEdit,
   onDelete,
   showActions = false,
+  variant = "default",
 }: CreditListItemProps) {
   const Icon = credit.type === "personal_loan" ? Landmark : CreditCard;
-  const subtitle = [credit.typeLabel, credit.issuer, credit.time].filter(Boolean).join(" • ");
+  const dateLabel = variant === "activity" ? formatCompactDate(credit.occurredAt) : credit.time;
+  const subtitle = [credit.typeLabel, credit.issuer, dateLabel].filter(Boolean).join(" • ");
 
   return (
     <div className="flex items-start gap-2 rounded-[16px] px-1 py-3">
@@ -28,16 +32,30 @@ export function CreditListItem({
         <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600">
           <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="break-words text-[0.9375rem] font-semibold leading-snug text-ink">
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <p
+            className={`text-[0.9375rem] font-semibold leading-snug text-ink ${
+              variant === "activity" ? "truncate" : "break-words"
+            }`}
+          >
             {credit.name}
           </p>
           {credit.note?.trim() ? (
-            <p className="mt-0.5 break-words text-[0.75rem] leading-snug text-ink-secondary">
+            <p
+              className={`mt-0.5 text-[0.75rem] leading-snug text-ink-secondary ${
+                variant === "activity" ? "truncate" : "break-words"
+              }`}
+            >
               {credit.note.trim()}
             </p>
           ) : null}
-          <p className="mt-0.5 text-[0.75rem] text-ink-muted">{subtitle}</p>
+          <p
+            className={`mt-0.5 text-[0.75rem] text-ink-muted ${
+              variant === "activity" ? "truncate whitespace-nowrap" : ""
+            }`}
+          >
+            {subtitle}
+          </p>
         </div>
         <div className="mt-0.5 shrink-0 text-right">
           <span className="text-[0.9375rem] font-semibold text-sky-700">

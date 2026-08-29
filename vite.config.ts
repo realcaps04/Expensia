@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["logo.png", "favicon.png"],
+      includeAssets: ["logo.png", "favicon.png", "favicon.svg", "icon-maskable.png"],
       manifest: {
         name: "Expensia — Track. Understand. Grow.",
         short_name: "Expensia",
@@ -25,9 +25,10 @@ export default defineConfig({
             src: "logo.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any",
           },
           {
-            src: "logo.png",
+            src: "icon-maskable.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",

@@ -85,12 +85,12 @@ define(['./workbox-f0c192c2'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "/index.html",
-    "revision": "0.eu7bdusg10s"
+    "revision": "0.bk3qcsg4n6g"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/index.html"), {
     allowlist: [/^\/$/],
-    denylist: [/^\/assets\//, /\.[^/]+$/]
+    denylist: [/^\/assets\//, /^\/api\//, /\.(?:js|css|png|jpg|jpeg|gif|webp|svg|ico|woff2?|json|webmanifest|map)$/]
   }));
 
 }));

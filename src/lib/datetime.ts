@@ -70,6 +70,10 @@ export function formatActivityDateHeader(ms: number) {
   }).format(new Date(ms));
 }
 
+export function formatCompactDate(ms: number) {
+  return formatDisplayDate(dateKeyFromMs(ms));
+}
+
 export function formatMonthHeader(monthKey: string) {
   const [year, month] = monthKey.split("-").map(Number);
   return new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" }).format(

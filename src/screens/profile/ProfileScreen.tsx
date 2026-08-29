@@ -4,11 +4,13 @@ import {
   Headphones,
   HelpCircle,
   LayoutGrid,
+  LogOut,
   Settings,
   Shield,
   SlidersHorizontal,
   User,
 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ProfileAvatar, profileDisplayName } from "../../components/profile/ProfileAvatar";
 import {
@@ -16,6 +18,7 @@ import {
   ProfileMenuRow,
   ProfileMenuSection,
 } from "../../components/profile/ProfileMenuRow";
+import { ConfirmSheet } from "../../components/sheets/ConfirmSheet";
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { providerLabel } from "../../lib/profile-achievements";
@@ -23,13 +26,15 @@ import { formatCurrency } from "../../lib/format";
 import { formatMemberSince } from "../../lib/profile-extras";
 
 export function ProfileScreen() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { stats, convexUser, isLoading } = useProfileStats();
+  const [signOutOpen, setSignOutOpen] = useState(false);
   const name = profileDisplayName(user);
   const savings = stats?.savings ?? 0;
 
   return (
-    <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
+    <>
+      <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
       <div className="mx-auto flex max-w-[390px] flex-col gap-5">
         <header className="flex items-center justify-between gap-3">
           <h1 className="font-display text-[1.375rem] font-bold text-ink">Profile</h1>
@@ -136,7 +141,29 @@ export function ProfileScreen() {
           <ProfileMenuDivider />
           <ProfileMenuRow icon={Headphones} label="Contact Us" onClick={() => window.alert("Contact support at help@expensia.app")} />
         </ProfileMenuSection>
+
+        <button
+          type="button"
+          onClick={() => setSignOutOpen(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-card border border-rose-200 bg-white py-3.5 text-[0.9375rem] font-semibold text-expense shadow-soft transition-colors hover:bg-rose-50 active:scale-[0.99]"
+        >
+          <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
+          Log Out
+        </button>
       </div>
     </div>
+
+      <ConfirmSheet
+        open={signOutOpen}
+        onClose={() => setSignOutOpen(false)}
+        onConfirm={() => {
+          setSignOutOpen(false);
+          signOut();
+        }}
+        title="Sign out?"
+        message="You will need to sign in again to access your account."
+        confirmLabel="Sign out"
+      />
+    </>
   );
 }

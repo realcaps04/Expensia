@@ -26,6 +26,7 @@ export function ActivityListItem({
       <CreditListItem
         credit={item.data}
         showActions={showActions}
+        variant="activity"
         onEdit={onEditCredit}
         onDelete={onDeleteCredit}
       />
@@ -36,6 +37,7 @@ export function ActivityListItem({
     <TransactionListItem
       tx={item.data}
       showActions={showActions}
+      variant="activity"
       onEdit={onEditTransaction}
       onDelete={onDeleteTransaction}
     />

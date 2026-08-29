@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { TransactionIcon } from "../../lib/convex-mappers";
+import { formatCompactDate } from "../../lib/datetime";
 import { formatCurrency } from "../../lib/format";
 import type { TransactionRowData } from "../../lib/transaction-types";
 
@@ -23,6 +24,7 @@ type TransactionListItemProps = {
   onEdit: (tx: TransactionRowData) => void;
   onDelete?: (tx: TransactionRowData) => void;
   showActions?: boolean;
+  variant?: "default" | "activity";
 };
 
 export function TransactionListItem({
@@ -30,9 +32,14 @@ export function TransactionListItem({
   onEdit,
   onDelete,
   showActions = false,
+  variant = "default",
 }: TransactionListItemProps) {
   const { Icon, bg, color } = ICONS[tx.icon];
   const signedAmount = tx.type === "income" ? tx.amount : -tx.amount;
+  const meta =
+    variant === "activity"
+      ? `${tx.category} • ${formatCompactDate(tx.occurredAt)}`
+      : `${tx.category} • ${tx.time}`;
 
   return (
     <div className="flex items-start gap-2 rounded-[16px] px-1 py-3">
@@ -46,15 +53,29 @@ export function TransactionListItem({
         >
           <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="break-words text-[0.9375rem] font-semibold leading-snug text-ink">{tx.title}</p>
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <p
+            className={`text-[0.9375rem] font-semibold leading-snug text-ink ${
+              variant === "activity" ? "truncate" : "break-words"
+            }`}
+          >
+            {tx.title}
+          </p>
           {tx.note?.trim() ? (
-            <p className="mt-0.5 break-words text-[0.75rem] leading-snug text-ink-secondary">
+            <p
+              className={`mt-0.5 text-[0.75rem] leading-snug text-ink-secondary ${
+                variant === "activity" ? "truncate" : "break-words"
+              }`}
+            >
               {tx.note.trim()}
             </p>
           ) : null}
-          <p className="mt-0.5 text-[0.75rem] text-ink-muted">
-            {tx.category} • {tx.time}
+          <p
+            className={`mt-0.5 text-[0.75rem] text-ink-muted ${
+              variant === "activity" ? "truncate whitespace-nowrap" : ""
+            }`}
+          >
+            {meta}
           </p>
         </div>
         <span
