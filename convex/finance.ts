@@ -2,12 +2,24 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { category } from "./validators";
 import {
+  addDays,
+  dateKeyFromMs,
   endOfDayMs,
   endOfMonthMs,
   monthKeyFromDate,
   startOfDayMs,
   startOfMonthMs,
 } from "./lib/helpers";
+
+function netBalance(transactions: { type: "income" | "expense"; amount: number; occurredAt: number }[], beforeMs: number) {
+  let balance = 0;
+  for (const tx of transactions) {
+    if (tx.occurredAt <= beforeMs) {
+      balance += tx.type === "income" ? tx.amount : -tx.amount;
+    }
+  }
+  return balance;
+}
 
 function sumByType(transactions: { type: "income" | "expense"; amount: number }[]) {
   let income = 0;
@@ -32,13 +44,20 @@ export const getDashboard = query({
     const monthEnd = endOfMonthMs(now);
     const dayStart = startOfDayMs(now);
     const dayEnd = endOfDayMs(now);
+    const yesterdayDate = addDays(now, -1);
+    const yesterdayStart = startOfDayMs(yesterdayDate);
+    const yesterdayEnd = endOfDayMs(yesterdayDate);
 
     const monthTx = all.filter((tx) => tx.occurredAt >= monthStart && tx.occurredAt <= monthEnd);
     const todayTx = all.filter((tx) => tx.occurredAt >= dayStart && tx.occurredAt <= dayEnd);
+    const yesterdayTx = all.filter(
+      (tx) => tx.occurredAt >= yesterdayStart && tx.occurredAt <= yesterdayEnd,
+    );
 
     const lifetime = sumByType(all);
     const month = sumByType(monthTx);
     const today = sumByType(todayTx);
+    const yesterdayStats = sumByType(yesterdayTx);
 
     const budget = await ctx.db
       .query("budgets")
@@ -55,6 +74,7 @@ export const getDashboard = query({
       todayIncome: today.income,
       todayExpenses: today.expenses,
       todayNet: today.net,
+      yesterdayNet: yesterdayStats.net,
       transactionCount: all.length,
       monthlyBudget: budget?.totalLimit,
     };
@@ -90,6 +110,67 @@ export const getSpendingByCategory = query({
         percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
       }))
       .sort((a, b) => b.amount - a.amount);
+  },
+});
+
+export const getBalanceTrend = query({
+  args: {
+    userId: v.id("users"),
+    days: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const days = Math.min(Math.max(args.days ?? 14, 2), 90);
+    const all = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const now = new Date();
+    const points: { date: string; balance: number }[] = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const day = addDays(now, -i);
+      const end = endOfDayMs(day);
+      points.push({
+        date: dateKeyFromMs(end),
+        balance: netBalance(all, end),
+      });
+    }
+
+    return points;
+  },
+});
+
+export const getDailyExpenseTrend = query({
+  args: {
+    userId: v.id("users"),
+    start: v.number(),
+    end: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const rows = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const expenses = rows.filter(
+      (tx) => tx.type === "expense" && tx.occurredAt >= args.start && tx.occurredAt <= args.end,
+    );
+
+    const totals = new Map<string, number>();
+    const cursor = startOfDayMs(new Date(args.start));
+    const endDay = startOfDayMs(new Date(args.end));
+
+    for (let ms = cursor; ms <= endDay; ms = addDays(new Date(ms), 1).getTime()) {
+      totals.set(dateKeyFromMs(ms), 0);
+    }
+
+    for (const tx of expenses) {
+      const key = dateKeyFromMs(tx.occurredAt);
+      totals.set(key, (totals.get(key) ?? 0) + tx.amount);
+    }
+
+    return [...totals.entries()].map(([date, amount]) => ({ date, amount }));
   },
 });
 

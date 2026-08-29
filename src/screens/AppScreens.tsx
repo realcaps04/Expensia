@@ -19,14 +19,7 @@ export function ActivityScreen() {
   );
 }
 
-export function InsightsScreen() {
-  return (
-    <PlaceholderPage
-      title="Insights"
-      description="Spending charts and trends will appear here."
-    />
-  );
-}
+export { InsightsScreen } from "./InsightsScreen";
 
 export function ProfileScreen() {
   const { user, signOut } = useAuth();

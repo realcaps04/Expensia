@@ -40,3 +40,17 @@ export function endOfMonthMs(date = new Date()) {
   d.setHours(23, 59, 59, 999);
   return d.getTime();
 }
+
+export function dateKeyFromMs(ms: number) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function addDays(date: Date, days: number) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}

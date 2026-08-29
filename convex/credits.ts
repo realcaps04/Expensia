@@ -42,6 +42,9 @@ export const create = mutation({
     apr: v.optional(v.number()),
     lastFour: v.optional(v.string()),
     note: v.optional(v.string()),
+    startDate: v.optional(v.number()),
+    tenureMonths: v.optional(v.number()),
+    emiPaidCount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
@@ -62,6 +65,9 @@ export const create = mutation({
       apr: args.apr,
       lastFour: args.lastFour?.trim() || undefined,
       note: args.note?.trim() || undefined,
+      startDate: args.startDate,
+      tenureMonths: args.tenureMonths,
+      emiPaidCount: args.emiPaidCount ?? (args.type === "personal_loan" ? 0 : undefined),
       isArchived: false,
       createdAt: now,
       updatedAt: now,

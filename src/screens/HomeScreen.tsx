@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { HomeHeader } from "../components/home/HomeHeader";
 import { BalanceCard } from "../components/home/BalanceCard";
-import { QuickActions } from "../components/home/QuickActions";
+import { QuickActions, type QuickActionSheet } from "../components/home/QuickActions";
 import { TodayOverview } from "../components/home/TodayOverview";
 import { RecentTransactions } from "../components/home/RecentTransactions";
+import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
+import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
 import { useFinanceDashboard } from "../hooks/useFinanceDashboard";
 import { mapTransactionRow } from "../lib/convex-mappers";
 import type { DashboardSummary } from "../lib/types";
@@ -16,13 +19,17 @@ const EMPTY_SUMMARY: DashboardSummary = {
   todayIncome: 0,
   todayExpenses: 0,
   todayNet: 0,
+  yesterdayNet: 0,
   transactionCount: 0,
 };
 
 export function HomeScreen() {
-  const { dashboard, transactions, isLoading } = useFinanceDashboard();
+  const { userId, dashboard, transactions, balanceSparkline, isLoading } = useFinanceDashboard();
+  const [activeSheet, setActiveSheet] = useState<QuickActionSheet | null>(null);
   const summary = dashboard ?? EMPTY_SUMMARY;
   const rows = (transactions ?? []).map(mapTransactionRow);
+
+  const closeSheet = () => setActiveSheet(null);
 
   return (
     <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
@@ -41,13 +48,27 @@ export function HomeScreen() {
           </div>
         ) : (
           <>
-            <BalanceCard summary={summary} />
-            <QuickActions />
+            <BalanceCard summary={summary} sparkline={balanceSparkline} />
+            <QuickActions onOpenSheet={setActiveSheet} />
             <TodayOverview summary={summary} />
             <RecentTransactions transactions={rows} />
           </>
         )}
       </motion.div>
+
+      <AddTransactionSheet
+        open={activeSheet === "income"}
+        onClose={closeSheet}
+        userId={userId}
+        variant="income"
+      />
+      <AddTransactionSheet
+        open={activeSheet === "expense"}
+        onClose={closeSheet}
+        userId={userId}
+        variant="expense"
+      />
+      <AddCreditSheet open={activeSheet === "credit"} onClose={closeSheet} userId={userId} />
     </div>
   );
 }
