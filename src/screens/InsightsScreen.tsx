@@ -60,14 +60,32 @@ export function InsightsScreen() {
       creditAccounts === undefined);
 
   const credits = (creditAccounts ?? []).map(mapCreditRow);
-
+  const creditTotal = creditSummary?.totalBalance ?? 0;
   const totalSpent = (byCategory ?? []).reduce((sum, row) => sum + row.amount, 0);
-  const donutSegments = (byCategory ?? []).map((row) => ({
+  const overviewTotal = totalSpent + creditTotal;
+
+  const expenseSegments = (byCategory ?? []).map((row) => ({
     label: row.category,
     amount: row.amount,
-    percentage: row.percentage,
+    percentage:
+      overviewTotal > 0 ? Math.round((row.amount / overviewTotal) * 100) : row.percentage,
     color: categoryColor(row.category),
   }));
+
+  const creditSegment =
+    creditTotal > 0
+      ? [
+          {
+            label: "credit",
+            amount: creditTotal,
+            percentage:
+              overviewTotal > 0 ? Math.round((creditTotal / overviewTotal) * 100) : 100,
+            color: categoryColor("credit"),
+          },
+        ]
+      : [];
+
+  const donutSegments = [...expenseSegments, ...creditSegment];
 
   const trendPoints = (dailyTrend ?? []).map((d) => d.amount);
   const trendLabels = (dailyTrend ?? []).map((d) => formatShortDate(d.date));
@@ -81,69 +99,6 @@ export function InsightsScreen() {
             Understand where your money goes
           </p>
         </div>
-
-        <section className="rounded-card bg-gradient-to-br from-violet-brand to-violet-deep p-5 text-white shadow-soft">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <p className="text-[0.8125rem] font-medium text-white/80">Credit</p>
-              <p className="mt-2 font-display text-[1.75rem] font-bold tracking-tight">
-                {formatCurrency(-(creditSummary?.totalBalance ?? 0), { signed: true })}
-              </p>
-              <p className="mt-1.5 text-[0.8125rem] text-white/75">
-                {creditSummary?.accountCount
-                  ? `Across ${creditSummary.accountCount} account${creditSummary.accountCount === 1 ? "" : "s"}`
-                  : "No credit or loan accounts yet"}
-              </p>
-            </div>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white/15">
-              <CreditCard className="h-6 w-6" strokeWidth={1.75} />
-            </div>
-          </div>
-
-          {credits.length > 0 ? (
-            <ul className="mt-5 space-y-3 border-t border-white/15 pt-4">
-              {credits.map((account) => {
-                const Icon = account.type === "personal_loan" ? Landmark : CreditCard;
-                const utilization =
-                  account.creditLimit > 0
-                    ? Math.round((account.balance / account.creditLimit) * 100)
-                    : 0;
-
-                return (
-                  <li key={account.id} className="rounded-[14px] bg-white/10 px-4 py-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
-                          <Icon className="h-4 w-4" strokeWidth={2} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-[0.9375rem] font-semibold">{account.name}</p>
-                          <p className="mt-0.5 truncate text-[0.75rem] text-white/70">
-                            {account.issuer ?? (account.type === "personal_loan" ? "Loan" : "Credit card")}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="shrink-0 text-[0.9375rem] font-semibold">
-                        {formatCurrency(-account.balance, { signed: true })}
-                      </p>
-                    </div>
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-pill bg-white/15">
-                      <div
-                        className="h-full rounded-pill bg-white/85"
-                        style={{ width: `${Math.min(utilization, 100)}%` }}
-                      />
-                    </div>
-                    <p className="mt-1.5 text-[0.6875rem] text-white/70">
-                      {account.type === "personal_loan" && account.tenureMonths
-                        ? `${account.emiPaidCount ?? 0} of ${account.tenureMonths} EMIs`
-                        : `${utilization}% utilization`}
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : null}
-        </section>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
           {TIMEFRAMES.map(({ id }) => (
@@ -178,28 +133,81 @@ export function InsightsScreen() {
                   totalLabel={formatCurrency(totalSpent)}
                 />
                 <ul className="w-full flex-1 space-y-2.5">
-                  {(byCategory ?? []).length === 0 ? (
+                  {(byCategory ?? []).length === 0 && creditTotal === 0 ? (
                     <li className="text-[0.8125rem] text-ink-muted">No expenses recorded yet.</li>
                   ) : (
-                    (byCategory ?? []).map((row) => (
-                      <li key={row.category} className="flex items-center justify-between gap-3">
-                        <div className="flex min-w-0 items-center gap-2">
-                          <span
-                            className="h-2.5 w-2.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: categoryColor(row.category) }}
-                          />
-                          <span className="truncate text-[0.8125rem] font-medium text-ink">
-                            {categoryLabel(row.category)}
-                          </span>
-                        </div>
-                        <div className="shrink-0 text-right">
-                          <p className="text-[0.8125rem] font-semibold text-ink">
-                            {formatCurrency(row.amount)}
-                          </p>
-                          <p className="text-[0.6875rem] text-ink-muted">{row.percentage}%</p>
-                        </div>
-                      </li>
-                    ))
+                    <>
+                      {(byCategory ?? []).map((row) => (
+                        <li key={row.category} className="flex items-center justify-between gap-3">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <span
+                              className="h-2.5 w-2.5 shrink-0 rounded-full"
+                              style={{ backgroundColor: categoryColor(row.category) }}
+                            />
+                            <span className="truncate text-[0.8125rem] font-medium text-ink">
+                              {categoryLabel(row.category)}
+                            </span>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className="text-[0.8125rem] font-semibold text-ink">
+                              {formatCurrency(row.amount)}
+                            </p>
+                            <p className="text-[0.6875rem] text-ink-muted">
+                              {overviewTotal > 0
+                                ? Math.round((row.amount / overviewTotal) * 100)
+                                : row.percentage}
+                              %
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                      {creditTotal > 0 ? (
+                        <>
+                          <li className="flex items-center justify-between gap-3 border-t border-surface-border pt-2.5">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span
+                                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                                style={{ backgroundColor: categoryColor("credit") }}
+                              />
+                              <span className="truncate text-[0.8125rem] font-medium text-ink">
+                                Credit
+                              </span>
+                            </div>
+                            <div className="shrink-0 text-right">
+                              <p className="text-[0.8125rem] font-semibold text-sky-600">
+                                {formatCurrency(-creditTotal, { signed: true })}
+                              </p>
+                              <p className="text-[0.6875rem] text-ink-muted">
+                                {overviewTotal > 0
+                                  ? Math.round((creditTotal / overviewTotal) * 100)
+                                  : 100}
+                                %
+                              </p>
+                            </div>
+                          </li>
+                          {credits.map((account) => (
+                            <li
+                              key={account.id}
+                              className="flex items-center justify-between gap-3 pl-4"
+                            >
+                              <div className="flex min-w-0 items-center gap-2">
+                                {account.type === "personal_loan" ? (
+                                  <Landmark className="h-3.5 w-3.5 shrink-0 text-ink-muted" />
+                                ) : (
+                                  <CreditCard className="h-3.5 w-3.5 shrink-0 text-ink-muted" />
+                                )}
+                                <span className="truncate text-[0.75rem] text-ink-secondary">
+                                  {account.name}
+                                </span>
+                              </div>
+                              <p className="shrink-0 text-[0.75rem] font-medium text-sky-600">
+                                {formatCurrency(-account.balance, { signed: true })}
+                              </p>
+                            </li>
+                          ))}
+                        </>
+                      ) : null}
+                    </>
                   )}
                 </ul>
               </div>
