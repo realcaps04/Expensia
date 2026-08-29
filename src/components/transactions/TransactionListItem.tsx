@@ -36,10 +36,7 @@ export function TransactionListItem({
 }: TransactionListItemProps) {
   const { Icon, bg, color } = ICONS[tx.icon];
   const signedAmount = tx.type === "income" ? tx.amount : -tx.amount;
-  const meta =
-    variant === "activity"
-      ? `${tx.category} • ${formatCompactDate(tx.occurredAt)}`
-      : `${tx.category} • ${tx.time}`;
+  const meta = `${tx.category} • ${formatCompactDate(tx.occurredAt)}`;
 
   return (
     <div className="flex items-start gap-2 rounded-[16px] px-1 py-3">

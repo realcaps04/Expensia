@@ -72,6 +72,7 @@ export default defineSchema({
     startDate: v.optional(v.number()),
     tenureMonths: v.optional(v.number()),
     emiPaidCount: v.optional(v.number()),
+    linkedIncomeId: v.optional(v.id("transactions")),
     isArchived: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),

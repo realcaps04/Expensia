@@ -1,6 +1,68 @@
 import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { creditType } from "./validators";
+
+async function insertLinkedIncome(
+  ctx: MutationCtx,
+  args: {
+    userId: Id<"users">;
+    name: string;
+    amount: number;
+    note?: string;
+    occurredAt: number;
+    now: number;
+  },
+) {
+  if (args.amount <= 0) return undefined;
+
+  return await ctx.db.insert("transactions", {
+    userId: args.userId,
+    type: "income",
+    amount: args.amount,
+    title: args.name.trim(),
+    category: "other",
+    paymentMethod: "bank_transfer",
+    note: args.note?.trim() || "Added from credit account",
+    occurredAt: args.occurredAt,
+    createdAt: args.now,
+    updatedAt: args.now,
+  });
+}
+
+async function syncLinkedIncome(
+  ctx: MutationCtx,
+  linkedIncomeId: Id<"transactions"> | undefined,
+  args: {
+    userId: Id<"users">;
+    name: string;
+    amount: number;
+    note?: string;
+    occurredAt: number;
+    now: number;
+  },
+) {
+  if (!linkedIncomeId) return linkedIncomeId;
+
+  const income = await ctx.db.get(linkedIncomeId);
+  if (!income || income.userId !== args.userId) return linkedIncomeId;
+
+  if (args.amount <= 0) {
+    await ctx.db.delete(linkedIncomeId);
+    return undefined;
+  }
+
+  await ctx.db.patch(linkedIncomeId, {
+    amount: args.amount,
+    title: args.name.trim(),
+    note: args.note?.trim() || "Added from credit account",
+    occurredAt: args.occurredAt,
+    updatedAt: args.now,
+  });
+
+  return linkedIncomeId;
+}
 
 function assertValidCredit(args: {
   creditLimit: number;
@@ -45,6 +107,7 @@ export const create = mutation({
     startDate: v.optional(v.number()),
     tenureMonths: v.optional(v.number()),
     emiPaidCount: v.optional(v.number()),
+    addAsIncome: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
@@ -53,6 +116,18 @@ export const create = mutation({
     assertValidCredit(args);
 
     const now = Date.now();
+    const occurredAt = args.startDate ?? now;
+    const linkedIncomeId = args.addAsIncome
+      ? await insertLinkedIncome(ctx, {
+          userId: args.userId,
+          name: args.name,
+          amount: args.creditLimit,
+          note: args.note,
+          occurredAt,
+          now,
+        })
+      : undefined;
+
     const creditId = await ctx.db.insert("credits", {
       userId: args.userId,
       name: args.name.trim(),
@@ -68,6 +143,7 @@ export const create = mutation({
       startDate: args.startDate,
       tenureMonths: args.tenureMonths,
       emiPaidCount: args.emiPaidCount ?? (args.type === "personal_loan" ? 0 : undefined),
+      linkedIncomeId,
       isArchived: false,
       createdAt: now,
       updatedAt: now,
@@ -161,8 +237,26 @@ export const update = mutation({
     assertValidCredit(next);
 
     const now = Date.now();
+    const nextName = args.name !== undefined ? args.name.trim() : credit.name;
+    const nextLimit = args.creditLimit ?? credit.creditLimit;
+    const nextNote = args.note !== undefined ? args.note.trim() || undefined : credit.note;
+    const nextStartDate = args.startDate !== undefined ? args.startDate : credit.startDate;
+    const occurredAt = nextStartDate ?? credit.createdAt;
+
+    let linkedIncomeId = credit.linkedIncomeId;
+    if (linkedIncomeId) {
+      linkedIncomeId = await syncLinkedIncome(ctx, linkedIncomeId, {
+        userId: args.userId,
+        name: nextName,
+        amount: nextLimit,
+        note: nextNote,
+        occurredAt,
+        now,
+      });
+    }
+
     await ctx.db.patch(args.creditId, {
-      ...(args.name !== undefined ? { name: args.name.trim() } : {}),
+      ...(args.name !== undefined ? { name: nextName } : {}),
       ...(args.type !== undefined ? { type: args.type } : {}),
       ...(args.issuer !== undefined ? { issuer: args.issuer.trim() || undefined } : {}),
       ...(args.creditLimit !== undefined ? { creditLimit: args.creditLimit } : {}),
@@ -171,11 +265,12 @@ export const update = mutation({
       ...(args.dueDay !== undefined ? { dueDay: args.dueDay } : {}),
       ...(args.apr !== undefined ? { apr: args.apr } : {}),
       ...(args.lastFour !== undefined ? { lastFour: args.lastFour.trim() || undefined } : {}),
-      ...(args.note !== undefined ? { note: args.note.trim() || undefined } : {}),
+      ...(args.note !== undefined ? { note: nextNote } : {}),
       ...(args.startDate !== undefined ? { startDate: args.startDate } : {}),
       ...(args.tenureMonths !== undefined ? { tenureMonths: args.tenureMonths } : {}),
       ...(args.emiPaidCount !== undefined ? { emiPaidCount: args.emiPaidCount } : {}),
       ...(args.isArchived !== undefined ? { isArchived: args.isArchived } : {}),
+      linkedIncomeId,
       updatedAt: now,
     });
 
@@ -193,6 +288,12 @@ export const remove = mutation({
     const credit = await ctx.db.get(args.creditId);
     if (!credit || credit.userId !== args.userId) {
       throw new Error("Credit account not found.");
+    }
+    if (credit.linkedIncomeId) {
+      const income = await ctx.db.get(credit.linkedIncomeId);
+      if (income && income.userId === args.userId) {
+        await ctx.db.delete(credit.linkedIncomeId);
+      }
     }
     await ctx.db.delete(args.creditId);
     return args.creditId;

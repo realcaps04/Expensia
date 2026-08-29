@@ -43,15 +43,12 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
   const [issuer, setIssuer] = useState("");
   const [loanAmount, setLoanAmount] = useState("");
   const [loanBalance, setLoanBalance] = useState("");
-  const [apr, setApr] = useState("");
-  const [emiAmount, setEmiAmount] = useState("");
-  const [emiDay, setEmiDay] = useState("1");
   const [startDate, setStartDate] = useState(toDateInputValue());
-  const [tenureMonths, setTenureMonths] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
   const [balance, setBalance] = useState("");
   const [lastFour, setLastFour] = useState("");
   const [note, setNote] = useState("");
+  const [addAsIncome, setAddAsIncome] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -64,13 +61,9 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       setMode(editMode);
       setName(editCredit.name);
       setIssuer(editCredit.issuer ?? "");
-      setApr(numToInput(editCredit.apr));
-      setEmiAmount(numToInput(editCredit.minimumPayment));
-      setEmiDay(editCredit.dueDay ? String(editCredit.dueDay) : "1");
       setStartDate(
         editCredit.startDate ? toDateInputValue(new Date(editCredit.startDate)) : toDateInputValue(),
       );
-      setTenureMonths(numToInput(editCredit.tenureMonths));
       setNote(editCredit.note ?? "");
       setLastFour(editCredit.lastFour ?? "");
 
@@ -87,15 +80,12 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       setIssuer("");
       setLoanAmount("");
       setLoanBalance("");
-      setApr("");
-      setEmiAmount("");
-      setEmiDay("1");
       setStartDate(toDateInputValue());
-      setTenureMonths("");
       setCreditLimit("");
       setBalance("");
       setLastFour("");
       setNote("");
+      setAddAsIncome(false);
     }
 
     setError("");
@@ -119,10 +109,6 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
       if (mode === "loan") {
         const amount = parseNum(loanAmount);
         const owed = isEdit ? parseNum(loanBalance) : amount;
-        const rate = apr ? parseNum(apr) : undefined;
-        const emi = emiAmount ? parseNum(emiAmount) : undefined;
-        const tenure = tenureMonths ? Math.round(parseNum(tenureMonths)) : undefined;
-        const day = Math.round(parseNum(emiDay));
 
         if (!Number.isFinite(amount) || amount <= 0) {
           throw new Error("Enter a valid loan amount.");
@@ -133,9 +119,6 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
         if (owed > amount) {
           throw new Error("Remaining balance cannot exceed the loan amount.");
         }
-        if (!Number.isFinite(day) || day < 1 || day > 31) {
-          throw new Error("EMI day must be between 1 and 31.");
-        }
 
         const payload = {
           userId,
@@ -144,12 +127,8 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           issuer: issuer.trim() || undefined,
           creditLimit: amount,
           balance: owed,
-          minimumPayment: emi,
-          dueDay: day,
-          apr: rate,
           note: note.trim() || undefined,
           startDate: parseDateInputToMs(startDate),
-          tenureMonths: tenure,
         };
 
         if (isEdit && editCredit) {
@@ -158,13 +137,11 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
             creditId: editCredit.id as Id<"credits">,
           });
         } else {
-          await createCredit({ ...payload, emiPaidCount: 0 });
+          await createCredit({ ...payload, emiPaidCount: 0, addAsIncome });
         }
       } else {
         const limit = parseNum(creditLimit);
         const owed = parseNum(balance);
-        const rate = apr ? parseNum(apr) : undefined;
-        const day = emiDay ? Math.round(parseNum(emiDay)) : undefined;
 
         if (!Number.isFinite(limit) || limit <= 0) {
           throw new Error("Enter a valid credit limit.");
@@ -183,8 +160,6 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
           issuer: issuer.trim() || undefined,
           creditLimit: limit,
           balance: owed,
-          dueDay: day,
-          apr: rate,
           lastFour: lastFour.trim() || undefined,
           note: note.trim() || undefined,
         };
@@ -195,7 +170,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
             creditId: editCredit.id as Id<"credits">,
           });
         } else {
-          await createCredit(payload);
+          await createCredit({ ...payload, addAsIncome });
         }
       }
       onClose();
@@ -321,32 +296,18 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
 
           {mode === "loan" ? (
             <>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Loan Amount">
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">₹</span>
-                    <input
-                      value={loanAmount}
-                      onChange={(e) => setLoanAmount(e.target.value.replace(/[^\d.]/g, ""))}
-                      inputMode="decimal"
-                      placeholder="0"
-                      className={`${inputClass} pl-7`}
-                    />
-                  </div>
-                </Field>
-                <Field label="Interest Rate (p.a.)">
-                  <div className="relative">
-                    <input
-                      value={apr}
-                      onChange={(e) => setApr(e.target.value.replace(/[^\d.]/g, ""))}
-                      inputMode="decimal"
-                      placeholder="0"
-                      className={`${inputClass} pr-7`}
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted">%</span>
-                  </div>
-                </Field>
-              </div>
+              <Field label="Loan Amount">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">₹</span>
+                  <input
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(e.target.value.replace(/[^\d.]/g, ""))}
+                    inputMode="decimal"
+                    placeholder="0"
+                    className={`${inputClass} pl-7`}
+                  />
+                </div>
+              </Field>
 
               {isEdit ? (
                 <Field label="Remaining Balance">
@@ -363,53 +324,14 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
                 </Field>
               ) : null}
 
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="EMI Amount">
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">₹</span>
-                    <input
-                      value={emiAmount}
-                      onChange={(e) => setEmiAmount(e.target.value.replace(/[^\d.]/g, ""))}
-                      inputMode="decimal"
-                      placeholder="0"
-                      className={`${inputClass} pl-7`}
-                    />
-                  </div>
-                </Field>
-                <Field label="EMI Day">
-                  <select
-                    value={emiDay}
-                    onChange={(e) => setEmiDay(e.target.value)}
-                    className={inputClass}
-                  >
-                    {Array.from({ length: 31 }, (_, i) => String(i + 1)).map((day) => (
-                      <option key={day} value={day}>
-                        {day}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Start Date">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label="Tenure (Months)">
-                  <input
-                    value={tenureMonths}
-                    onChange={(e) => setTenureMonths(e.target.value.replace(/\D/g, ""))}
-                    inputMode="numeric"
-                    placeholder="12"
-                    className={inputClass}
-                  />
-                </Field>
-              </div>
+              <Field label="Start Date">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className={inputClass}
+                />
+              </Field>
             </>
           ) : (
             <>
@@ -440,34 +362,6 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Due Day">
-                  <select
-                    value={emiDay}
-                    onChange={(e) => setEmiDay(e.target.value)}
-                    className={inputClass}
-                  >
-                    {Array.from({ length: 31 }, (_, i) => String(i + 1)).map((day) => (
-                      <option key={day} value={day}>
-                        {day}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Interest Rate (p.a.)">
-                  <div className="relative">
-                    <input
-                      value={apr}
-                      onChange={(e) => setApr(e.target.value.replace(/[^\d.]/g, ""))}
-                      inputMode="decimal"
-                      placeholder="0"
-                      className={`${inputClass} pr-7`}
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted">%</span>
-                  </div>
-                </Field>
-              </div>
-
               <Field label="Last 4 Digits (Optional)">
                 <input
                   value={lastFour}
@@ -480,6 +374,25 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null }: Add
               </Field>
             </>
           )}
+
+          {!isEdit ? (
+            <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-surface-border bg-surface px-3 py-3">
+              <input
+                type="checkbox"
+                checked={addAsIncome}
+                onChange={(e) => setAddAsIncome(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-surface-border text-teal-brand focus:ring-teal-brand/30"
+              />
+              <span className="min-w-0">
+                <span className="block text-[0.8125rem] font-semibold text-ink">
+                  Also add as income
+                </span>
+                <span className="mt-0.5 block text-[0.75rem] leading-relaxed text-ink-secondary">
+                  Creates a matching income entry for the {mode === "loan" ? "loan amount" : "credit limit"}.
+                </span>
+              </span>
+            </label>
+          ) : null}
 
           <Field label="Note (Optional)">
             <textarea
