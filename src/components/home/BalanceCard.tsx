@@ -105,8 +105,11 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           {isLoading ? (
             <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100" />
           ) : creditTotal > 0 ? (
-            <p className="mt-1 text-[0.8125rem] font-semibold text-sky-600">
-              {formatCurrency(creditTotal, { hide: hidden })} credit {range.creditLabel}
+            <p className="mt-1 text-[0.75rem] text-ink-muted">
+              <span className="font-medium text-sky-600">
+                {formatCurrency(creditTotal, { hide: hidden })}
+              </span>{" "}
+              credit {range.creditLabel}
             </p>
           ) : !hasActivity ? (
             <p className="mt-1 text-[0.8125rem] text-ink-muted">No activity in this period</p>

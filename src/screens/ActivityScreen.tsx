@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import { ActivityFilterBar } from "../components/activity/ActivityFilterBar";
 import { ActivityListItem } from "../components/activity/ActivityListItem";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
+import { ConfirmSheet, deleteItemMessage } from "../components/sheets/ConfirmSheet";
 import { useAuth } from "../context/AuthProvider";
 import {
   DEFAULT_ACTIVITY_FILTERS,
@@ -35,6 +36,12 @@ export function ActivityScreen() {
   const userId = getConvexUserId(user);
   const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
   const [filters, setFilters] = useState(DEFAULT_ACTIVITY_FILTERS);
+  const [deleteTarget, setDeleteTarget] = useState<
+    | { kind: "transaction"; item: TransactionRowData }
+    | { kind: "credit"; item: CreditActivityRowData }
+    | null
+  >(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   const transactions = useQuery(api.transactions.listAll, userId ? { userId } : "skip");
   const credits = useQuery(api.credits.list, userId ? { userId } : "skip");
@@ -70,34 +77,42 @@ export function ActivityScreen() {
   const isLoading =
     userId !== null && (transactions === undefined || credits === undefined);
 
-  const handleDeleteTransaction = async (tx: TransactionRowData) => {
-    if (!userId) return;
-    if (!window.confirm(`Delete "${tx.title}"? This cannot be undone.`)) return;
-
-    try {
-      await removeTx({
-        userId,
-        transactionId: tx.id as Id<"transactions">,
-      });
-      if (editingTransaction?.id === tx.id) {
-        setEditingTransaction(null);
-      }
-    } catch {
-      window.alert("Could not delete this transaction.");
-    }
+  const handleDeleteTransaction = (tx: TransactionRowData) => {
+    setDeleteTarget({ kind: "transaction", item: tx });
   };
 
-  const handleDeleteCredit = async (credit: CreditActivityRowData) => {
-    if (!userId) return;
-    if (!window.confirm(`Delete "${credit.name}"? This cannot be undone.`)) return;
+  const handleDeleteCredit = (credit: CreditActivityRowData) => {
+    setDeleteTarget({ kind: "credit", item: credit });
+  };
 
+  const confirmDelete = async () => {
+    if (!userId || !deleteTarget) return;
+
+    setDeleteBusy(true);
     try {
-      await removeCredit({
-        userId,
-        creditId: credit.id as Id<"credits">,
-      });
+      if (deleteTarget.kind === "transaction") {
+        await removeTx({
+          userId,
+          transactionId: deleteTarget.item.id as Id<"transactions">,
+        });
+        if (editingTransaction?.id === deleteTarget.item.id) {
+          setEditingTransaction(null);
+        }
+      } else {
+        await removeCredit({
+          userId,
+          creditId: deleteTarget.item.id as Id<"credits">,
+        });
+      }
+      setDeleteTarget(null);
     } catch {
-      window.alert("Could not delete this credit account.");
+      window.alert(
+        deleteTarget.kind === "transaction"
+          ? "Could not delete this transaction."
+          : "Could not delete this credit account.",
+      );
+    } finally {
+      setDeleteBusy(false);
     }
   };
 
