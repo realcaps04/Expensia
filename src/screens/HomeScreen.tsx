@@ -24,7 +24,8 @@ const EMPTY_SUMMARY: DashboardSummary = {
 };
 
 export function HomeScreen() {
-  const { userId, dashboard, transactions, balanceSparkline, isLoading } = useFinanceDashboard();
+  const { userId, dashboard, transactions, balanceSparkline, creditOutstanding, isLoading } =
+    useFinanceDashboard();
   const [activeSheet, setActiveSheet] = useState<QuickActionSheet | null>(null);
   const summary = dashboard ?? EMPTY_SUMMARY;
   const rows = (transactions ?? []).map(mapTransactionRow);
@@ -48,7 +49,11 @@ export function HomeScreen() {
           </div>
         ) : (
           <>
-            <BalanceCard summary={summary} sparkline={balanceSparkline} />
+            <BalanceCard
+              summary={summary}
+              sparkline={balanceSparkline}
+              creditOutstanding={creditOutstanding}
+            />
             <QuickActions onOpenSheet={setActiveSheet} />
             <TodayOverview summary={summary} />
             <RecentTransactions transactions={rows} />
