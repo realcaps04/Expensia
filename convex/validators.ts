@@ -35,10 +35,18 @@ export const userSettings = v.object({
   currency: v.string(),
   theme: v.union(v.literal("light"), v.literal("dark"), v.literal("system")),
   notifications: v.boolean(),
+  showBalance: v.optional(v.boolean()),
+  showNotificationPreview: v.optional(v.boolean()),
+  autoCategorize: v.optional(v.boolean()),
+  language: v.optional(v.string()),
 });
 
 export const DEFAULT_SETTINGS = {
   currency: "INR",
   theme: "light" as const,
   notifications: true,
+  showBalance: true,
+  showNotificationPreview: true,
+  autoCategorize: true,
+  language: "en",
 };

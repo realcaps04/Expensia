@@ -25,6 +25,7 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: (profile: GoogleProfile) => Promise<void>;
   signOut: () => void;
+  syncUser: (user: UserProfile) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -95,9 +96,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const syncUser = useCallback((profile: UserProfile) => {
+    saveSession(profile);
+    setUser(profile);
+  }, []);
+
   const value = useMemo(
-    () => ({ user, isLoading, signUp, signIn, signInWithGoogle, signOut }),
-    [user, isLoading, signUp, signIn, signInWithGoogle, signOut],
+    () => ({ user, isLoading, signUp, signIn, signInWithGoogle, signOut, syncUser }),
+    [user, isLoading, signUp, signIn, signInWithGoogle, signOut, syncUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

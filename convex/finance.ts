@@ -91,6 +91,38 @@ export const getDashboard = query({
   },
 });
 
+export const getProfileStats = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const transactions = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const credits = await ctx.db
+      .query("credits")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const activeCredits = credits.filter((row) => !row.isArchived);
+    let totalIncome = 0;
+    let totalExpenses = 0;
+
+    for (const tx of transactions) {
+      if (tx.type === "income") totalIncome += tx.amount;
+      else totalExpenses += tx.amount;
+    }
+
+    return {
+      totalIncome,
+      totalExpenses,
+      savings: totalIncome - totalExpenses,
+      transactionCount: transactions.length,
+      accountCount: activeCredits.length + 1,
+    };
+  },
+});
+
 export const getSpendingByCategory = query({
   args: {
     userId: v.id("users"),

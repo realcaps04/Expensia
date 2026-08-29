@@ -7,7 +7,7 @@ import { PwaPrompts } from "./components/pwa/PwaPrompts";
 import { LoginScreen } from "./screens/LoginScreen";
 import { SignUpScreen } from "./screens/SignUpScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { ActivityScreen, InsightsScreen, ProfileScreen } from "./screens/AppScreens";
+import { ActivityScreen, InsightsScreen, ProfileRoutes } from "./screens/AppScreens";
 import { getInitialRoute } from "./lib/onboarding";
 
 export default function App() {
@@ -43,7 +43,7 @@ export default function App() {
           <Route index element={<HomeScreen />} />
           <Route path="activity" element={<ActivityScreen />} />
           <Route path="insights" element={<InsightsScreen />} />
-          <Route path="profile" element={<ProfileScreen />} />
+          <Route path="profile/*" element={<ProfileRoutes />} />
         </Route>
         <Route path="*" element={<Navigate to={getInitialRoute()} replace />} />
       </Routes>

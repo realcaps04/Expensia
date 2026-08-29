@@ -1,40 +1,22 @@
-import { useAuth } from "../context/AuthProvider";
-import { getDisplayName } from "../lib/session";
+import { Route, Routes } from "react-router-dom";
+import { ProfileScreen } from "./profile/ProfileScreen";
+import { ProfilePersonalInfoScreen } from "./profile/ProfilePersonalInfoScreen";
+import { ProfileSecurityScreen } from "./profile/ProfileSecurityScreen";
+import { ProfilePreferencesScreen } from "./profile/ProfilePreferencesScreen";
+import { ProfileOverviewScreen } from "./profile/ProfileOverviewScreen";
 
 export { ActivityScreen } from "./ActivityScreen";
 export { InsightsScreen } from "./InsightsScreen";
+export { ProfileScreen };
 
-export function ProfileScreen() {
-  const { user, signOut } = useAuth();
-
+export function ProfileRoutes() {
   return (
-    <div className="px-5 pb-6 pt-[max(1.5rem,env(safe-area-inset-top))]">
-      <div className="mx-auto max-w-[390px] rounded-card bg-white p-6 shadow-soft">
-        <div className="flex items-center gap-4">
-          {user?.picture ? (
-            <img
-              src={user.picture}
-              alt=""
-              className="h-16 w-16 rounded-full border border-surface-border object-cover"
-            />
-          ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-brand to-violet-brand text-xl font-semibold text-white">
-              {getDisplayName(user).charAt(0)}
-            </div>
-          )}
-          <div>
-            <p className="font-display text-lg font-semibold text-ink">{getDisplayName(user)}</p>
-            <p className="text-sm text-ink-secondary">{user?.email}</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={signOut}
-          className="mt-6 w-full rounded-[14px] border border-surface-border py-3 text-sm font-semibold text-ink-secondary transition-colors hover:bg-slate-50 hover:text-ink"
-        >
-          Sign out
-        </button>
-      </div>
-    </div>
+    <Routes>
+      <Route index element={<ProfileScreen />} />
+      <Route path="personal" element={<ProfilePersonalInfoScreen />} />
+      <Route path="security" element={<ProfileSecurityScreen />} />
+      <Route path="preferences" element={<ProfilePreferencesScreen />} />
+      <Route path="overview" element={<ProfileOverviewScreen />} />
+    </Routes>
   );
 }
