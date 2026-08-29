@@ -4,6 +4,9 @@ import { WelcomeGate } from "./components/auth/WelcomeGate";
 import { AppFrame } from "./components/layout/AppFrame";
 import { MainShell } from "./components/layout/MainShell";
 import { PwaPrompts } from "./components/pwa/PwaPrompts";
+import { ForgotPasswordScreen } from "./screens/ForgotPasswordScreen";
+import { ResetPasswordScreen } from "./screens/ResetPasswordScreen";
+import { VerifyResetCodeScreen } from "./screens/VerifyResetCodeScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import { SignUpScreen } from "./screens/SignUpScreen";
 import { HomeScreen } from "./screens/HomeScreen";
@@ -29,6 +32,30 @@ export default function App() {
           element={
             <RedirectIfAuthed>
               <SignUpScreen />
+            </RedirectIfAuthed>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <RedirectIfAuthed>
+              <ForgotPasswordScreen />
+            </RedirectIfAuthed>
+          }
+        />
+        <Route
+          path="/forgot-password/verify"
+          element={
+            <RedirectIfAuthed>
+              <VerifyResetCodeScreen />
+            </RedirectIfAuthed>
+          }
+        />
+        <Route
+          path="/forgot-password/new-password"
+          element={
+            <RedirectIfAuthed>
+              <ResetPasswordScreen />
             </RedirectIfAuthed>
           }
         />

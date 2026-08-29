@@ -2,7 +2,7 @@ import type { FormEvent } from "react";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
 import { AuthBackground } from "../components/brand/AuthBackground";
 import { BrandLockup } from "../components/brand/ExpensiaLogo";
@@ -11,7 +11,9 @@ import { useAuth } from "../context/AuthProvider";
 
 export function LoginScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn } = useAuth();
+  const resetSuccess = (location.state as { resetSuccess?: boolean } | null)?.resetSuccess;
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -90,14 +92,20 @@ export function LoginScreen() {
                 }
               />
               <div className="mt-2.5 flex justify-end">
-                <button
-                  type="button"
+                <Link
+                  to="/forgot-password"
                   className="text-[0.8125rem] font-semibold text-teal-brand transition-colors hover:text-teal-deep"
                 >
                   Forgot password?
-                </button>
+                </Link>
               </div>
             </div>
+
+            {resetSuccess ? (
+              <p className="rounded-[12px] bg-emerald-50 px-3 py-2.5 text-[0.8125rem] font-medium text-emerald-700">
+                Password updated. Sign in with your new password.
+              </p>
+            ) : null}
 
             {error ? (
               <p className="rounded-[12px] bg-red-50 px-3 py-2.5 text-[0.8125rem] font-medium text-red-600">

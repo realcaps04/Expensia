@@ -78,4 +78,17 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_user_and_archived", ["userId", "isArchived"]),
+
+  passwordResetOtps: defineTable({
+    email: v.string(),
+    userId: v.id("users"),
+    codeHash: v.string(),
+    expiresAt: v.number(),
+    attempts: v.number(),
+    verifiedAt: v.optional(v.number()),
+    resetTokenHash: v.optional(v.string()),
+    resetTokenExpiresAt: v.optional(v.number()),
+    consumedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_email", ["email"]),
 });
