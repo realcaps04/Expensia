@@ -3,7 +3,7 @@ import { ChevronDown, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react
 import { useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { Sparkline } from "../charts/Sparkline";
+import { BalanceTrendChart } from "../charts/BalanceTrendChart";
 import { useAuth } from "../../context/AuthProvider";
 import {
   balancePeriodRange,
@@ -88,50 +88,54 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         </div>
       </div>
 
-      <div className="mt-3 flex items-end justify-between gap-2">
-        <div>
-          {isLoading ? (
-            <div className="h-9 w-36 animate-pulse rounded-lg bg-slate-100" />
-          ) : (
-            <p
-              className={`font-display text-[1.75rem] font-bold tracking-tight ${
-                net >= 0 ? "text-ink" : "text-expense"
-              }`}
-            >
-              {formatCurrency(net, { signed: true, hide: hidden })}
-            </p>
-          )}
+      <div className="mt-3">
+        {isLoading ? (
+          <div className="h-9 w-36 animate-pulse rounded-lg bg-slate-100" />
+        ) : (
+          <p
+            className={`font-display text-[1.75rem] font-bold tracking-tight ${
+              net >= 0 ? "text-ink" : "text-expense"
+            }`}
+          >
+            {formatCurrency(net, { signed: true, hide: hidden })}
+          </p>
+        )}
 
-          {isLoading ? (
-            <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100" />
-          ) : creditTotal > 0 ? (
-            <p className="mt-1 text-[0.75rem] text-ink-muted">
-              <span className="font-medium text-sky-600">
-                {formatCurrency(creditTotal, { hide: hidden })}
-              </span>{" "}
-              credit {range.creditLabel}
-            </p>
-          ) : !hasActivity ? (
-            <p className="mt-1 text-[0.8125rem] text-ink-muted">No activity in this period</p>
-          ) : net !== 0 ? (
-            <p
-              className={`mt-1 text-[0.8125rem] font-semibold ${
-                net >= 0 ? "text-income" : "text-expense"
-              }`}
-            >
-              {formatCurrency(net, { signed: true, hide: hidden })} net {range.creditLabel}
-            </p>
-          ) : (
-            <p className="mt-1 text-[0.8125rem] text-ink-muted">
-              {formatCurrency(income, { signed: true, hide: hidden })} in ·{" "}
-              {formatCurrency(-expenses, { signed: true, hide: hidden })} out
-            </p>
-          )}
-        </div>
-        {showSparkline ? (
-          <Sparkline points={sparkline} stroke={net >= 0 ? "#14B8A6" : "#F87171"} />
-        ) : null}
+        {isLoading ? (
+          <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100" />
+        ) : creditTotal > 0 ? (
+          <p className="mt-1 text-[0.75rem] text-ink-muted">
+            <span className="font-medium text-sky-600">
+              {formatCurrency(creditTotal, { hide: hidden })}
+            </span>{" "}
+            credit {range.creditLabel}
+          </p>
+        ) : !hasActivity ? (
+          <p className="mt-1 text-[0.8125rem] text-ink-muted">No activity in this period</p>
+        ) : net !== 0 ? (
+          <p
+            className={`mt-1 text-[0.8125rem] font-semibold ${
+              net >= 0 ? "text-income" : "text-expense"
+            }`}
+          >
+            {formatCurrency(net, { signed: true, hide: hidden })} net {range.creditLabel}
+          </p>
+        ) : (
+          <p className="mt-1 text-[0.8125rem] text-ink-muted">
+            {formatCurrency(income, { signed: true, hide: hidden })} in ·{" "}
+            {formatCurrency(-expenses, { signed: true, hide: hidden })} out
+          </p>
+        )}
       </div>
+
+      {showSparkline ? (
+        <div className="mt-4 -mx-1">
+          <BalanceTrendChart
+            points={sparkline}
+            stroke={net >= 0 ? "#14B8A6" : "#F87171"}
+          />
+        </div>
+      ) : null}
 
       <div className="mt-5 grid grid-cols-2 gap-4 border-t border-surface-border pt-4">
         <div className="flex items-center gap-3">
