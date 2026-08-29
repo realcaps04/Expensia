@@ -12,7 +12,6 @@ import { api } from "../../convex/_generated/api";
 import type { GoogleProfile, UserProfile } from "../lib/types";
 import { convexUserToProfile, googleProfileToUpsertArgs } from "../lib/convex-mappers";
 import { clearSession, loadSession, saveSession } from "../lib/session";
-import { isConvexEnabled } from "../lib/convex-config";
 
 type AuthContextValue = {
   user: UserProfile | null;
@@ -48,9 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(
     async (input: Parameters<AuthContextValue["signUp"]>[0]) => {
-      if (!isConvexEnabled) {
-        throw new Error("Convex is not configured.");
-      }
       setIsLoading(true);
       try {
         const created = await registerEmail(input);
@@ -66,9 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      if (!isConvexEnabled) {
-        throw new Error("Convex is not configured.");
-      }
       setIsLoading(true);
       try {
         const signedIn = await signInEmail({ email, password });
@@ -84,9 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = useCallback(
     async (profile: GoogleProfile) => {
-      if (!isConvexEnabled) {
-        throw new Error("Convex is not configured.");
-      }
       setIsLoading(true);
       try {
         const upserted = await upsertGoogle(googleProfileToUpsertArgs(profile));
