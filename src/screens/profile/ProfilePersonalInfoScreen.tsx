@@ -2,7 +2,6 @@ import { useMutation } from "convex/react";
 import {
   Calendar,
   Camera,
-  Crown,
   Globe,
   Mail,
   Phone,
@@ -20,7 +19,8 @@ import {
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { convexUserToProfile } from "../../lib/convex-mappers";
-import { loadProfileExtras, saveProfileExtras } from "../../lib/profile-extras";
+import { providerLabel } from "../../lib/profile-achievements";
+import { loadProfileExtras, saveProfileExtras, formatMemberSince } from "../../lib/profile-extras";
 import { toDateInputValue } from "../../lib/datetime";
 
 export function ProfilePersonalInfoScreen() {
@@ -33,8 +33,8 @@ export function ProfilePersonalInfoScreen() {
   const [email] = useState(user?.email ?? "");
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
-  const [gender, setGender] = useState("Male");
-  const [country, setCountry] = useState("India");
+  const [gender, setGender] = useState("");
+  const [country, setCountry] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -44,8 +44,8 @@ export function ProfilePersonalInfoScreen() {
     setLastName(user?.lastName ?? "");
     setPhone(convexUser?.contactNumber ?? "");
     setDob(extras.dateOfBirth ?? "");
-    setGender(extras.gender ?? "Male");
-    setCountry(extras.country ?? "India");
+    setGender(extras.gender ?? "");
+    setCountry(extras.country ?? "");
   }, [user, convexUser]);
 
   const name = profileDisplayName(user);
@@ -87,16 +87,23 @@ export function ProfilePersonalInfoScreen() {
     >
       <ProfileCard className="px-5 py-6 text-center">
         <div className="relative mx-auto w-fit">
-          <ProfileAvatar name={name} picture={user?.picture} size="xl" showBadge />
+        <ProfileAvatar
+          name={name}
+          picture={user?.picture}
+          size="xl"
+          showBadge={user?.provider === "google"}
+        />
           <span className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-teal-brand text-white shadow-md">
             <Camera className="h-4 w-4" strokeWidth={2} />
           </span>
         </div>
         <p className="mt-4 font-display text-[1.125rem] font-bold text-ink">{name}</p>
-        <span className="mt-2 inline-flex items-center gap-1.5 rounded-pill bg-amber-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-amber-700">
-          <Crown className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Premium Member
-        </span>
+        <p className="mt-1 text-[0.8125rem] text-ink-secondary">{providerLabel(user?.provider)}</p>
+        {convexUser ? (
+          <p className="mt-1 text-[0.75rem] text-ink-muted">
+            Member since {formatMemberSince(convexUser.createdAt)}
+          </p>
+        ) : null}
       </ProfileCard>
 
       <div className="space-y-4">
@@ -150,6 +157,7 @@ export function ProfilePersonalInfoScreen() {
             onChange={(e) => setGender(e.target.value)}
             className="w-full bg-transparent text-[0.9375rem] text-ink outline-none"
           >
+            <option value="">Select gender</option>
             <option>Male</option>
             <option>Female</option>
             <option>Other</option>
@@ -163,6 +171,7 @@ export function ProfilePersonalInfoScreen() {
             onChange={(e) => setCountry(e.target.value)}
             className="w-full bg-transparent text-[0.9375rem] text-ink outline-none"
           >
+            <option value="">Select country</option>
             <option>India</option>
             <option>United States</option>
             <option>United Kingdom</option>

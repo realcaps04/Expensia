@@ -1,9 +1,9 @@
 import {
   Bell,
   ChevronRight,
-  Crown,
   Headphones,
   HelpCircle,
+  LayoutGrid,
   Settings,
   Shield,
   SlidersHorizontal,
@@ -18,6 +18,7 @@ import {
 } from "../../components/profile/ProfileMenuRow";
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
+import { providerLabel } from "../../lib/profile-achievements";
 import { formatCurrency } from "../../lib/format";
 import { formatMemberSince } from "../../lib/profile-extras";
 
@@ -25,6 +26,7 @@ export function ProfileScreen() {
   const { user } = useAuth();
   const { stats, convexUser, isLoading } = useProfileStats();
   const name = profileDisplayName(user);
+  const savings = stats?.savings ?? 0;
 
   return (
     <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
@@ -42,14 +44,23 @@ export function ProfileScreen() {
 
         <section className="overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-brand via-teal-deep to-[#0f766e] p-5 text-white shadow-[0_16px_40px_rgba(13,148,136,0.28)]">
           <div className="flex items-start gap-4">
-            <ProfileAvatar name={name} picture={user?.picture} size="lg" showBadge />
+            <ProfileAvatar
+              name={name}
+              picture={user?.picture}
+              size="lg"
+              showBadge={user?.provider === "google"}
+            />
             <div className="min-w-0 flex-1 pt-1">
               <p className="truncate font-display text-[1.125rem] font-bold">{name}</p>
               <p className="mt-0.5 truncate text-[0.8125rem] text-white/80">{user?.email}</p>
-              <span className="mt-2 inline-flex items-center gap-1.5 rounded-pill bg-white/15 px-2.5 py-1 text-[0.6875rem] font-semibold backdrop-blur-sm">
-                <Crown className="h-3.5 w-3.5 text-amber-300" strokeWidth={2.5} />
-                Premium Member
+              <span className="mt-2 inline-flex items-center rounded-pill bg-white/15 px-2.5 py-1 text-[0.6875rem] font-semibold backdrop-blur-sm">
+                {providerLabel(user?.provider)}
               </span>
+              {convexUser ? (
+                <p className="mt-2 text-[0.75rem] text-white/70">
+                  Member since {formatMemberSince(convexUser.createdAt)}
+                </p>
+              ) : null}
             </div>
           </div>
         </section>
@@ -73,13 +84,17 @@ export function ProfileScreen() {
                 <p className="text-[0.9375rem] font-bold text-income">
                   {formatCurrency(stats?.totalIncome ?? 0)}
                 </p>
-                <p className="mt-1 text-[0.6875rem] font-medium text-ink-muted">Total Incomes</p>
+                <p className="mt-1 text-[0.6875rem] font-medium text-ink-muted">Total Income</p>
               </div>
               <div>
-                <p className="text-[0.9375rem] font-bold text-teal-deep">
-                  {formatCurrency(stats?.savings ?? 0)}
+                <p
+                  className={`text-[0.9375rem] font-bold ${
+                    savings >= 0 ? "text-teal-deep" : "text-expense"
+                  }`}
+                >
+                  {formatCurrency(savings, { signed: true })}
                 </p>
-                <p className="mt-1 text-[0.6875rem] font-medium text-ink-muted">Savings</p>
+                <p className="mt-1 text-[0.6875rem] font-medium text-ink-muted">Net Savings</p>
               </div>
             </div>
           )}
@@ -90,11 +105,15 @@ export function ProfileScreen() {
           className="flex items-center gap-3 rounded-[20px] bg-[#1e293b] p-4 text-white shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-transform active:scale-[0.99]"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
-            <Crown className="h-5 w-5 text-amber-300" strokeWidth={2} />
+            <LayoutGrid className="h-5 w-5 text-teal-light" strokeWidth={2} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-display text-[0.9375rem] font-semibold">Upgrade to Premium</p>
-            <p className="mt-0.5 text-[0.75rem] text-white/70">Unlock advanced insights & exports</p>
+            <p className="font-display text-[0.9375rem] font-semibold">Profile Overview</p>
+            <p className="mt-0.5 text-[0.75rem] text-white/70">
+              {isLoading
+                ? "Loading your stats…"
+                : `${stats?.transactionCount ?? 0} transactions · ${stats?.creditCount ?? 0} credit accounts`}
+            </p>
           </div>
           <span className="inline-flex items-center gap-0.5 text-[0.8125rem] font-semibold text-teal-light">
             View
@@ -117,12 +136,6 @@ export function ProfileScreen() {
           <ProfileMenuDivider />
           <ProfileMenuRow icon={Headphones} label="Contact Us" onClick={() => window.alert("Contact support at help@expensia.app")} />
         </ProfileMenuSection>
-
-        {convexUser ? (
-          <p className="px-1 text-center text-[0.75rem] text-ink-muted">
-            Member since {formatMemberSince(convexUser.createdAt)}
-          </p>
-        ) : null}
       </div>
     </div>
   );

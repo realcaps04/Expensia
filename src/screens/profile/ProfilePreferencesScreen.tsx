@@ -10,6 +10,7 @@ import { ProfileMenuDivider, ProfileMenuSection } from "../../components/profile
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { convexUserToProfile } from "../../lib/convex-mappers";
+import { formatLastSeen } from "../../lib/profile-achievements";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type Theme = Doc<"users">["settings"]["theme"];
@@ -178,7 +179,9 @@ export function ProfilePreferencesScreen() {
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-[0.9375rem] font-medium text-ink">Data Backup</span>
-            <span className="mt-0.5 block text-[0.75rem] text-ink-muted">Last backup: Today</span>
+            <span className="mt-0.5 block text-[0.75rem] text-ink-muted">
+              Last synced: {formatLastSeen(convexUser?.updatedAt)}
+            </span>
           </span>
         </button>
         <ProfileMenuDivider />

@@ -9,10 +9,8 @@ export type ProfileExtras = {
 };
 
 const DEFAULT_EXTRAS: ProfileExtras = {
-  gender: "Male",
-  country: "India",
-  biometricLogin: true,
-  twoFactorAuth: true,
+  biometricLogin: false,
+  twoFactorAuth: false,
 };
 
 export function loadProfileExtras(): ProfileExtras {

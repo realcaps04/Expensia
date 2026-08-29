@@ -107,18 +107,37 @@ export const getProfileStats = query({
     const activeCredits = credits.filter((row) => !row.isArchived);
     let totalIncome = 0;
     let totalExpenses = 0;
+    let monthIncome = 0;
+    let monthExpenses = 0;
+
+    const now = new Date();
+    const monthStart = startOfMonthMs(now);
+    const monthEnd = endOfMonthMs(now);
 
     for (const tx of transactions) {
       if (tx.type === "income") totalIncome += tx.amount;
       else totalExpenses += tx.amount;
+
+      if (tx.occurredAt >= monthStart && tx.occurredAt <= monthEnd) {
+        if (tx.type === "income") monthIncome += tx.amount;
+        else monthExpenses += tx.amount;
+      }
     }
+
+    const creditBalance = activeCredits.reduce((sum, row) => sum + row.balance, 0);
 
     return {
       totalIncome,
       totalExpenses,
       savings: totalIncome - totalExpenses,
+      monthIncome,
+      monthExpenses,
+      monthNet: monthIncome - monthExpenses,
       transactionCount: transactions.length,
-      accountCount: activeCredits.length + 1,
+      creditCount: activeCredits.length,
+      creditBalance,
+      incomeCount: transactions.filter((tx) => tx.type === "income").length,
+      expenseCount: transactions.filter((tx) => tx.type === "expense").length,
     };
   },
 });
