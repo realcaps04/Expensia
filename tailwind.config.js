@@ -55,10 +55,16 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-8px)" },
         },
+        "graph-pulse": {
+          "0%": { transform: "scale(0.45)", opacity: "0.55" },
+          "70%": { transform: "scale(2.4)", opacity: "0" },
+          "100%": { transform: "scale(2.4)", opacity: "0" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.7s ease-out both",
         float: "float 5s ease-in-out infinite",
+        "graph-pulse": "graph-pulse 1.7s ease-out infinite",
       },
     },
   },

@@ -1,9 +1,9 @@
-import { CreditCard, Landmark } from "lucide-react";
+import { ArrowDown, ArrowUp, CreditCard, Landmark, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { categoryColor, DonutChart } from "../components/charts/DonutChart";
-import { LineChart } from "../components/charts/LineChart";
+import { TrendAreaChart } from "../components/charts/TrendAreaChart";
 import { useAuth } from "../context/AuthProvider";
 import { categoryLabel, mapCreditRow } from "../lib/convex-mappers";
 import { formatCurrency } from "../lib/format";
@@ -27,19 +27,16 @@ function rangeForDays(days: number) {
   return { start: start.getTime(), end: end.getTime() };
 }
 
-function formatShortDate(dateKey: string) {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(
-    new Date(y, m - 1, d),
-  );
-}
-
 export function InsightsScreen() {
   const { user } = useAuth();
   const userId = getConvexUserId(user);
   const [timeframe, setTimeframe] = useState<Timeframe>("30D");
   const days = TIMEFRAMES.find((t) => t.id === timeframe)?.days ?? 30;
   const range = useMemo(() => rangeForDays(days), [days]);
+  const prevRange = useMemo(() => {
+    const duration = range.end - range.start;
+    return { start: range.start - duration - 1, end: range.start - 1 };
+  }, [range]);
 
   const byCategory = useQuery(
     api.finance.getSpendingByCategory,
@@ -49,6 +46,10 @@ export function InsightsScreen() {
     api.finance.getDailyExpenseTrend,
     userId ? { userId, ...range } : "skip",
   );
+  const prevDailyTrend = useQuery(
+    api.finance.getDailyExpenseTrend,
+    userId ? { userId, ...prevRange } : "skip",
+  );
   const creditSummary = useQuery(api.credits.getSummary, userId ? { userId } : "skip");
   const creditAccounts = useQuery(api.credits.list, userId ? { userId } : "skip");
 
@@ -56,6 +57,7 @@ export function InsightsScreen() {
     userId !== null &&
     (byCategory === undefined ||
       dailyTrend === undefined ||
+      prevDailyTrend === undefined ||
       creditSummary === undefined ||
       creditAccounts === undefined);
 
@@ -87,8 +89,21 @@ export function InsightsScreen() {
 
   const donutSegments = [...expenseSegments, ...creditSegment];
 
-  const trendPoints = (dailyTrend ?? []).map((d) => d.amount);
-  const trendLabels = (dailyTrend ?? []).map((d) => formatShortDate(d.date));
+  const trendPoints = (dailyTrend ?? []).map((d) => ({ date: d.date, value: d.amount }));
+  const prevTotal = (prevDailyTrend ?? []).reduce((sum, row) => sum + row.amount, 0);
+  const dailyAverage = days > 0 ? Math.round(totalSpent / days) : 0;
+  const vsPriorPct =
+    prevTotal > 0 ? ((totalSpent - prevTotal) / prevTotal) * 100 : totalSpent > 0 ? 100 : 0;
+  const spendingUp = vsPriorPct > 0.05;
+  const spendingDown = vsPriorPct < -0.05;
+  const vsPriorLabel =
+    timeframe === "7D"
+      ? "vs last week"
+      : timeframe === "30D"
+        ? "vs last month"
+        : timeframe === "1Y"
+          ? "vs last year"
+          : "vs prior period";
 
   return (
     <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
@@ -214,12 +229,44 @@ export function InsightsScreen() {
             </section>
 
             <section className="rounded-card bg-white p-5 shadow-soft">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="font-display text-[1rem] font-semibold text-ink">Spending Trend</h2>
-                <span className="text-[0.75rem] font-medium text-ink-muted">{timeframe}</span>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.8125rem] font-medium text-ink-muted">Total Spending</p>
+                  <p className="mt-1 font-display text-[1.5rem] font-bold tracking-tight text-ink">
+                    {formatCurrency(totalSpent)}
+                  </p>
+                  {prevTotal > 0 || totalSpent > 0 ? (
+                    <p
+                      className={`mt-1 inline-flex items-center gap-1 text-[0.75rem] font-semibold ${
+                        spendingUp ? "text-expense" : spendingDown ? "text-income" : "text-ink-muted"
+                      }`}
+                    >
+                      {spendingUp ? (
+                        <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      ) : spendingDown ? (
+                        <ArrowDown className="h-3.5 w-3.5" strokeWidth={2.5} />
+                      ) : null}
+                      {Math.abs(vsPriorPct).toFixed(1)}% {vsPriorLabel}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="shrink-0 rounded-[16px] bg-teal-brand/10 px-3 py-2.5">
+                  <div className="flex items-center gap-1.5 text-[0.6875rem] font-medium text-teal-deep">
+                    <Wallet className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Daily Average
+                  </div>
+                  <p className="mt-1 text-right font-display text-[0.9375rem] font-bold text-ink">
+                    {formatCurrency(dailyAverage)}
+                  </p>
+                </div>
               </div>
               <div className="mt-5">
-                <LineChart points={trendPoints} labels={trendLabels} />
+                <TrendAreaChart
+                  points={trendPoints}
+                  invertTone
+                  expenseLed={spendingUp}
+                  height={196}
+                />
               </div>
             </section>
           </>

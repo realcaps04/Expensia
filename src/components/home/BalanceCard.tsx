@@ -77,9 +77,16 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
   const isLoading = userId !== null && periodData === undefined;
 
   const sparkline = (() => {
-    const values = periodData?.trend.map((point) => point.balance) ?? [];
-    if (values.length >= 2) return values;
-    if (values.length === 1) return [0, values[0]];
+    const rows = periodData?.trend ?? [];
+    if (rows.length >= 2) {
+      return rows.map((point) => ({ date: point.date, value: point.balance }));
+    }
+    if (rows.length === 1) {
+      return [
+        { date: rows[0].date, value: 0 },
+        { date: rows[0].date, value: rows[0].balance },
+      ];
+    }
     return [];
   })();
 
@@ -177,7 +184,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
       </div>
 
       {showSparkline ? (
-        <div className="mt-4 -mx-1">
+        <div className="mt-4">
           <BalanceTrendChart points={sparkline} expenseLed={expenses > income} />
         </div>
       ) : null}
