@@ -1,16 +1,19 @@
 export function formatCurrency(amount: number, options?: { signed?: boolean; hide?: boolean }) {
   if (options?.hide) return "••••••";
 
+  // No spaces between sign, rupee symbol, and digits — they wrap as one unit.
   const formatted = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.abs(amount));
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(Math.abs(amount))
+    .replace(/[\s\u00A0\u202F\u2007\u2009\u200A]/g, "");
 
   if (!options?.signed) return formatted;
-  if (amount > 0) return `+ ${formatted}`;
-  if (amount < 0) return `- ${formatted}`;
+  if (amount > 0) return `+${formatted}`;
+  if (amount < 0) return `-${formatted}`;
   return formatted;
 }
 

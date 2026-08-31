@@ -16,8 +16,12 @@ function MetricBar({
   pct: number;
 }) {
   return (
-    <div>
-      <p className={`text-[0.9375rem] font-semibold ${textClass}`}>{value}</p>
+    <div className="min-w-0">
+      <p className={`text-[0.8125rem] font-semibold ${textClass}`}>
+        <span className="inline-flex max-w-full items-baseline overflow-hidden whitespace-nowrap">
+          {value}
+        </span>
+      </p>
       <p className="mt-0.5 text-[0.6875rem] font-medium text-ink-muted">{label}</p>
       <div className="mt-2 h-1.5 overflow-hidden rounded-pill bg-slate-100">
         <div className={`h-full rounded-pill ${fillClass}`} style={{ width: `${pct}%` }} />
@@ -43,7 +47,7 @@ export function TodayOverview({ summary }: TodayOverviewProps) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-4">
+      <div className="mt-5 grid grid-cols-3 gap-3">
         <MetricBar
           label="Income"
           value={formatCurrency(summary.todayIncome, { signed: true })}

@@ -8,7 +8,7 @@ export function useFinanceDashboard() {
   const userId = getConvexUserId(user);
 
   const dashboard = useQuery(api.finance.getDashboard, userId ? { userId } : "skip");
-  const transactions = useQuery(api.transactions.listRecent, userId ? { userId, limit: 10 } : "skip");
+  const transactions = useQuery(api.transactions.listRecent, userId ? { userId, limit: 7 } : "skip");
 
   return {
     userId,

@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { ChevronDown, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { BalanceTrendChart } from "../charts/BalanceTrendChart";
@@ -17,6 +17,45 @@ import { BalancePeriodMenu } from "./BalancePeriodMenu";
 type BalanceCardProps = {
   userId?: Id<"users"> | null;
 };
+
+function PeriodStat({
+  label,
+  amount,
+  hide,
+  valueClass,
+  iconWrapClass,
+  icon,
+}: {
+  label: string;
+  amount: number;
+  hide?: boolean;
+  valueClass: string;
+  iconWrapClass: string;
+  icon: ReactNode;
+}) {
+  const sign = amount > 0 ? "+" : amount < 0 ? "−" : "";
+
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      <div
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconWrapClass}`}
+      >
+        {icon}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+        <p className="text-[0.75rem] text-ink-muted">{label}</p>
+        {hide ? (
+          <p className={`text-[0.875rem] font-semibold ${valueClass}`}>••••••</p>
+        ) : (
+          <p className={`inline-flex items-baseline whitespace-nowrap text-[0.875rem] font-semibold ${valueClass}`}>
+            {sign ? <span>{sign}</span> : null}
+            <span>{formatCurrency(Math.abs(amount))}</span>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
   const { user } = useAuth();
@@ -98,7 +137,14 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-ink" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: hidden })}
+            {hidden ? (
+              "••••••"
+            ) : (
+              <span className="inline-flex items-baseline whitespace-nowrap">
+                {net > 0 ? <span>+</span> : net < 0 ? <span>−</span> : null}
+                <span>{formatCurrency(Math.abs(net))}</span>
+              </span>
+            )}
           </p>
         )}
 
@@ -119,7 +165,8 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
               net >= 0 ? "text-income" : "text-expense"
             }`}
           >
-            {formatCurrency(net, { signed: true, hide: hidden })} net {range.creditLabel}
+            {formatCurrency(net, { signed: true, hide: hidden })}
+            <span className="font-medium"> net {range.creditLabel}</span>
           </p>
         ) : (
           <p className="mt-1 text-[0.8125rem] text-ink-muted">
@@ -131,36 +178,27 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
 
       {showSparkline ? (
         <div className="mt-4 -mx-1">
-          <BalanceTrendChart
-            points={sparkline}
-            stroke={net >= 0 ? "#14B8A6" : "#F87171"}
-          />
+          <BalanceTrendChart points={sparkline} expenseLed={expenses > income} />
         </div>
       ) : null}
 
-      <div className="mt-5 grid grid-cols-2 gap-4 border-t border-surface-border pt-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-income">
-            <TrendingDown className="h-4 w-4 rotate-180" strokeWidth={2.5} />
-          </div>
-          <div>
-            <p className="text-[0.75rem] text-ink-muted">Income</p>
-            <p className="text-[0.9375rem] font-semibold text-income">
-              {formatCurrency(income, { signed: true, hide: hidden })}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-expense">
-            <TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />
-          </div>
-          <div>
-            <p className="text-[0.75rem] text-ink-muted">Expenses</p>
-            <p className="text-[0.9375rem] font-semibold text-expense">
-              {formatCurrency(-expenses, { signed: true, hide: hidden })}
-            </p>
-          </div>
-        </div>
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-surface-border pt-4">
+        <PeriodStat
+          label="Income"
+          amount={income}
+          hide={hidden}
+          valueClass="text-income"
+          iconWrapClass="bg-emerald-50 text-income"
+          icon={<TrendingDown className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
+        />
+        <PeriodStat
+          label="Expenses"
+          amount={-expenses}
+          hide={hidden}
+          valueClass="text-expense"
+          iconWrapClass="bg-red-50 text-expense"
+          icon={<TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
+        />
       </div>
     </section>
   );

@@ -7,7 +7,11 @@ type RecentTransactionsProps = {
   onEditTransaction: (tx: TransactionRowData) => void;
 };
 
+const HOME_TRANSACTION_ROWS = 7;
+
 export function RecentTransactions({ transactions, onEditTransaction }: RecentTransactionsProps) {
+  const visible = transactions.slice(0, HOME_TRANSACTION_ROWS);
+
   return (
     <section>
       <div className="mb-1 flex items-center justify-between gap-3 px-1">
@@ -21,7 +25,7 @@ export function RecentTransactions({ transactions, onEditTransaction }: RecentTr
       </div>
 
       <div className="rounded-card bg-white px-3 py-1 shadow-soft">
-        {transactions.length === 0 ? (
+        {visible.length === 0 ? (
           <div className="px-2 py-8 text-center">
             <p className="text-sm font-medium text-ink">Nothing here yet</p>
             <p className="mt-1 text-[0.8125rem] text-ink-secondary">
@@ -29,7 +33,7 @@ export function RecentTransactions({ transactions, onEditTransaction }: RecentTr
             </p>
           </div>
         ) : (
-          transactions.map((tx) => (
+          visible.map((tx) => (
             <TransactionListItem key={tx.id} tx={tx} onEdit={onEditTransaction} />
           ))
         )}
