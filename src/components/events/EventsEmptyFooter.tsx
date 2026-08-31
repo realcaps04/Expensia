@@ -36,7 +36,7 @@ export function EventsEmptyFooter({ onCreate, variant = "end-of-list" }: EventsE
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex w-full max-w-[280px] items-center justify-center gap-2 rounded-[16px] border-2 border-teal-brand bg-white py-3 text-[0.9375rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/5 active:scale-[0.99]"
+        className="mt-5 inline-flex w-full max-w-[280px] items-center justify-center gap-2 rounded-[16px] border-2 border-teal-brand bg-white py-3 text-[0.9375rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/5 active:scale-[0.99] dark:bg-transparent dark:hover:bg-teal-brand/10"
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
         Create New Event

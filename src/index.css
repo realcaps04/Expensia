@@ -112,6 +112,23 @@ a:focus-visible {
   background-color: #475569 !important;
 }
 
+.dark .bg-teal-50,
+.dark .bg-emerald-50 {
+  background-color: rgb(20 184 166 / 0.16) !important;
+}
+
+.dark .bg-rose-50 {
+  background-color: rgb(251 113 113 / 0.16) !important;
+}
+
+.dark .bg-sky-50 {
+  background-color: rgb(56 189 248 / 0.16) !important;
+}
+
+.dark .bg-\[\#FAFBFC\] {
+  background-color: var(--bg-muted) !important;
+}
+
 .dark .text-ink {
   color: var(--text-primary) !important;
 }

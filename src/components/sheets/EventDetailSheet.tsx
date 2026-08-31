@@ -102,7 +102,7 @@ export function EventDetailSheet({
           </div>
           <div>
             <p className="text-[0.6875rem] font-medium text-ink-muted">Credit</p>
-            <p className="mt-0.5 text-[0.875rem] font-semibold text-sky-600">
+            <p className="mt-0.5 text-[0.875rem] font-semibold text-sky-600 dark:text-sky-300">
               {formatCurrency(-event.creditTotal, { signed: true })}
             </p>
           </div>
@@ -127,7 +127,7 @@ export function EventDetailSheet({
             label="Add Income"
             description="Record money coming in"
             icon={Wallet}
-            iconBg="bg-emerald-50"
+            iconBg="bg-emerald-50 dark:bg-emerald-500/15"
             iconColor="text-income"
             onClick={onAddIncome}
           />
@@ -135,7 +135,7 @@ export function EventDetailSheet({
             label="Add Expense"
             description="Record money going out"
             icon={Receipt}
-            iconBg="bg-rose-50"
+            iconBg="bg-rose-50 dark:bg-rose-500/15"
             iconColor="text-expense"
             onClick={onAddExpense}
           />
@@ -143,8 +143,8 @@ export function EventDetailSheet({
             label="Add Credit"
             description="Link a loan or card"
             icon={CreditCard}
-            iconBg="bg-sky-50"
-            iconColor="text-sky-600"
+            iconBg="bg-sky-50 dark:bg-sky-500/15"
+            iconColor="text-sky-500 dark:text-sky-300"
             onClick={onAddCredit}
           />
         </div>

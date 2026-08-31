@@ -105,6 +105,7 @@ export function TrendAreaChart({
 }: TrendAreaChartProps) {
   const reactId = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const width = 360;
@@ -139,22 +140,33 @@ export function TrendAreaChart({
   const trendingDown = last.value < first.value;
   const fillColor =
     expenseLed || (invertTone ? !trendingDown : trendingDown) ? EXPENSE_COLOR : INCOME_COLOR;
-  const lastColor = toneForDelta(
-    points[Math.max(0, lastIndex - 1)]?.value ?? last.value,
-    last.value,
-    invertTone,
-    fillColor,
-  );
 
+  const colorAtIndex = (index: number) => {
+    if (points.length < 2) return fillColor;
+    if (index <= 0) return toneForDelta(points[0].value, points[1].value, invertTone, fillColor);
+    return toneForDelta(points[index - 1].value, points[index].value, invertTone, fillColor);
+  };
+
+  const lastColor = colorAtIndex(lastIndex);
   const linePath = coords.map((point, index) => `${index === 0 ? "M" : "L"} ${n(point.x)} ${n(point.y)}`).join(" ");
   const areaPath = `${linePath} L ${n(last.x)} ${n(padT + innerH)} L ${n(first.x)} ${n(padT + innerH)} Z`;
   const gradientId = `trendFill-${reactId}`;
   const active = activeIndex !== null ? coords[activeIndex] : null;
+  const activeColor = activeIndex !== null ? colorAtIndex(activeIndex) : fillColor;
 
   const moveTo = (clientX: number) => {
-    const rect = wrapRef.current?.getBoundingClientRect();
-    if (!rect || coords.length === 0) return;
-    const x = ((clientX - rect.left) / rect.width) * width;
+    if (coords.length === 0) return;
+    const svg = svgRef.current;
+    let x = 0;
+    const ctm = svg?.getScreenCTM();
+    if (svg && ctm) {
+      const pt = new DOMPoint(clientX, 0);
+      x = pt.matrixTransform(ctm.inverse()).x;
+    } else {
+      const rect = (svg ?? wrapRef.current)?.getBoundingClientRect();
+      if (!rect) return;
+      x = ((clientX - rect.left) / rect.width) * width;
+    }
     let best = 0;
     let bestDist = Infinity;
     for (let i = 0; i < coords.length; i++) {
@@ -178,16 +190,19 @@ export function TrendAreaChart({
     );
   }
 
+  const amount = active ? Math.round(active.value) : 0;
+
   return (
     <div
       ref={wrapRef}
-      className={`relative ${className}`}
+      className={`relative overflow-visible ${className}`}
       style={{ aspectRatio: `${width} / ${height}` }}
       onPointerMove={(event) => moveTo(event.clientX)}
       onPointerDown={(event) => moveTo(event.clientX)}
       onPointerLeave={() => setActiveIndex(null)}
     >
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
@@ -276,7 +291,7 @@ export function TrendAreaChart({
             x2={active.x}
             y1={padT}
             y2={padT + innerH}
-            stroke={lastColor}
+            stroke={activeColor}
             strokeWidth="1.25"
             strokeDasharray="3.5 3.5"
           />
@@ -300,26 +315,30 @@ export function TrendAreaChart({
         {active && activeIndex !== lastIndex ? (
           <>
             <circle cx={active.x} cy={active.y} r="5.5" fill="#FFFFFF" />
-            <circle cx={active.x} cy={active.y} r="3.6" fill={fillColor} />
+            <circle cx={active.x} cy={active.y} r="3.6" fill={activeColor} />
           </>
         ) : null}
       </svg>
 
       {active ? (
         <div
-          className="pointer-events-none absolute z-10 -translate-y-full rounded-[12px] bg-white px-3 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.12)]"
+          className="pointer-events-none absolute z-20 w-max rounded-[12px] bg-white px-3 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.12)] dark:bg-slate-800 dark:shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
           style={{
             left: `${(active.x / width) * 100}%`,
             top: `${(active.y / height) * 100}%`,
             transform:
-              active.x > width * 0.62
-                ? "translate(-100%, calc(-100% - 10px))"
-                : "translate(8px, calc(-100% - 10px))",
+              active.x > width * 0.58
+                ? "translate(-100%, calc(-100% - 12px))"
+                : "translate(10px, calc(-100% - 12px))",
           }}
         >
-          <p className="text-[0.6875rem] font-medium text-ink-muted">{formatTooltipDate(active.date)}</p>
-          <p className="mt-0.5 text-[0.875rem] font-bold text-ink">
-            {formatCurrency(active.value, signed ? { signed: true } : undefined)}
+          <p className="whitespace-nowrap text-[0.6875rem] font-medium text-ink-muted">
+            {formatTooltipDate(active.date).replace(/ /g, "\u00A0")}
+          </p>
+          <p className="mt-0.5 flex items-baseline whitespace-nowrap text-[0.9375rem] font-bold tabular-nums text-ink">
+            {signed && amount > 0 ? <span>+</span> : null}
+            {signed && amount < 0 ? <span>−</span> : null}
+            <span>{formatCurrency(Math.abs(amount))}</span>
           </p>
         </div>
       ) : null}

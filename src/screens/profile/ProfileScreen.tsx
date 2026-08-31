@@ -19,6 +19,7 @@ import {
   ProfileMenuSection,
 } from "../../components/profile/ProfileMenuRow";
 import { ConfirmSheet } from "../../components/sheets/ConfirmSheet";
+import { ContactSupportSheet } from "../../components/sheets/ContactSupportSheet";
 import { useAuth } from "../../context/AuthProvider";
 import { useProfileStats } from "../../hooks/useProfileStats";
 import { providerLabel } from "../../lib/profile-achievements";
@@ -30,6 +31,7 @@ export function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { stats, convexUser, isLoading } = useProfileStats();
   const [signOutOpen, setSignOutOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const name = profileDisplayName(user);
   const savings = stats?.savings ?? 0;
 
@@ -140,7 +142,7 @@ export function ProfileScreen() {
         <ProfileMenuSection title="Support">
           <ProfileMenuRow icon={HelpCircle} label="Help Center" onClick={() => window.alert("Help center coming soon.")} />
           <ProfileMenuDivider />
-          <ProfileMenuRow icon={Headphones} label="Contact Us" onClick={() => window.alert("Contact support at help@expensia.app")} />
+          <ProfileMenuRow icon={Headphones} label="Contact Us" onClick={() => setContactOpen(true)} />
         </ProfileMenuSection>
 
         <button
@@ -154,6 +156,7 @@ export function ProfileScreen() {
       </div>
     </div>
 
+      <ContactSupportSheet open={contactOpen} onClose={() => setContactOpen(false)} />
       <ConfirmSheet
         open={signOutOpen}
         onClose={() => setSignOutOpen(false)}
