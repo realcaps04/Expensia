@@ -64,7 +64,7 @@ export function TodayOverview({ summary }: TodayOverviewProps) {
         />
         <MetricBar
           label="Credit"
-          value={formatCurrency(summary.todayCredit)}
+          value={formatCurrency(-summary.todayCredit, { signed: true })}
           fillClass="bg-sky-500"
           textClass="text-sky-600"
           pct={(summary.todayCredit / max) * 100}

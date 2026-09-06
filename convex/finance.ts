@@ -31,6 +31,20 @@ function sumByType(transactions: { type: "income" | "expense"; amount: number }[
   return { income, expenses, net: income - expenses };
 }
 
+function sumCreditsInRange(
+  credits: { isArchived: boolean; startDate?: number; createdAt: number; balance: number }[],
+  start: number,
+  end: number,
+) {
+  return credits
+    .filter((credit) => {
+      if (credit.isArchived) return false;
+      const creditAt = credit.startDate ?? credit.createdAt;
+      return creditAt >= start && creditAt <= end;
+    })
+    .reduce((sum, credit) => sum + credit.balance, 0);
+}
+
 const MAX_TREND_POINTS = 90;
 const MS_PER_DAY = 86_400_000;
 
@@ -110,9 +124,7 @@ export const getDashboard = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const todayCredit = credits
-      .filter((credit) => !credit.isArchived)
-      .reduce((sum, credit) => sum + credit.balance, 0);
+    const todayCredit = sumCreditsInRange(credits, dayStart, dayEnd);
 
     return {
       totalBalance: lifetime.net,
@@ -251,13 +263,7 @@ export const getPeriodDashboard = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const creditTotal = credits
-      .filter((credit) => {
-        if (credit.isArchived) return false;
-        const creditAt = credit.startDate ?? credit.createdAt;
-        return inRange(creditAt, args.start, args.end);
-      })
-      .reduce((sum, credit) => sum + credit.balance, 0);
+    const creditTotal = sumCreditsInRange(credits, args.start, args.end);
 
     return {
       income: stats.income,
