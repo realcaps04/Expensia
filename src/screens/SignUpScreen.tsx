@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
-import { AuthBackground } from "../components/brand/AuthBackground";
+import { AuthPageShell } from "../components/auth/AuthFlowLayout";
 import { BrandLockup } from "../components/brand/ExpensiaLogo";
 import { TextField } from "../components/ui/TextField";
 import { useAuth } from "../context/AuthProvider";
@@ -48,11 +48,8 @@ export function SignUpScreen() {
   };
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-surface">
-      <AuthBackground />
-
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
-        <motion.div
+    <AuthPageShell>
+      <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -78,6 +75,7 @@ export function SignUpScreen() {
                 placeholder="First name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
+                required
                 icon={<User className="h-[18px] w-[18px]" strokeWidth={1.75} />}
               />
               <TextField
@@ -87,6 +85,7 @@ export function SignUpScreen() {
                 placeholder="Last name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
+                required
               />
             </div>
 
@@ -98,6 +97,7 @@ export function SignUpScreen() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               icon={<Mail className="h-[18px] w-[18px]" strokeWidth={1.75} />}
             />
 
@@ -109,6 +109,8 @@ export function SignUpScreen() {
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
               icon={<Lock className="h-[18px] w-[18px]" strokeWidth={1.75} />}
               trailing={
                 <button
@@ -134,6 +136,8 @@ export function SignUpScreen() {
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
               icon={<Lock className="h-[18px] w-[18px]" strokeWidth={1.75} />}
               trailing={
                 <button
@@ -192,7 +196,6 @@ export function SignUpScreen() {
             </Link>
           </p>
         </motion.div>
-      </div>
-    </div>
+    </AuthPageShell>
   );
 }

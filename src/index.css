@@ -127,6 +127,10 @@ a:focus-visible {
   background-color: rgb(56 189 248 / 0.16) !important;
 }
 
+.dark .bg-violet-50 {
+  background-color: rgb(139 92 246 / 0.18) !important;
+}
+
 .dark .bg-amber-50 {
   background-color: rgb(166 124 82 / 0.16) !important;
 }
@@ -143,8 +147,20 @@ a:focus-visible {
   color: var(--text-secondary) !important;
 }
 
-.dark .text-ink-muted {
-  color: var(--text-muted) !important;
+.dark .text-orange-600 {
+  color: #fb923c !important;
+}
+
+.dark .text-emerald-700 {
+  color: #6ee7b7 !important;
+}
+
+.dark .text-amber-800 {
+  color: #fbbf24 !important;
+}
+
+.dark .text-violet-600 {
+  color: #a78bfa !important;
 }
 
 .dark .border-surface-border {
@@ -165,6 +181,12 @@ a:focus-visible {
   background-color: var(--bg-card);
   color: var(--text-primary);
   border-color: var(--border-subtle);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
 }
 
 .dark select option {

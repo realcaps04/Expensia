@@ -9,24 +9,42 @@ type AuthFlowLayoutProps = {
   children: ReactNode;
 };
 
-export function AuthFlowLayout({ backTo = "/login", children }: AuthFlowLayoutProps) {
+export function AuthPageShell({
+  children,
+  topPaddingClass = "pt-[max(2.5rem,env(safe-area-inset-top))]",
+}: {
+  children: ReactNode;
+  topPaddingClass?: string;
+}) {
   return (
     <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-surface">
-      <AuthBackground />
+      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+        <AuthBackground />
+      </div>
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))]">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto w-full max-w-[360px]"
-        >
-          <AuthBackButton to={backTo} />
-          <BrandLockup markSize={76} compact showTagline />
-          {children}
-        </motion.div>
+      <div
+        className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-[max(1.75rem,env(safe-area-inset-bottom))] ${topPaddingClass}`}
+      >
+        {children}
       </div>
     </div>
+  );
+}
+
+export function AuthFlowLayout({ backTo = "/login", children }: AuthFlowLayoutProps) {
+  return (
+    <AuthPageShell topPaddingClass="pt-[max(2rem,env(safe-area-inset-top))]">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto w-full max-w-[360px]"
+      >
+        <AuthBackButton to={backTo} />
+        <BrandLockup markSize={76} compact showTagline />
+        {children}
+      </motion.div>
+    </AuthPageShell>
   );
 }
 

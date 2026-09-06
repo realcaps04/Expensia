@@ -23,8 +23,9 @@ function WelcomeBackground() {
         </linearGradient>
       </defs>
 
-      <rect width="390" height="844" fill="#FAFAF8" />
+      <rect width="390" height="844" fill="var(--bg-primary)" />
 
+      <g className="dark:opacity-30">
       {/* top-left soft wash */}
       <ellipse cx="60" cy="80" rx="140" ry="120" fill="url(#waveTop)" />
 
@@ -62,6 +63,7 @@ function WelcomeBackground() {
         strokeOpacity="0.2"
         fill="none"
       />
+      </g>
     </svg>
   );
 }

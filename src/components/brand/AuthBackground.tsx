@@ -19,39 +19,41 @@ function AuthBackground() {
         </linearGradient>
       </defs>
 
-      <rect width="390" height="844" fill="#FAFAF8" />
+      <rect width="390" height="844" fill="var(--bg-primary)" />
 
-      {/* top-right wave */}
-      <path
-        d="M390 0 C320 40, 280 100, 260 180 S220 280, 390 320 L390 0 Z"
-        fill="url(#authWaveTR)"
-      />
-      <path
-        d="M390 20 C330 60, 290 120, 275 200 S240 300, 420 340"
-        stroke="#CBD5E1"
-        strokeWidth="1"
-        strokeOpacity="0.35"
-        fill="none"
-      />
+      <g className="dark:opacity-30">
+        {/* top-right wave */}
+        <path
+          d="M390 0 C320 40, 280 100, 260 180 S220 280, 390 320 L390 0 Z"
+          fill="url(#authWaveTR)"
+        />
+        <path
+          d="M390 20 C330 60, 290 120, 275 200 S240 300, 420 340"
+          stroke="#CBD5E1"
+          strokeWidth="1"
+          strokeOpacity="0.35"
+          fill="none"
+        />
 
-      {/* bottom-left wave */}
-      <path
-        d="M0 844 C80 780, 120 720, 140 640 S180 540, 0 500 L0 844 Z"
-        fill="url(#authWaveBL)"
-      />
-      <path
-        d="M0 820 C70 760, 110 700, 130 620 S170 520, -20 480"
-        stroke="#A5B4FC"
-        strokeWidth="1"
-        strokeOpacity="0.25"
-        fill="none"
-      />
+        {/* bottom-left wave */}
+        <path
+          d="M0 844 C80 780, 120 720, 140 640 S180 540, 0 500 L0 844 Z"
+          fill="url(#authWaveBL)"
+        />
+        <path
+          d="M0 820 C70 760, 110 700, 130 620 S170 520, -20 480"
+          stroke="#A5B4FC"
+          strokeWidth="1"
+          strokeOpacity="0.25"
+          fill="none"
+        />
 
-      {/* soft circles */}
-      <circle cx="320" cy="120" r="48" fill="#E0E7FF" fillOpacity="0.35" />
-      <circle cx="60" cy="680" r="64" fill="#CCFBF1" fillOpacity="0.3" />
-      <circle cx="340" cy="760" r="32" fill="#E0E7FF" fillOpacity="0.25" />
-      <circle cx="48" cy="200" r="24" fill="#F1F5F9" fillOpacity="0.8" />
+        {/* soft circles */}
+        <circle cx="320" cy="120" r="48" fill="#E0E7FF" fillOpacity="0.35" />
+        <circle cx="60" cy="680" r="64" fill="#CCFBF1" fillOpacity="0.3" />
+        <circle cx="340" cy="760" r="32" fill="#E0E7FF" fillOpacity="0.25" />
+        <circle cx="48" cy="200" r="24" fill="#F1F5F9" fillOpacity="0.8" />
+      </g>
     </svg>
   );
 }
