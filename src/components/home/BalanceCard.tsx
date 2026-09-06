@@ -36,15 +36,15 @@ function PeriodStat({
   const sign = amount > 0 ? "+" : amount < 0 ? "−" : "";
 
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-        <p className="text-[0.75rem] text-ink-muted">{label}</p>
+    <div className="flex h-10 min-w-0 items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.75rem] leading-4 text-ink-muted">{label}</p>
         {hide ? (
-          <p className={`text-[0.875rem] font-semibold ${valueClass}`}>••••••</p>
+          <p className={`mt-0.5 truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>••••••</p>
         ) : (
-          <p className={`inline-flex items-baseline whitespace-nowrap text-[0.875rem] font-semibold ${valueClass}`}>
-            {sign ? <span>{sign}</span> : null}
-            <span>{formatCurrency(Math.abs(amount))}</span>
+          <p className={`mt-0.5 truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>
+            {sign}
+            {formatCurrency(Math.abs(amount))}
           </p>
         )}
       </div>
@@ -189,7 +189,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         </div>
       ) : null}
 
-      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-surface-border pt-4">
+      <div className="mt-5 grid grid-cols-2 items-center gap-3 border-t border-surface-border pt-4">
         <PeriodStat
           label="Income"
           amount={income}

@@ -278,7 +278,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
                   mode === id ? "bg-teal-brand text-white shadow-sm" : "text-ink-secondary"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4 fill-none" />
                 {label}
               </button>
             ))}

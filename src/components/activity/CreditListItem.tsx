@@ -61,7 +61,7 @@ export function CreditListItem({
           <p className="mt-0.5 text-[0.6875rem] text-ink-muted">owed</p>
         </div>
         <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-transparent text-credit">
-          <Icon className="h-5 w-5" strokeWidth={2} />
+          <Icon className="h-5 w-5 fill-none" strokeWidth={2} />
         </div>
       </button>
 

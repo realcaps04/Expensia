@@ -81,7 +81,7 @@ function ActionButton({
     expense:
       "bg-orange-50 text-expense hover:bg-orange-100/80 dark:bg-orange-500/15 dark:text-orange-300 dark:hover:bg-orange-500/25",
     credit:
-      "bg-amber-50 text-credit hover:bg-amber-100/80 dark:bg-credit/15 dark:text-credit-light dark:hover:bg-credit/25",
+      "bg-credit/15 text-credit hover:bg-credit/25 dark:bg-credit/15 dark:text-credit-light dark:hover:bg-credit/25",
   } as const;
 
   return (
@@ -90,7 +90,7 @@ function ActionButton({
       onClick={onClick}
       className={`flex flex-col items-center justify-center gap-1 rounded-[14px] py-2.5 text-[0.6875rem] font-semibold transition-colors ${tones[tone]}`}
     >
-      <Icon className="h-4 w-4" strokeWidth={2.25} />
+      <Icon className="h-4 w-4 fill-none" strokeWidth={2.25} />
       {label}
     </button>
   );

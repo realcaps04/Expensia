@@ -183,3 +183,8 @@ a:focus-visible {
 .dark .active\:bg-slate-50:active {
   background-color: var(--bg-muted) !important;
 }
+
+.lucide-credit-card,
+.lucide-credit-card * {
+  fill: none !important;
+}

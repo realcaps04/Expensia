@@ -28,8 +28,8 @@ export default {
         income: "#0D9488",
         expense: "#E87820",
         credit: {
-          DEFAULT: "#A67C52",
-          light: "#D4A574",
+          DEFAULT: "#8B1E3F",
+          light: "#D47892",
         },
       },
       fontFamily: {

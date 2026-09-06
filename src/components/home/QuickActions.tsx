@@ -30,7 +30,7 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
               className="flex flex-col items-center gap-2 rounded-[18px] bg-white px-1.5 py-3.5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-transform active:scale-[0.98]"
             >
               <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${bg} ${color}`}>
-                <Icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={2} />
+                <Icon className="h-[1.125rem] w-[1.125rem] fill-none" strokeWidth={2} />
               </div>
               <span className="w-full px-0.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink">
                 {shortLabel}
@@ -47,7 +47,7 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
             className="flex flex-col items-center gap-2 rounded-[18px] bg-white px-1.5 py-3.5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-transform active:scale-[0.98]"
           >
             <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${bg} ${color}`}>
-              <Icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={2} />
+              <Icon className="h-[1.125rem] w-[1.125rem] fill-none" strokeWidth={2} />
             </div>
             <span className="w-full px-0.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink">
               {shortLabel}

@@ -53,7 +53,7 @@ function AddEntryButton({
       <div
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${iconBg} ${iconColor}`}
       >
-        <Icon className="h-5 w-5" strokeWidth={2} />
+        <Icon className="h-5 w-5 fill-none" strokeWidth={2} />
       </div>
     </button>
   );

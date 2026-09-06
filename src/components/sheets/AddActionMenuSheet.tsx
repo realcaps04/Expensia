@@ -40,7 +40,7 @@ export function AddActionMenuSheet({ open, onClose, onSelect }: AddActionMenuShe
               <div
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${item.bg} ${item.color}`}
               >
-                <Icon className="h-5 w-5" strokeWidth={2} />
+                <Icon className="h-5 w-5 fill-none" strokeWidth={2} />
               </div>
               <ChevronRight className="h-5 w-5 shrink-0 text-ink-muted" strokeWidth={2} />
             </button>
