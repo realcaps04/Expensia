@@ -188,3 +188,13 @@ a:focus-visible {
 .lucide-credit-card * {
   fill: none !important;
 }
+
+.chart-grid-line {
+  stroke: #94a3b8;
+  stroke-opacity: 0.22;
+}
+
+.dark .chart-grid-line {
+  stroke: #ffffff;
+  stroke-opacity: 0.04;
+}

@@ -226,7 +226,7 @@ export function TrendAreaChart({
                 x2={width - padR}
                 y1={y}
                 y2={y}
-                className="stroke-slate-200/70 dark:stroke-white/12"
+                className="chart-grid-line"
                 strokeWidth="1"
               />
               <text

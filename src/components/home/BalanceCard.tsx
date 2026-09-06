@@ -36,22 +36,20 @@ function PeriodStat({
   const sign = amount > 0 ? "+" : amount < 0 ? "−" : "";
 
   return (
-    <div className="flex h-10 min-w-0 items-center gap-2">
-      <div className="min-w-0 flex-1">
-        <p className="text-[0.75rem] leading-4 text-ink-muted">{label}</p>
+    <div className="min-w-0">
+      <p className="text-[0.75rem] leading-4 text-ink-muted">{label}</p>
+      <div className="mt-0.5 flex items-center gap-1.5">
         {hide ? (
-          <p className={`mt-0.5 truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>••••••</p>
+          <p className={`truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>••••••</p>
         ) : (
-          <p className={`mt-0.5 truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>
+          <p className={`truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>
             {sign}
             {formatCurrency(Math.abs(amount))}
           </p>
         )}
-      </div>
-      <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconWrapClass}`}
-      >
-        {icon}
+        <span className={`inline-flex shrink-0 items-center justify-center ${iconWrapClass}`}>
+          {icon}
+        </span>
       </div>
     </div>
   );
