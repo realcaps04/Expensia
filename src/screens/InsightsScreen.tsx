@@ -189,7 +189,7 @@ export function InsightsScreen() {
                               </span>
                             </div>
                             <div className="shrink-0 text-right">
-                              <p className="text-[0.8125rem] font-semibold text-sky-600">
+                              <p className="text-[0.8125rem] font-semibold text-credit">
                                 {formatCurrency(-creditTotal, { signed: true })}
                               </p>
                               <p className="text-[0.6875rem] text-ink-muted">
@@ -215,7 +215,7 @@ export function InsightsScreen() {
                                   {account.name}
                                 </span>
                               </div>
-                              <p className="shrink-0 text-[0.75rem] font-medium text-sky-600">
+                              <p className="shrink-0 text-[0.75rem] font-medium text-credit">
                                 {formatCurrency(-account.balance, { signed: true })}
                               </p>
                             </li>

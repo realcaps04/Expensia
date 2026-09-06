@@ -27,6 +27,10 @@ export default {
         },
         income: "#0D9488",
         expense: "#E87820",
+        credit: {
+          DEFAULT: "#A67C52",
+          light: "#D4A574",
+        },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

@@ -55,7 +55,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     description: "Cards, loans, and credit lines",
     icon: CreditCard,
     bg: "bg-transparent",
-    color: "text-sky-600",
+    color: "text-credit",
   },
   {
     id: "events",

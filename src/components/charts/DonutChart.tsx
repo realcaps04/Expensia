@@ -8,7 +8,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   salary: "#0D9488",
   freelance: "#3B82F6",
   other: "#94A3B8",
-  credit: "#0EA5E9",
+  credit: "#A67C52",
 };
 
 export type DonutSegment = {

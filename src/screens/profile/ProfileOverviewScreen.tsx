@@ -85,7 +85,7 @@ export function ProfileOverviewScreen() {
           {
             label: "Credit Balance",
             value: isLoading ? "…" : formatCurrency(stats?.creditBalance ?? 0),
-            valueClass: "text-sky-600",
+            valueClass: "text-credit",
           },
         ].map((item) => (
           <ProfileCard key={item.label} className="p-4">

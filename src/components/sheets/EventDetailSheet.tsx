@@ -102,7 +102,7 @@ export function EventDetailSheet({
           </div>
           <div>
             <p className="text-[0.6875rem] font-medium text-ink-muted">Credit</p>
-            <p className="mt-0.5 text-[0.875rem] font-semibold text-sky-600 dark:text-sky-300">
+            <p className="mt-0.5 text-[0.875rem] font-semibold text-credit dark:text-credit-light">
               {formatCurrency(-event.creditTotal, { signed: true })}
             </p>
           </div>
@@ -144,7 +144,7 @@ export function EventDetailSheet({
             description="Link a loan or card"
             icon={CreditCard}
             iconBg="bg-transparent"
-            iconColor="text-sky-500 dark:text-sky-300"
+            iconColor="text-credit dark:text-credit-light"
             onClick={onAddCredit}
           />
         </div>
