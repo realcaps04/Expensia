@@ -90,7 +90,7 @@ export function EventsScreen() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-pill bg-teal-brand px-4 py-2.5 text-[0.8125rem] font-semibold text-white shadow-[0_4px_14px_rgba(13,148,136,0.28)] transition-transform active:scale-[0.98]"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-pill bg-teal-brand px-4 py-2.5 text-[0.8125rem] font-semibold text-white shadow-[0_4px_14px_rgba(196,94,18,0.28)] transition-transform active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" strokeWidth={2.5} />
             New Event

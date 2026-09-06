@@ -197,7 +197,7 @@ export const sendResetEmail = internalAction({
             <div style="font-family:Inter,sans-serif;line-height:1.6;color:#1e293b">
               <h2 style="margin:0 0 12px">Reset your Expensia password</h2>
               <p>Use this verification code to continue:</p>
-              <p style="font-size:28px;font-weight:700;letter-spacing:0.2em;color:#0d9488">${args.code}</p>
+              <p style="font-size:28px;font-weight:700;letter-spacing:0.2em;color:#c45e12">${args.code}</p>
               <p style="color:#64748b">This code expires in 5 minutes. If you didn't request this, you can ignore this email.</p>
             </div>
           `,

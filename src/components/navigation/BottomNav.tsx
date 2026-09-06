@@ -27,8 +27,8 @@ function NavItem({
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex flex-col items-center justify-end gap-1 pb-0.5 text-[0.6875rem] font-medium transition-colors ${
-          isActive ? "text-teal-brand" : "text-ink-muted"
+        `flex flex-col items-center justify-end gap-1 pb-0.5 text-[0.6875rem] font-medium no-underline transition-colors ${
+          isActive ? "text-[#E87820]" : "text-ink-muted"
         }`
       }
     >
@@ -53,7 +53,7 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
           type="button"
           aria-label="Quick add"
           onClick={onAddClick}
-          className="absolute left-1/2 top-0 z-10 flex h-[3.75rem] w-[3.75rem] -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-teal-brand to-teal-deep text-white shadow-[0_10px_28px_rgba(20,184,166,0.42)] transition-transform active:scale-95"
+          className="absolute left-1/2 top-0 z-10 flex h-[3.75rem] w-[3.75rem] -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-[#E87820] to-[#C45E12] text-white shadow-[0_10px_28px_rgba(232,120,32,0.42)] transition-transform active:scale-95"
         >
           <Plus className="h-7 w-7" strokeWidth={2.5} />
         </button>

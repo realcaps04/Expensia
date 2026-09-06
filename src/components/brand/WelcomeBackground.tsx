@@ -10,7 +10,7 @@ function WelcomeBackground() {
       <defs>
         <linearGradient id="waveTop" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
           <stop stopColor="#C7D2FE" stopOpacity="0.35" />
-          <stop offset="1" stopColor="#99F6E4" stopOpacity="0" />
+          <stop offset="1" stopColor="#FED7AA" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="waveBottom" x1="390" y1="844" x2="190" y2="644" gradientUnits="userSpaceOnUse">
           <stop stopColor="#A5B4FC" stopOpacity="0.45" />
@@ -57,7 +57,7 @@ function WelcomeBackground() {
       />
       <path
         d="M390 710 C315 675, 250 695, 185 750 S70 805, -20 830"
-        stroke="#5EEAD4"
+        stroke="#F6B27A"
         strokeWidth="1"
         strokeOpacity="0.2"
         fill="none"

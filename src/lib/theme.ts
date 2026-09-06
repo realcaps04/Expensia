@@ -37,7 +37,7 @@ export function applyTheme(preference: ThemePreference) {
   root.dataset.theme = preference;
 
   const meta = document.querySelector('meta[name="theme-color"]');
-  meta?.setAttribute("content", resolved === "dark" ? "#0F172A" : "#FAFAF8");
+  meta?.setAttribute("content", resolved === "dark" ? "#0A0A0A" : "#FAFAF8");
 }
 
 export function initTheme() {

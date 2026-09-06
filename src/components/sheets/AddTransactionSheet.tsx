@@ -52,7 +52,7 @@ const CONFIG = {
     editSaveLabel: "Update Income",
     iconBg: "bg-emerald-50",
     iconColor: "text-income",
-    btnClass: "bg-gradient-to-r from-teal-brand to-teal-deep shadow-[0_10px_24px_rgba(13,148,136,0.28)]",
+    btnClass: "bg-gradient-to-r from-teal-brand to-teal-deep shadow-[0_10px_24px_rgba(196,94,18,0.28)]",
     sourceLabel: "Source",
     sourcePlaceholder: "Company / Client",
     defaultCategory: "salary",

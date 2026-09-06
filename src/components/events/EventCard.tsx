@@ -108,7 +108,7 @@ export function EventCard({
   return (
     <article className="rounded-[20px] bg-white p-4 shadow-[0_4px_24px_rgba(15,23,42,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.28)]">
       <div className="flex items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-brand text-white shadow-[0_4px_12px_rgba(13,148,136,0.25)]">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-brand text-white shadow-[0_4px_12px_rgba(196,94,18,0.25)]">
           <Users className="h-5 w-5" strokeWidth={2} />
         </div>
 

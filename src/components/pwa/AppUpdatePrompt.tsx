@@ -32,7 +32,7 @@ export function AppUpdatePrompt({ open, onDismiss, onUpdate }: AppUpdatePromptPr
             type="button"
             disabled={busy}
             onClick={() => void handleUpdate()}
-            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-gradient-to-r from-teal-brand to-teal-deep py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(13,148,136,0.28)] transition-transform active:scale-[0.98] disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-gradient-to-r from-teal-brand to-teal-deep py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(196,94,18,0.28)] transition-transform active:scale-[0.98] disabled:opacity-60"
           >
             {busy ? (
               <Loader2 className="h-5 w-5 animate-spin" />

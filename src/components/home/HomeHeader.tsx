@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "../../context/AuthProvider";
 import { useCloseOnBack } from "../../hooks/useCloseOnBack";
+import { useAvatarSrc } from "../../lib/avatar";
 import { getDisplayName, getConvexUserId } from "../../lib/session";
 import { resolveUserSettings } from "../../lib/user-settings";
 import type { CreditActivityRowData } from "../../lib/activity-types";
@@ -11,17 +12,21 @@ import type { TransactionRowData } from "../../lib/transaction-types";
 import { AppSearchBar } from "./AppSearchBar";
 
 function Avatar({ name, picture }: { name: string; picture?: string }) {
-  if (picture) {
+  const { src, onError } = useAvatarSrc(picture);
+  const initial = name.charAt(0).toUpperCase() || "U";
+
+  if (src) {
     return (
       <img
-        src={picture}
+        src={src}
         alt=""
+        referrerPolicy="no-referrer"
+        onError={onError}
         className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-soft"
       />
     );
   }
 
-  const initial = name.charAt(0).toUpperCase() || "U";
   return (
     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-brand to-violet-brand text-sm font-semibold text-white shadow-soft">
       {initial}

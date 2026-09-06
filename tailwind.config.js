@@ -6,9 +6,9 @@ export default {
     extend: {
       colors: {
         teal: {
-          brand: "#14B8A6",
-          deep: "#0D9488",
-          light: "#5EEAD4",
+          brand: "#E87820",
+          deep: "#C45E12",
+          light: "#F6B27A",
         },
         violet: {
           brand: "#6366F1",
@@ -40,7 +40,7 @@ export default {
       boxShadow: {
         soft: "0 8px 32px rgba(30, 41, 59, 0.06)",
         logo: "0 20px 60px rgba(99, 102, 241, 0.12)",
-        btn: "0 12px 28px rgba(13, 148, 136, 0.22)",
+        btn: "0 12px 28px rgba(196, 94, 18, 0.22)",
       },
       maxWidth: {
         shell: "430px",

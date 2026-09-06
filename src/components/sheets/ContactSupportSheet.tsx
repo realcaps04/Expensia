@@ -19,7 +19,7 @@ export function ContactSupportSheet({ open, onClose }: ContactSupportSheetProps)
         <div className="flex flex-col gap-2">
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
-            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-teal-brand py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(20,184,166,0.28)] transition-transform active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-teal-brand py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(232,120,32,0.28)] transition-transform active:scale-[0.98]"
           >
             <Mail className="h-4 w-4" strokeWidth={2.25} />
             Send email

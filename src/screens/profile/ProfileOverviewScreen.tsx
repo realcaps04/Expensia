@@ -39,7 +39,7 @@ export function ProfileOverviewScreen() {
         </Link>
       }
     >
-      <section className="overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-brand via-teal-deep to-[#0f766e] p-5 text-white shadow-[0_16px_40px_rgba(13,148,136,0.28)]">
+      <section className="overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-brand via-teal-deep to-[#9A4A0F] p-5 text-white shadow-[0_16px_40px_rgba(196,94,18,0.28)]">
         <div className="flex items-start gap-4">
           <ProfileAvatar
             name={name}

@@ -1,4 +1,5 @@
 import { BadgeCheck } from "lucide-react";
+import { useAvatarSrc } from "../../lib/avatar";
 import { getDisplayName } from "../../lib/session";
 
 type ProfileAvatarProps = {
@@ -22,13 +23,16 @@ export function ProfileAvatar({
   showBadge = false,
 }: ProfileAvatarProps) {
   const initial = name.charAt(0).toUpperCase() || "U";
+  const { src, onError } = useAvatarSrc(picture);
 
   return (
     <div className="relative shrink-0">
-      {picture ? (
+      {src ? (
         <img
-          src={picture}
+          src={src}
           alt=""
+          referrerPolicy="no-referrer"
+          onError={onError}
           className={`${SIZES[size]} rounded-full border-[3px] border-white/80 object-cover shadow-soft`}
         />
       ) : (

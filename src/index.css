@@ -11,16 +11,16 @@
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --border-subtle: #f1f5f9;
-  --teal: #14b8a6;
+  --teal: #e87820;
   --violet: #6366f1;
   color-scheme: light;
 }
 
 .dark {
-  --bg-primary: #0f172a;
-  --bg-card: #1e293b;
+  --bg-primary: #0a0a0a;
+  --bg-card: #191919;
   --bg-muted: #334155;
-  --bg-elevated: #1e293b;
+  --bg-elevated: #191919;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
@@ -72,14 +72,14 @@ a:focus-visible {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #14b8a6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #e87820 0%, #6366f1 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .gradient-btn {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 45%, #6366f1 100%);
+  background: linear-gradient(135deg, #e87820 0%, #c45e12 45%, #6366f1 100%);
 }
 
 @media (min-width: 768px) {
@@ -114,7 +114,7 @@ a:focus-visible {
 
 .dark .bg-teal-50,
 .dark .bg-emerald-50 {
-  background-color: rgb(20 184 166 / 0.16) !important;
+  background-color: rgb(232 120 32 / 0.16) !important;
 }
 
 .dark .bg-rose-50 {
@@ -150,7 +150,7 @@ a:focus-visible {
 }
 
 .dark .bg-white\/50 {
-  background-color: rgb(30 41 59 / 0.72) !important;
+  background-color: rgb(25 25 25 / 0.72) !important;
 }
 
 .dark input,

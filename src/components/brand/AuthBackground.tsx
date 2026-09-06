@@ -10,11 +10,11 @@ function AuthBackground() {
       <defs>
         <linearGradient id="authWaveTR" x1="390" y1="0" x2="220" y2="180" gradientUnits="userSpaceOnUse">
           <stop stopColor="#A5B4FC" stopOpacity="0.4" />
-          <stop offset="0.5" stopColor="#5EEAD4" stopOpacity="0.25" />
+          <stop offset="0.5" stopColor="#F6B27A" stopOpacity="0.25" />
           <stop offset="1" stopColor="#FAFAF8" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="authWaveBL" x1="0" y1="844" x2="180" y2="680" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#99F6E4" stopOpacity="0.35" />
+          <stop stopColor="#FED7AA" stopOpacity="0.35" />
           <stop offset="1" stopColor="#C7D2FE" stopOpacity="0.15" />
         </linearGradient>
       </defs>

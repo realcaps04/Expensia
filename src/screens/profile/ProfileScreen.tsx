@@ -50,7 +50,7 @@ export function ProfileScreen() {
           </Link>
         </header>
 
-        <section className="overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-brand via-teal-deep to-[#0f766e] p-5 text-white shadow-[0_16px_40px_rgba(13,148,136,0.28)]">
+        <section className="overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-brand via-teal-deep to-[#9A4A0F] p-5 text-white shadow-[0_16px_40px_rgba(196,94,18,0.28)]">
           <div className="flex items-start gap-4">
             <ProfileAvatar
               name={name}
@@ -110,7 +110,7 @@ export function ProfileScreen() {
 
         <Link
           to="/home/profile/overview"
-          className="flex items-center gap-3 rounded-[20px] bg-[#1e293b] p-4 text-white shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-transform active:scale-[0.99]"
+          className="flex items-center gap-3 rounded-[20px] bg-[#1e293b] p-4 text-white shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-transform active:scale-[0.99] dark:bg-[#191919]"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
             <LayoutGrid className="h-5 w-5 text-teal-light" strokeWidth={2} />
