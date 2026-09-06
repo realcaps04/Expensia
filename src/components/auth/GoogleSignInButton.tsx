@@ -45,7 +45,7 @@ export function GoogleSignInButton({
       type="button"
       disabled={busy}
       onClick={() => login()}
-      className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-surface-border bg-white py-3 text-[0.8125rem] font-medium text-ink shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 dark:hover:border-slate-600 dark:hover:bg-[#2a2a2a]"
+      className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-surface-border bg-white py-3 text-[0.8125rem] font-medium text-ink shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-slate-200 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 dark:hover:border-slate-600 dark:hover:bg-[#161616]"
     >
       {busy ? (
         <Loader2 className="h-[18px] w-[18px] animate-spin text-ink-muted" aria-hidden />

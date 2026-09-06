@@ -18,13 +18,13 @@
 
 .dark {
   --bg-primary: #0a0a0a;
-  --bg-card: #191919;
-  --bg-muted: #334155;
-  --bg-elevated: #191919;
+  --bg-card: #111111;
+  --bg-muted: #1a1a1a;
+  --bg-elevated: #111111;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
-  --border-subtle: #334155;
+  --border-subtle: #222222;
   color-scheme: dark;
 }
 
@@ -114,7 +114,7 @@ a:focus-visible {
 
 .dark .bg-teal-50,
 .dark .bg-emerald-50 {
-  background-color: #2a2a2a !important;
+  background-color: #161616 !important;
 }
 
 .dark .bg-rose-50,
@@ -172,7 +172,7 @@ a:focus-visible {
 }
 
 .dark .bg-white\/50 {
-  background-color: rgb(25 25 25 / 0.72) !important;
+  background-color: rgb(17 17 17 / 0.82) !important;
 }
 
 .dark input,

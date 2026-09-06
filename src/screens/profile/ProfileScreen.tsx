@@ -110,7 +110,7 @@ export function ProfileScreen() {
 
         <Link
           to="/home/profile/overview"
-          className="flex items-center gap-3 rounded-[20px] bg-[#1e293b] p-4 text-white shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-transform active:scale-[0.99] dark:bg-[#191919]"
+          className="flex items-center gap-3 rounded-[20px] bg-[#1e293b] p-4 text-white shadow-[0_12px_32px_rgba(15,23,42,0.18)] transition-transform active:scale-[0.99] dark:bg-[#111111]"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
             <LayoutGrid className="h-5 w-5 text-teal-light" strokeWidth={2} />

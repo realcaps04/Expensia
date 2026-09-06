@@ -123,7 +123,7 @@ export function InsightsScreen() {
               onClick={() => setTimeframe(id)}
               className={`shrink-0 rounded-pill px-4 py-2 text-[0.8125rem] font-semibold transition-colors ${
                 timeframe === id
-                  ? "bg-slate-800 text-white shadow-sm dark:bg-[#3a3a3a]"
+                  ? "bg-slate-800 text-white shadow-sm dark:bg-[#1a1a1a]"
                   : "bg-white text-ink-secondary shadow-[0_1px_4px_rgba(15,23,42,0.06)]"
               }`}
             >
@@ -250,7 +250,7 @@ export function InsightsScreen() {
                     </p>
                   ) : null}
                 </div>
-                <div className="shrink-0 rounded-[16px] bg-slate-100 px-3 py-2.5 dark:bg-[#2a2a2a]">
+                <div className="shrink-0 rounded-[16px] bg-slate-100 px-3 py-2.5 dark:bg-[#161616]">
                   <div className="flex items-center gap-1.5 text-[0.6875rem] font-medium text-income">
                     <Wallet className="h-3.5 w-3.5" strokeWidth={2.25} />
                     Daily Average
