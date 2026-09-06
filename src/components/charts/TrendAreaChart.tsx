@@ -3,7 +3,6 @@ import { formatCurrency } from "../../lib/format";
 
 const INCOME_COLOR = "#14B8A6";
 const EXPENSE_COLOR = "#E87820";
-const GRID_COLOR = "#E2E8F0";
 const AXIS_COLOR = "#94A3B8";
 
 export type TrendSeriesPoint = {
@@ -227,7 +226,7 @@ export function TrendAreaChart({
                 x2={width - padR}
                 y1={y}
                 y2={y}
-                stroke={GRID_COLOR}
+                className="stroke-slate-200/70 dark:stroke-white/12"
                 strokeWidth="1"
               />
               <text

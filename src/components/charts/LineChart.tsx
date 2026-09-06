@@ -66,7 +66,7 @@ export function LineChart({
               x2={width - padX}
               y1={y}
               y2={y}
-              stroke="#E2E8F0"
+              className="stroke-slate-200/70 dark:stroke-white/12"
               strokeDasharray="4 4"
             />
           );
