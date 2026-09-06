@@ -31,7 +31,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Add Income",
     description: "Salary, refunds, and other inflows",
     icon: Wallet,
-    bg: "bg-emerald-50",
+    bg: "bg-emerald-50 dark:bg-[#2a2a2a]",
     color: "text-income",
   },
   {

@@ -114,7 +114,7 @@ a:focus-visible {
 
 .dark .bg-teal-50,
 .dark .bg-emerald-50 {
-  background-color: rgb(232 120 32 / 0.16) !important;
+  background-color: #2a2a2a !important;
 }
 
 .dark .bg-rose-50 {
