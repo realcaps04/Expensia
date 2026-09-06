@@ -29,7 +29,7 @@ export function CreditListItem({
         onClick={() => onEdit?.(credit)}
         className="flex min-w-0 flex-1 items-start gap-3 text-left transition-colors active:opacity-80"
       >
-        <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+        <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-transparent text-sky-600">
           <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
         <div className="min-w-0 flex-1 overflow-hidden">

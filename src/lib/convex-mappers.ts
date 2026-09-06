@@ -60,9 +60,22 @@ export function categoryLabel(category: string) {
   return CATEGORY_LABELS[category] ?? category;
 }
 
-export type TransactionIcon = "briefcase" | "food" | "transport" | "shopping";
+export type TransactionIcon =
+  | "salary"
+  | "freelance"
+  | "food"
+  | "transport"
+  | "shopping"
+  | "bills"
+  | "entertainment"
+  | "health"
+  | "other_income"
+  | "other";
 
-export function categoryIcon(category: string): TransactionIcon {
+export function categoryIcon(
+  category: string,
+  type?: "income" | "expense",
+): TransactionIcon {
   switch (category) {
     case "food":
       return "food";
@@ -70,8 +83,18 @@ export function categoryIcon(category: string): TransactionIcon {
       return "transport";
     case "shopping":
       return "shopping";
+    case "bills":
+      return "bills";
+    case "entertainment":
+      return "entertainment";
+    case "health":
+      return "health";
+    case "salary":
+      return "salary";
+    case "freelance":
+      return "freelance";
     default:
-      return "briefcase";
+      return type === "income" ? "other_income" : "other";
   }
 }
 
@@ -84,11 +107,10 @@ export function formatTransactionTime(ms: number) {
 }
 
 export function mapTransactionRow(tx: Doc<"transactions">) {
-  const typeLabel = tx.type === "income" ? "Income" : categoryLabel(tx.category);
   return {
     id: tx._id,
     title: tx.title,
-    category: typeLabel,
+    category: categoryLabel(tx.category),
     categoryKey: tx.category,
     type: tx.type,
     amount: tx.amount,
@@ -97,7 +119,7 @@ export function mapTransactionRow(tx: Doc<"transactions">) {
     eventId: tx.eventId,
     occurredAt: tx.occurredAt,
     time: formatTransactionTime(tx.occurredAt),
-    icon: categoryIcon(tx.category),
+    icon: categoryIcon(tx.category, tx.type),
   };
 }
 

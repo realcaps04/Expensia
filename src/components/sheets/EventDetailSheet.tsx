@@ -127,7 +127,7 @@ export function EventDetailSheet({
             label="Add Income"
             description="Record money coming in"
             icon={Wallet}
-            iconBg="bg-emerald-50 dark:bg-emerald-500/15"
+            iconBg="bg-transparent"
             iconColor="text-income"
             onClick={onAddIncome}
           />
@@ -135,7 +135,7 @@ export function EventDetailSheet({
             label="Add Expense"
             description="Record money going out"
             icon={Receipt}
-            iconBg="bg-orange-50 dark:bg-orange-500/15"
+            iconBg="bg-transparent"
             iconColor="text-expense"
             onClick={onAddExpense}
           />
@@ -143,7 +143,7 @@ export function EventDetailSheet({
             label="Add Credit"
             description="Link a loan or card"
             icon={CreditCard}
-            iconBg="bg-sky-50 dark:bg-sky-500/15"
+            iconBg="bg-transparent"
             iconColor="text-sky-500 dark:text-sky-300"
             onClick={onAddCredit}
           />

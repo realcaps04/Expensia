@@ -195,7 +195,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           amount={income}
           hide={hidden}
           valueClass="text-income"
-          iconWrapClass="bg-emerald-50 text-income"
+          iconWrapClass="bg-transparent text-income"
           icon={<TrendingDown className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
         />
         <PeriodStat
@@ -203,7 +203,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           amount={-expenses}
           hide={hidden}
           valueClass="text-expense"
-          iconWrapClass="bg-orange-50 text-expense"
+          iconWrapClass="bg-transparent text-expense"
           icon={<TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
         />
       </div>

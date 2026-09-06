@@ -1,10 +1,16 @@
 import {
+  Banknote,
   Briefcase,
   Car,
+  CircleEllipsis,
+  Clapperboard,
+  HeartPulse,
   Pencil,
+  Receipt,
   ShoppingBag,
   Trash2,
   UtensilsCrossed,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import type { TransactionIcon } from "../../lib/convex-mappers";
@@ -12,11 +18,19 @@ import { formatCompactDate } from "../../lib/datetime";
 import { formatCurrency } from "../../lib/format";
 import type { TransactionRowData } from "../../lib/transaction-types";
 
+const ICON_BG = "bg-transparent";
+
 const ICONS: Record<TransactionIcon, { Icon: LucideIcon; bg: string; color: string }> = {
-  briefcase: { Icon: Briefcase, bg: "bg-emerald-50", color: "text-income" },
-  food: { Icon: UtensilsCrossed, bg: "bg-orange-50", color: "text-expense" },
-  transport: { Icon: Car, bg: "bg-sky-50", color: "text-sky-600" },
-  shopping: { Icon: ShoppingBag, bg: "bg-amber-50", color: "text-amber-600" },
+  salary: { Icon: Banknote, bg: ICON_BG, color: "text-income" },
+  freelance: { Icon: Briefcase, bg: ICON_BG, color: "text-sky-600" },
+  other_income: { Icon: Wallet, bg: ICON_BG, color: "text-income" },
+  food: { Icon: UtensilsCrossed, bg: ICON_BG, color: "text-income" },
+  transport: { Icon: Car, bg: ICON_BG, color: "text-violet-brand" },
+  shopping: { Icon: ShoppingBag, bg: ICON_BG, color: "text-expense" },
+  bills: { Icon: Receipt, bg: ICON_BG, color: "text-amber-600" },
+  entertainment: { Icon: Clapperboard, bg: ICON_BG, color: "text-purple-500" },
+  health: { Icon: HeartPulse, bg: ICON_BG, color: "text-pink-500" },
+  other: { Icon: CircleEllipsis, bg: ICON_BG, color: "text-ink-muted" },
 };
 
 type TransactionListItemProps = {
@@ -34,7 +48,7 @@ export function TransactionListItem({
   showActions = false,
   variant = "default",
 }: TransactionListItemProps) {
-  const { Icon, bg, color } = ICONS[tx.icon];
+  const { Icon, bg, color } = ICONS[tx.icon] ?? ICONS.other;
   const signedAmount = tx.type === "income" ? tx.amount : -tx.amount;
   const meta = `${tx.category} • ${formatCompactDate(tx.occurredAt)}`;
 

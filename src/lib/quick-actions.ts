@@ -31,7 +31,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Add Income",
     description: "Salary, refunds, and other inflows",
     icon: Wallet,
-    bg: "bg-emerald-50 dark:bg-[#2a2a2a]",
+    bg: "bg-transparent",
     color: "text-income",
   },
   {
@@ -40,7 +40,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Add Expense",
     description: "Bills, shopping, and daily spending",
     icon: Receipt,
-    bg: "bg-orange-50",
+    bg: "bg-transparent",
     color: "text-expense",
   },
   {
@@ -49,7 +49,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Add Credit",
     description: "Cards, loans, and credit lines",
     icon: CreditCard,
-    bg: "bg-sky-50",
+    bg: "bg-transparent",
     color: "text-sky-600",
   },
   {
@@ -58,7 +58,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Events",
     description: "Group income, expenses & credit by occasion",
     icon: CalendarRange,
-    bg: "bg-violet-50",
+    bg: "bg-transparent",
     color: "text-violet-brand",
     to: "/home/events",
   },
