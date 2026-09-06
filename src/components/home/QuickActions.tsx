@@ -20,7 +20,7 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
   return (
     <div className="grid grid-cols-4 gap-2">
       {QUICK_ACTION_ITEMS.map((action) => {
-        const { label, icon: Icon, bg, color } = action;
+        const { shortLabel, icon: Icon, bg, color } = action;
 
         if (action.kind === "route") {
           return (
@@ -32,8 +32,8 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
               <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${bg} ${color}`}>
                 <Icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={2} />
               </div>
-              <span className="text-center text-[0.6875rem] font-semibold leading-tight text-ink">
-                {label}
+              <span className="w-full px-0.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink">
+                {shortLabel}
               </span>
             </Link>
           );
@@ -49,8 +49,8 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
             <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${bg} ${color}`}>
               <Icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={2} />
             </div>
-            <span className="text-center text-[0.6875rem] font-semibold leading-tight text-ink">
-              {label}
+            <span className="w-full px-0.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink">
+              {shortLabel}
             </span>
           </button>
         );

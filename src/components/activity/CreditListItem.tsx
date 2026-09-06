@@ -29,9 +29,6 @@ export function CreditListItem({
         onClick={() => onEdit?.(credit)}
         className="flex min-w-0 flex-1 items-start gap-3 text-left transition-colors active:opacity-80"
       >
-        <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-transparent text-sky-600">
-          <Icon className="h-5 w-5" strokeWidth={2} />
-        </div>
         <div className="min-w-0 flex-1 overflow-hidden">
           <p
             className={`text-[0.9375rem] font-semibold leading-snug text-ink ${
@@ -62,6 +59,9 @@ export function CreditListItem({
             {formatCurrency(credit.balance)}
           </span>
           <p className="mt-0.5 text-[0.6875rem] text-ink-muted">owed</p>
+        </div>
+        <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-transparent text-sky-600">
+          <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
       </button>
 

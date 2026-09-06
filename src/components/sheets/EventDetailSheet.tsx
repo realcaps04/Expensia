@@ -1,4 +1,4 @@
-import { CreditCard, Pencil, Receipt, Wallet } from "lucide-react";
+import { ArrowDownFromLine, CreditCard, Pencil, Wallet } from "lucide-react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { formatCurrency } from "../../lib/format";
 import { BottomSheet } from "./BottomSheet";
@@ -46,14 +46,14 @@ function AddEntryButton({
       onClick={onClick}
       className="flex w-full items-center gap-4 rounded-[18px] bg-white px-4 py-3.5 text-left shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-transform active:scale-[0.99]"
     >
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.9375rem] font-semibold text-ink">{label}</p>
+        <p className="mt-0.5 text-[0.8125rem] text-ink-secondary">{description}</p>
+      </div>
       <div
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${iconBg} ${iconColor}`}
       >
         <Icon className="h-5 w-5" strokeWidth={2} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[0.9375rem] font-semibold text-ink">{label}</p>
-        <p className="mt-0.5 text-[0.8125rem] text-ink-secondary">{description}</p>
       </div>
     </button>
   );
@@ -134,7 +134,7 @@ export function EventDetailSheet({
           <AddEntryButton
             label="Add Expense"
             description="Record money going out"
-            icon={Receipt}
+            icon={ArrowDownFromLine}
             iconBg="bg-transparent"
             iconColor="text-expense"
             onClick={onAddExpense}

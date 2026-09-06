@@ -37,11 +37,6 @@ function PeriodStat({
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconWrapClass}`}
-      >
-        {icon}
-      </div>
       <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
         <p className="text-[0.75rem] text-ink-muted">{label}</p>
         {hide ? (
@@ -52,6 +47,11 @@ function PeriodStat({
             <span>{formatCurrency(Math.abs(amount))}</span>
           </p>
         )}
+      </div>
+      <div
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconWrapClass}`}
+      >
+        {icon}
       </div>
     </div>
   );
@@ -196,7 +196,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           hide={hidden}
           valueClass="text-income"
           iconWrapClass="bg-transparent text-income"
-          icon={<TrendingDown className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
+          icon={<TrendingUp className="h-4 w-4" strokeWidth={2.5} />}
         />
         <PeriodStat
           label="Expenses"
@@ -204,7 +204,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           hide={hidden}
           valueClass="text-expense"
           iconWrapClass="bg-transparent text-expense"
-          icon={<TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
+          icon={<TrendingDown className="h-4 w-4" strokeWidth={2.5} />}
         />
       </div>
     </section>

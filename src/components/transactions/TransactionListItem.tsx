@@ -59,11 +59,6 @@ export function TransactionListItem({
         onClick={() => onEdit(tx)}
         className="flex min-w-0 flex-1 items-start gap-3 text-left transition-colors active:opacity-80"
       >
-        <div
-          className={`mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
-        >
-          <Icon className="h-5 w-5" strokeWidth={2} />
-        </div>
         <div className="min-w-0 flex-1 overflow-hidden">
           <p
             className={`text-[0.9375rem] font-semibold leading-snug text-ink ${
@@ -96,6 +91,11 @@ export function TransactionListItem({
         >
           {formatCurrency(signedAmount, { signed: true })}
         </span>
+        <div
+          className={`mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2} />
+        </div>
       </button>
 
       {showActions ? (

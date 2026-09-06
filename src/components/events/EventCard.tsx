@@ -53,9 +53,9 @@ function MetricCell({
 
   return (
     <div className="rounded-[14px] border border-surface-border bg-slate-50 px-3 py-2.5 dark:border-slate-600/40 dark:bg-slate-800/80">
-      <div className="flex items-center gap-1.5">
-        <Icon className={`h-3.5 w-3.5 ${tones[tone].icon}`} strokeWidth={2.25} />
+      <div className="flex items-center justify-between gap-1.5">
         <span className="text-[0.6875rem] font-medium text-ink-muted">{label}</span>
+        <Icon className={`h-3.5 w-3.5 ${tones[tone].icon}`} strokeWidth={2.25} />
       </div>
       <p className={`mt-1 font-display text-[0.9375rem] font-bold ${tones[tone].value}`}>
         {value}

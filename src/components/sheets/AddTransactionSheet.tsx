@@ -1,5 +1,6 @@
 import { useMutation } from "convex/react";
 import {
+  ArrowDownFromLine,
   Briefcase,
   Building2,
   Calendar,
@@ -52,6 +53,7 @@ const CONFIG = {
     editSaveLabel: "Update Income",
     iconBg: "bg-transparent",
     iconColor: "text-income",
+    Icon: Wallet,
     btnClass: "bg-gradient-to-r from-teal-brand to-teal-deep shadow-[0_10px_24px_rgba(196,94,18,0.28)]",
     sourceLabel: "Source",
     sourcePlaceholder: "Company / Client",
@@ -68,6 +70,7 @@ const CONFIG = {
     editSaveLabel: "Update Expense",
     iconBg: "bg-transparent",
     iconColor: "text-expense",
+    Icon: ArrowDownFromLine,
     btnClass: "bg-gradient-to-r from-[#E87820] to-[#C45E12] shadow-[0_10px_24px_rgba(232,120,32,0.32)]",
     sourceLabel: "Merchant",
     sourcePlaceholder: "Store or vendor",
@@ -275,7 +278,7 @@ export function AddTransactionSheet({
         <div
           className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full ${cfg.iconBg} ${cfg.iconColor}`}
         >
-          <Wallet className="h-8 w-8" strokeWidth={1.75} />
+          <cfg.Icon className="h-8 w-8" strokeWidth={1.75} />
         </div>
         <h3 className="font-display text-[1.125rem] font-bold text-ink">{sheetTitle}</h3>
         <p className="mt-1 max-w-[280px] text-[0.8125rem] leading-relaxed text-ink-secondary">
