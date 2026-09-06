@@ -26,7 +26,7 @@ export default {
           border: "#F1F5F9",
         },
         income: "#0D9488",
-        expense: "#F87171",
+        expense: "#E87820",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

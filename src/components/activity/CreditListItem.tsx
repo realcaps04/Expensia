@@ -80,7 +80,7 @@ export function CreditListItem({
               type="button"
               aria-label={`Delete ${credit.name}`}
               onClick={() => onDelete(credit)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-rose-50 hover:text-expense"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-orange-50 hover:text-expense"
             >
               <Trash2 className="h-4 w-4" strokeWidth={2} />
             </button>

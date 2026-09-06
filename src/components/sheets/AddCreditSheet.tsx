@@ -232,7 +232,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
         title={sheetTitle}
         footer={
           <div className="space-y-2">
-            {error ? <p className="text-center text-[0.8125rem] text-rose-500">{error}</p> : null}
+            {error ? <p className="text-center text-[0.8125rem] text-orange-500">{error}</p> : null}
             <button
               type="button"
               disabled={busy}
@@ -253,7 +253,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
                 type="button"
                 disabled={busy}
                 onClick={() => setDeleteConfirmOpen(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-rose-200 bg-rose-50 py-3 text-[0.875rem] font-semibold text-rose-600 transition-colors hover:bg-rose-100 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-orange-200 bg-orange-50 py-3 text-[0.875rem] font-semibold text-orange-600 transition-colors hover:bg-orange-100 disabled:opacity-60"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete Account

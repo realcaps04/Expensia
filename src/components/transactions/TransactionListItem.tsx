@@ -14,7 +14,7 @@ import type { TransactionRowData } from "../../lib/transaction-types";
 
 const ICONS: Record<TransactionIcon, { Icon: LucideIcon; bg: string; color: string }> = {
   briefcase: { Icon: Briefcase, bg: "bg-emerald-50", color: "text-income" },
-  food: { Icon: UtensilsCrossed, bg: "bg-rose-50", color: "text-expense" },
+  food: { Icon: UtensilsCrossed, bg: "bg-orange-50", color: "text-expense" },
   transport: { Icon: Car, bg: "bg-sky-50", color: "text-sky-600" },
   shopping: { Icon: ShoppingBag, bg: "bg-amber-50", color: "text-amber-600" },
 };
@@ -99,7 +99,7 @@ export function TransactionListItem({
               type="button"
               aria-label={`Delete ${tx.title}`}
               onClick={() => onDelete(tx)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-rose-50 hover:text-expense"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-orange-50 hover:text-expense"
             >
               <Trash2 className="h-4 w-4" strokeWidth={2} />
             </button>

@@ -32,7 +32,7 @@ export function AuthFlowLayout({ backTo = "/login", children }: AuthFlowLayoutPr
 
 export function AuthFormError({ message }: { message: string }) {
   return (
-    <p className="rounded-[12px] bg-red-50 px-3 py-2.5 text-[0.8125rem] font-medium text-red-600">
+    <p className="rounded-[12px] bg-orange-50 px-3 py-2.5 text-[0.8125rem] font-medium text-orange-600">
       {message}
     </p>
   );

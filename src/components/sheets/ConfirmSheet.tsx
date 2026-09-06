@@ -34,7 +34,7 @@ export function ConfirmSheet({
             type="button"
             disabled={busy}
             onClick={() => void onConfirm()}
-            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-expense py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(248,113,113,0.28)] transition-transform active:scale-[0.98] disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-expense py-3.5 text-[0.9375rem] font-semibold text-white shadow-[0_10px_24px_rgba(232,120,32,0.28)] transition-transform active:scale-[0.98] disabled:opacity-60"
           >
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : confirmLabel}
           </button>
@@ -50,7 +50,7 @@ export function ConfirmSheet({
       }
     >
       <div className="flex flex-col items-center pb-2 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 text-expense">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-expense">
           <AlertTriangle className="h-7 w-7" strokeWidth={2} />
         </div>
         <p className="text-[0.9375rem] leading-relaxed text-ink-secondary">{message}</p>

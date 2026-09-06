@@ -66,9 +66,9 @@ const CONFIG = {
     editSubtitle: "Update this expense entry.",
     saveLabel: "Save Expense",
     editSaveLabel: "Update Expense",
-    iconBg: "bg-rose-50",
+    iconBg: "bg-orange-50",
     iconColor: "text-expense",
-    btnClass: "bg-gradient-to-r from-rose-400 to-rose-500 shadow-[0_10px_24px_rgba(248,113,113,0.32)]",
+    btnClass: "bg-gradient-to-r from-[#E87820] to-[#C45E12] shadow-[0_10px_24px_rgba(232,120,32,0.32)]",
     sourceLabel: "Merchant",
     sourcePlaceholder: "Store or vendor",
     defaultCategory: "food",
@@ -241,7 +241,7 @@ export function AddTransactionSheet({
         title={sheetTitle}
       footer={
         <div className="space-y-2">
-          {error ? <p className="text-center text-[0.8125rem] text-rose-500">{error}</p> : null}
+          {error ? <p className="text-center text-[0.8125rem] text-orange-500">{error}</p> : null}
           <button
             type="button"
             disabled={busy}
@@ -262,7 +262,7 @@ export function AddTransactionSheet({
               type="button"
               disabled={busy}
               onClick={handleDelete}
-              className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-rose-200 bg-rose-50 py-3 text-[0.875rem] font-semibold text-rose-600 transition-colors hover:bg-rose-100 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-orange-200 bg-orange-50 py-3 text-[0.875rem] font-semibold text-orange-600 transition-colors hover:bg-orange-100 disabled:opacity-60"
             >
               <Trash2 className="h-4 w-4" />
               Delete Transaction

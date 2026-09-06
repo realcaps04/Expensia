@@ -117,8 +117,10 @@ a:focus-visible {
   background-color: #2a2a2a !important;
 }
 
-.dark .bg-rose-50 {
-  background-color: rgb(251 113 113 / 0.16) !important;
+.dark .bg-rose-50,
+.dark .bg-red-50,
+.dark .bg-orange-50 {
+  background-color: rgb(232 120 32 / 0.16) !important;
 }
 
 .dark .bg-sky-50 {

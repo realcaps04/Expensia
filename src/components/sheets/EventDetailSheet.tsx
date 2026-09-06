@@ -135,7 +135,7 @@ export function EventDetailSheet({
             label="Add Expense"
             description="Record money going out"
             icon={Receipt}
-            iconBg="bg-rose-50 dark:bg-rose-500/15"
+            iconBg="bg-orange-50 dark:bg-orange-500/15"
             iconColor="text-expense"
             onClick={onAddExpense}
           />

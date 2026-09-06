@@ -203,7 +203,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           amount={-expenses}
           hide={hidden}
           valueClass="text-expense"
-          iconWrapClass="bg-red-50 text-expense"
+          iconWrapClass="bg-orange-50 text-expense"
           icon={<TrendingUp className="h-4 w-4 rotate-180" strokeWidth={2.5} />}
         />
       </div>

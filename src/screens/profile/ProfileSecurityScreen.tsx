@@ -95,7 +95,7 @@ export function ProfileSecurityScreen() {
         <button
           type="button"
           onClick={() => setSignOutOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded-card border border-rose-200 bg-white py-3.5 text-[0.9375rem] font-semibold text-expense shadow-soft transition-colors hover:bg-rose-50 active:scale-[0.99]"
+          className="flex w-full items-center justify-center gap-2 rounded-card border border-orange-200 bg-white py-3.5 text-[0.9375rem] font-semibold text-expense shadow-soft transition-colors hover:bg-orange-50 active:scale-[0.99]"
         >
           <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
           Sign Out

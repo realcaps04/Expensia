@@ -40,7 +40,7 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     label: "Add Expense",
     description: "Bills, shopping, and daily spending",
     icon: Receipt,
-    bg: "bg-rose-50",
+    bg: "bg-orange-50",
     color: "text-expense",
   },
   {

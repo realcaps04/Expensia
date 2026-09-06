@@ -5,7 +5,7 @@ type PasswordStrengthMeterProps = {
 };
 
 const BAR_COLORS = {
-  Weak: ["bg-rose-400", "bg-slate-200", "bg-slate-200"],
+  Weak: ["bg-orange-400", "bg-slate-200", "bg-slate-200"],
   Fair: ["bg-amber-400", "bg-amber-400", "bg-slate-200"],
   Strong: ["bg-teal-brand", "bg-teal-brand", "bg-teal-brand"],
 } as const;

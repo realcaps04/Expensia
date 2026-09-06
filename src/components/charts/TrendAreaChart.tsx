@@ -2,7 +2,7 @@ import { useId, useMemo, useRef, useState } from "react";
 import { formatCurrency } from "../../lib/format";
 
 const INCOME_COLOR = "#14B8A6";
-const EXPENSE_COLOR = "#F87171";
+const EXPENSE_COLOR = "#E87820";
 const GRID_COLOR = "#E2E8F0";
 const AXIS_COLOR = "#94A3B8";
 
@@ -13,7 +13,7 @@ export type TrendSeriesPoint = {
 
 type TrendAreaChartProps = {
   points: TrendSeriesPoint[];
-  /** Spending charts: rising values are expense-red. Balance charts: falling values are red. */
+  /** Spending charts: rising values are expense-orange. Balance charts: falling values are orange. */
   invertTone?: boolean;
   expenseLed?: boolean;
   signed?: boolean;

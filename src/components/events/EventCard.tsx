@@ -46,7 +46,7 @@ function MetricCell({
 }) {
   const tones = {
     income: { icon: "text-teal-brand", value: "text-teal-brand" },
-    expense: { icon: "text-rose-400", value: "text-rose-400" },
+    expense: { icon: "text-expense", value: "text-expense" },
     credit: { icon: "text-sky-400", value: "text-sky-400" },
     net: { icon: "text-ink-muted", value: "text-ink" },
   } as const;
@@ -79,7 +79,7 @@ function ActionButton({
     income:
       "bg-teal-50 text-teal-brand hover:bg-teal-100/80 dark:bg-teal-brand/15 dark:text-teal-light dark:hover:bg-teal-brand/25",
     expense:
-      "bg-rose-50 text-rose-500 hover:bg-rose-100/80 dark:bg-rose-500/15 dark:text-rose-300 dark:hover:bg-rose-500/25",
+      "bg-orange-50 text-expense hover:bg-orange-100/80 dark:bg-orange-500/15 dark:text-orange-300 dark:hover:bg-orange-500/25",
     credit:
       "bg-sky-50 text-sky-600 hover:bg-sky-100/80 dark:bg-sky-500/15 dark:text-sky-300 dark:hover:bg-sky-500/25",
   } as const;

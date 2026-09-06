@@ -1,7 +1,7 @@
 const CATEGORY_COLORS: Record<string, string> = {
   food: "#14B8A6",
   transport: "#6366F1",
-  shopping: "#F87171",
+  shopping: "#E87820",
   bills: "#F59E0B",
   entertainment: "#A855F7",
   health: "#EC4899",

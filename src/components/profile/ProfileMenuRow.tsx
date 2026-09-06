@@ -28,7 +28,7 @@ export function ProfileMenuRow({
     <>
       <span
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-          danger ? "bg-rose-50 text-expense" : "bg-slate-50 text-ink-secondary"
+          danger ? "bg-orange-50 text-expense" : "bg-slate-50 text-ink-secondary"
         }`}
       >
         <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
