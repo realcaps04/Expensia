@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { DatePicker } from "../ui/DatePicker";
 import { MenuSelect, type MenuSelectOption } from "../ui/MenuSelect";
 
 type SheetFieldRowProps = {
@@ -50,6 +51,8 @@ type SheetNativeInputProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   displayValue?: string;
+  min?: string;
+  max?: string;
 };
 
 export function SheetNativeInput({
@@ -58,6 +61,8 @@ export function SheetNativeInput({
   onChange,
   placeholder,
   displayValue,
+  min,
+  max,
 }: SheetNativeInputProps) {
   if (type === "text") {
     return (
@@ -67,6 +72,20 @@ export function SheetNativeInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
+      />
+    );
+  }
+
+  if (type === "date") {
+    return (
+      <DatePicker
+        variant="field"
+        value={value}
+        onChange={onChange}
+        displayValue={displayValue}
+        min={min}
+        max={max}
+        ariaLabel="Date"
       />
     );
   }

@@ -22,6 +22,7 @@ import { convexUserToProfile } from "../../lib/convex-mappers";
 import { providerLabel } from "../../lib/profile-achievements";
 import { loadProfileExtras, saveProfileExtras, formatMemberSince } from "../../lib/profile-extras";
 import { toDateInputValue } from "../../lib/datetime";
+import { DatePicker } from "../../components/ui/DatePicker";
 
 export function ProfilePersonalInfoScreen() {
   const { user, syncUser } = useAuth();
@@ -142,12 +143,14 @@ export function ProfilePersonalInfoScreen() {
         </ProfileField>
 
         <ProfileField label="Date of Birth" icon={Calendar}>
-          <input
-            type="date"
+          <DatePicker
+            variant="field"
             value={dob}
             max={toDateInputValue()}
-            onChange={(e) => setDob(e.target.value)}
-            className="w-full bg-transparent text-[0.9375rem] text-ink outline-none"
+            onChange={setDob}
+            allowClear
+            placeholder="Select date of birth"
+            ariaLabel="Date of birth"
           />
         </ProfileField>
 

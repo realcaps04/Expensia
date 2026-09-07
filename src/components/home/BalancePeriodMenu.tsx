@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCloseOnBack } from "../../hooks/useCloseOnBack";
 import {
   BALANCE_PERIOD_PRESETS,
@@ -8,6 +8,7 @@ import {
   presetFromKind,
 } from "../../lib/balance-period";
 import { toDateInputValue } from "../../lib/datetime";
+import { DatePicker, MonthPicker } from "../ui/DatePicker";
 
 type BalancePeriodMenuProps = {
   open: boolean;
@@ -24,18 +25,29 @@ function monthInputValue() {
 
 export function BalancePeriodMenu({ open, onClose, period, onChange }: BalancePeriodMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  const dateInputRef = useRef<HTMLInputElement>(null);
-  const monthInputRef = useRef<HTMLInputElement>(null);
+  const [customDate, setCustomDate] = useState(
+    period.kind === "date" ? period.date : toDateInputValue(),
+  );
+  const [customMonth, setCustomMonth] = useState(
+    period.kind === "monthKey" ? period.monthKey : monthInputValue(),
+  );
 
   useCloseOnBack(open, onClose);
 
   useEffect(() => {
     if (!open) return;
+    setCustomDate(period.kind === "date" ? period.date : toDateInputValue());
+    setCustomMonth(period.kind === "monthKey" ? period.monthKey : monthInputValue());
+  }, [open, period]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const onPointerDown = (event: MouseEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        onClose();
-      }
+      const target = event.target as HTMLElement;
+      if (menuRef.current?.contains(target)) return;
+      if (target.closest('[role="dialog"]')) return;
+      onClose();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -89,36 +101,32 @@ export function BalancePeriodMenu({ open, onClose, period, onChange }: BalancePe
           Custom
         </p>
         <div className="space-y-2">
-          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
+          <div className="space-y-1.5 rounded-xl bg-surface px-3 py-2.5">
             <span className="text-[0.8125rem] font-medium text-ink-secondary">Pick a date</span>
-            <input
-              ref={dateInputRef}
-              type="date"
-              defaultValue={period.kind === "date" ? period.date : toDateInputValue()}
+            <DatePicker
+              value={customDate}
               max={toDateInputValue()}
-              onChange={(event) => {
-                if (!event.target.value) return;
-                onChange({ kind: "date", date: event.target.value });
+              onChange={(date) => {
+                setCustomDate(date);
+                onChange({ kind: "date", date });
                 onClose();
               }}
-              className="rounded-lg border border-surface-border bg-white px-2 py-1 text-[0.75rem] text-ink"
+              ariaLabel="Pick a date"
             />
-          </label>
-          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
+          </div>
+          <div className="space-y-1.5 rounded-xl bg-surface px-3 py-2.5">
             <span className="text-[0.8125rem] font-medium text-ink-secondary">Pick a month</span>
-            <input
-              ref={monthInputRef}
-              type="month"
-              defaultValue={period.kind === "monthKey" ? period.monthKey : monthInputValue()}
+            <MonthPicker
+              value={customMonth}
               max={monthInputValue()}
-              onChange={(event) => {
-                if (!event.target.value) return;
-                onChange({ kind: "monthKey", monthKey: event.target.value });
+              onChange={(monthKey) => {
+                setCustomMonth(monthKey);
+                onChange({ kind: "monthKey", monthKey });
                 onClose();
               }}
-              className="rounded-lg border border-surface-border bg-white px-2 py-1 text-[0.75rem] text-ink"
+              ariaLabel="Pick a month"
             />
-          </label>
+          </div>
         </div>
       </div>
     </div>

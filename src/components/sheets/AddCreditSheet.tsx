@@ -6,6 +6,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../../convex/_generated/api";
 import type { CreditActivityRowData } from "../../lib/activity-types";
 import { parseDateInputToMs, toDateInputValue } from "../../lib/datetime";
+import { DatePicker } from "../ui/DatePicker";
 import { MenuSelect } from "../ui/MenuSelect";
 import { BottomSheet } from "./BottomSheet";
 import { ConfirmSheet, deleteItemMessage } from "./ConfirmSheet";
@@ -340,11 +341,10 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
               ) : null}
 
               <Field label="Start Date">
-                <input
-                  type="date"
+                <DatePicker
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={inputClass}
+                  onChange={setStartDate}
+                  ariaLabel="Start date"
                 />
               </Field>
             </>
