@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { ChevronDown, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
+import { ChevronDown, CreditCard, Eye, EyeOff, TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -36,9 +36,14 @@ function PeriodStat({
   const sign = amount > 0 ? "+" : amount < 0 ? "−" : "";
 
   return (
-    <div className="min-w-0">
-      <p className="text-[0.75rem] leading-4 text-ink-muted">{label}</p>
-      <div className="mt-0.5 flex items-center gap-1.5">
+    <div className="min-w-0 text-center">
+      <div className="flex items-center justify-center gap-1">
+        <p className="text-[0.75rem] leading-4 text-ink-muted">{label}</p>
+        <span className={`inline-flex shrink-0 items-center justify-center ${iconWrapClass}`}>
+          {icon}
+        </span>
+      </div>
+      <div className="mt-0.5 flex items-center justify-center">
         {hide ? (
           <p className={`truncate text-[0.875rem] font-semibold leading-5 ${valueClass}`}>••••••</p>
         ) : (
@@ -47,9 +52,6 @@ function PeriodStat({
             {formatCurrency(Math.abs(amount))}
           </p>
         )}
-        <span className={`inline-flex shrink-0 items-center justify-center ${iconWrapClass}`}>
-          {icon}
-        </span>
       </div>
     </div>
   );
@@ -63,11 +65,13 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
   const [period, setPeriod] = useState<BalancePeriod>(DEFAULT_BALANCE_PERIOD);
 
   const range = useMemo(() => balancePeriodRange(period), [period]);
+  const tzOffsetMinutes = useMemo(() => new Date().getTimezoneOffset(), []);
   const periodData = useQuery(
     api.finance.getPeriodDashboard,
-    userId ? { userId, start: range.start, end: range.end } : "skip",
+    userId ? { userId, start: range.start, end: range.end, tzOffsetMinutes } : "skip",
   );
 
+  // Net / trend stay income − expenses only. Credit is display-only for the period.
   const net = periodData?.net ?? 0;
   const income = periodData?.income ?? 0;
   const expenses = periodData?.expenses ?? 0;
@@ -155,13 +159,6 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
 
         {isLoading ? (
           <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100" />
-        ) : creditTotal > 0 ? (
-          <p className="mt-1 text-[0.75rem] text-ink-muted">
-            <span className="font-medium text-credit">
-              {formatCurrency(creditTotal, { hide: hidden })}
-            </span>{" "}
-            credit {range.creditLabel}
-          </p>
         ) : !hasActivity ? (
           <p className="mt-1 text-[0.8125rem] text-ink-muted">No activity in this period</p>
         ) : net !== 0 ? (
@@ -187,7 +184,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         </div>
       ) : null}
 
-      <div className="mt-5 grid grid-cols-2 items-center gap-3 border-t border-surface-border pt-4">
+      <div className="mt-5 grid grid-cols-3 items-center gap-2 border-t border-surface-border pt-4 sm:gap-3">
         <PeriodStat
           label="Income"
           amount={income}
@@ -203,6 +200,14 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
           valueClass="text-expense"
           iconWrapClass="bg-transparent text-expense"
           icon={<TrendingDown className="h-4 w-4" strokeWidth={2.5} />}
+        />
+        <PeriodStat
+          label="Credit"
+          amount={creditTotal > 0 ? -creditTotal : 0}
+          hide={hidden}
+          valueClass="text-credit"
+          iconWrapClass="bg-transparent text-credit"
+          icon={<CreditCard className="h-4 w-4 fill-none" strokeWidth={2.5} />}
         />
       </div>
     </section>

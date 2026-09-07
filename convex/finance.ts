@@ -4,10 +4,12 @@ import { category } from "./validators";
 import {
   addDays,
   dateKeyFromMs,
+  dateKeyFromMsInTz,
   endOfDayMs,
   endOfMonthMs,
   monthKeyFromDate,
   startOfDayMs,
+  startOfLocalDayMs,
   startOfMonthMs,
 } from "./lib/helpers";
 
@@ -52,24 +54,29 @@ function buildPeriodTrend(
   periodTx: { type: "income" | "expense"; amount: number; occurredAt: number }[],
   rangeStart: number,
   end: number,
+  tzOffsetMinutes = 0,
 ) {
-  const start = startOfDayMs(new Date(rangeStart));
-  const totalDays = Math.max(1, Math.ceil((end - start) / MS_PER_DAY));
+  const start = rangeStart;
+  const totalDays = Math.max(1, Math.ceil((end - start + 1) / MS_PER_DAY));
   const stepDays = Math.max(1, Math.ceil(totalDays / MAX_TREND_POINTS));
   const points: { date: string; balance: number }[] = [];
 
-  for (let ms = start; ms <= end; ms = addDays(new Date(ms), stepDays).getTime()) {
-    const bucketEnd = Math.min(endOfDayMs(new Date(ms)), end);
+  for (let i = 0; i < totalDays; i += stepDays) {
+    const dayStart = start + i * MS_PER_DAY;
+    const bucketEnd = Math.min(dayStart + MS_PER_DAY - 1, end);
     let net = 0;
     for (const tx of periodTx) {
       if (tx.occurredAt <= bucketEnd) {
         net += tx.type === "income" ? tx.amount : -tx.amount;
       }
     }
-    points.push({ date: dateKeyFromMs(bucketEnd), balance: net });
+    points.push({
+      date: dateKeyFromMsInTz(bucketEnd, tzOffsetMinutes),
+      balance: net,
+    });
   }
 
-  const lastDate = dateKeyFromMs(end);
+  const lastDate = dateKeyFromMsInTz(end, tzOffsetMinutes);
   const lastPoint = points[points.length - 1];
   if (!lastPoint || lastPoint.date !== lastDate) {
     let net = 0;
@@ -230,8 +237,10 @@ export const getPeriodDashboard = query({
     userId: v.id("users"),
     start: v.number(),
     end: v.number(),
+    tzOffsetMinutes: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const tzOffsetMinutes = args.tzOffsetMinutes ?? 0;
     const all = await ctx.db
       .query("transactions")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -254,9 +263,12 @@ export const getPeriodDashboard = query({
 
     const rangeStart =
       args.start === 0 && all.length > 0
-        ? startOfDayMs(new Date(Math.min(...all.map((tx) => tx.occurredAt))))
-        : startOfDayMs(new Date(args.start));
-    const points = buildPeriodTrend(periodTx, rangeStart, args.end);
+        ? startOfLocalDayMs(
+            Math.min(...all.map((tx) => tx.occurredAt)),
+            tzOffsetMinutes,
+          )
+        : args.start;
+    const points = buildPeriodTrend(periodTx, rangeStart, args.end, tzOffsetMinutes);
 
     const credits = await ctx.db
       .query("credits")

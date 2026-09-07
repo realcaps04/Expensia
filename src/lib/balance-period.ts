@@ -83,14 +83,17 @@ export function balancePeriodRange(period: BalancePeriod, now = new Date()): Bal
         creditLabel: "in the last 7 days",
         compareLabel: "prior 7 days",
       };
-    case "month":
+    case "month": {
+      const monthEnd = endOfMonthMs(now);
+      const todayEnd = endOfDayMs(now);
       return {
         start: startOfMonthMs(now),
-        end: endOfMonthMs(now),
+        end: Math.min(monthEnd, todayEnd),
         label: "This Month",
         creditLabel: "this month",
         compareLabel: "last month",
       };
+    }
     case "all":
       return {
         start: 0,
@@ -111,9 +114,12 @@ export function balancePeriodRange(period: BalancePeriod, now = new Date()): Bal
       const [year, month] = period.monthKey.split("-").map(Number);
       const anchor = new Date(year, month - 1, 1);
       const monthLabel = formatMonthHeader(period.monthKey);
+      const monthEnd = endOfMonthMs(anchor);
+      const isCurrentMonth =
+        year === now.getFullYear() && month - 1 === now.getMonth();
       return {
         start: startOfMonthMs(anchor),
-        end: endOfMonthMs(anchor),
+        end: isCurrentMonth ? Math.min(monthEnd, endOfDayMs(now)) : monthEnd,
         label: monthLabel,
         creditLabel: `in ${monthLabel}`,
         compareLabel: "prior month",

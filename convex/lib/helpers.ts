@@ -99,6 +99,22 @@ export function dateKeyFromMs(ms: number) {
   return `${y}-${m}-${day}`;
 }
 
+/** Format a calendar date in the caller's timezone. `tzOffsetMinutes` is `Date#getTimezoneOffset()`. */
+export function dateKeyFromMsInTz(ms: number, tzOffsetMinutes: number) {
+  const shifted = new Date(ms - tzOffsetMinutes * 60_000);
+  const y = shifted.getUTCFullYear();
+  const m = String(shifted.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(shifted.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Local midnight for the calendar day of `ms` in the caller's timezone. */
+export function startOfLocalDayMs(ms: number, tzOffsetMinutes: number) {
+  const key = dateKeyFromMsInTz(ms, tzOffsetMinutes);
+  const [y, m, d] = key.split("-").map(Number);
+  return Date.UTC(y, m - 1, d) + tzOffsetMinutes * 60_000;
+}
+
 export function addDays(date: Date, days: number) {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
