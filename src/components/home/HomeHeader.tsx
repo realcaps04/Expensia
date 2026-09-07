@@ -1,15 +1,12 @@
-import { Bell } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useAuth } from "../../context/AuthProvider";
-import { useCloseOnBack } from "../../hooks/useCloseOnBack";
+import { Calculator } from "lucide-react";
+import { useState } from "react";
 import { useAvatarSrc } from "../../lib/avatar";
-import { getDisplayName, getConvexUserId } from "../../lib/session";
-import { resolveUserSettings } from "../../lib/user-settings";
+import { getDisplayName } from "../../lib/session";
+import { useAuth } from "../../context/AuthProvider";
 import type { CreditActivityRowData } from "../../lib/activity-types";
 import type { TransactionRowData } from "../../lib/transaction-types";
 import { AppSearchBar } from "./AppSearchBar";
+import { CalculatorSheet } from "./CalculatorSheet";
 
 function Avatar({ name, picture }: { name: string; picture?: string }) {
   const { src, onError } = useAvatarSrc(picture);
@@ -42,76 +39,33 @@ export function HomeHeader({
   onSelectCredit?: (credit: CreditActivityRowData) => void;
 }) {
   const { user } = useAuth();
-  const userId = getConvexUserId(user);
-  const convexUser = useQuery(api.users.getUser, userId ? { userId } : "skip");
-  const showNotificationPreview =
-    resolveUserSettings(convexUser?.settings).showNotificationPreview ?? true;
   const firstName = user ? getDisplayName(user).split(" ")[0] : "there";
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const notificationsRef = useRef<HTMLDivElement>(null);
-
-  useCloseOnBack(notificationsOpen, () => setNotificationsOpen(false));
-
-  useEffect(() => {
-    if (!notificationsOpen) return;
-
-    const onPointerDown = (event: MouseEvent) => {
-      if (!notificationsRef.current?.contains(event.target as Node)) {
-        setNotificationsOpen(false);
-      }
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setNotificationsOpen(false);
-    };
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [notificationsOpen]);
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   return (
-    <header className="flex items-center justify-between gap-4">
-      <div className="flex min-w-0 items-center">
-        <Avatar name={firstName} picture={user?.picture} />
-      </div>
+    <>
+      <header className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center">
+          <Avatar name={firstName} picture={user?.picture} />
+        </div>
 
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-        <AppSearchBar
-          onSelectTransaction={onSelectTransaction}
-          onSelectCredit={onSelectCredit}
-        />
-        <div ref={notificationsRef} className="relative shrink-0">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <AppSearchBar
+            onSelectTransaction={onSelectTransaction}
+            onSelectCredit={onSelectCredit}
+          />
           <button
             type="button"
-            aria-label="Notifications"
-            aria-expanded={notificationsOpen}
-            aria-haspopup="dialog"
-            onClick={() => setNotificationsOpen((open) => !open)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-surface-border bg-white text-ink-secondary shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors hover:text-ink"
+            aria-label="Open calculator"
+            onClick={() => setCalculatorOpen(true)}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-surface-border bg-white text-ink-secondary shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors hover:text-ink"
           >
-            <Bell className="h-[18px] w-[18px]" strokeWidth={2} />
-            {showNotificationPreview ? (
-              <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-teal-brand ring-2 ring-white" />
-            ) : null}
+            <Calculator className="h-[18px] w-[18px]" strokeWidth={2} />
           </button>
-          {notificationsOpen ? (
-            <div
-              role="dialog"
-              aria-label="Notifications"
-              className="absolute right-0 top-[calc(100%+0.5rem)] z-20 w-[min(16rem,calc(100vw-2.5rem))] rounded-[16px] border border-surface-border bg-white p-4 shadow-[0_12px_40px_rgba(15,23,42,0.14)]"
-            >
-              <p className="text-[0.8125rem] font-semibold text-ink">Notifications</p>
-              <p className="mt-1.5 text-[0.75rem] leading-relaxed text-ink-secondary">
-                The app is in its early stages. Bug fixes are ongoing — please hold on!
-              </p>
-            </div>
-          ) : null}
         </div>
-      </div>
-    </header>
+      </header>
+
+      <CalculatorSheet open={calculatorOpen} onClose={() => setCalculatorOpen(false)} />
+    </>
   );
 }
