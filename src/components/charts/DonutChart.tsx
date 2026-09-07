@@ -7,7 +7,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   health: "#EC4899",
   salary: "#0D9488",
   freelance: "#3B82F6",
-  other: "#94A3B8",
+  other: "#C4A574",
   credit: "#8B1E3F",
 };
 

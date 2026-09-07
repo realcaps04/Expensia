@@ -30,7 +30,7 @@ const ICONS: Record<TransactionIcon, { Icon: LucideIcon; bg: string; color: stri
   bills: { Icon: Receipt, bg: ICON_BG, color: "text-amber-600" },
   entertainment: { Icon: Clapperboard, bg: ICON_BG, color: "text-purple-500" },
   health: { Icon: HeartPulse, bg: ICON_BG, color: "text-pink-500" },
-  other: { Icon: CircleEllipsis, bg: ICON_BG, color: "text-ink-muted" },
+  other: { Icon: CircleEllipsis, bg: ICON_BG, color: "text-[#C4A574]" },
 };
 
 type TransactionListItemProps = {
