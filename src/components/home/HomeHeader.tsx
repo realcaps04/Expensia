@@ -1,4 +1,4 @@
-import { Calculator } from "lucide-react";
+import { BadgeCheck, Calculator } from "lucide-react";
 import { useState } from "react";
 import { useAvatarSrc } from "../../lib/avatar";
 import { getDisplayName } from "../../lib/session";
@@ -12,21 +12,28 @@ function Avatar({ name, picture }: { name: string; picture?: string }) {
   const { src, onError } = useAvatarSrc(picture);
   const initial = name.charAt(0).toUpperCase() || "U";
 
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt=""
-        referrerPolicy="no-referrer"
-        onError={onError}
-        className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-soft"
-      />
-    );
-  }
-
   return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-brand to-violet-brand text-sm font-semibold text-white shadow-soft">
-      {initial}
+    <div className="relative shrink-0">
+      {src ? (
+        <img
+          src={src}
+          alt=""
+          referrerPolicy="no-referrer"
+          onError={onError}
+          className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-soft"
+        />
+      ) : (
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-brand to-violet-brand text-sm font-semibold text-white shadow-soft">
+          {initial}
+        </div>
+      )}
+      <span
+        className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-teal-brand shadow-sm"
+        aria-label="Verified"
+        title="Verified"
+      >
+        <BadgeCheck className="h-3.5 w-3.5" strokeWidth={2.5} />
+      </span>
     </div>
   );
 }
