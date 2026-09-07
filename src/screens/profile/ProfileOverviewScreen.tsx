@@ -137,7 +137,7 @@ export function ProfileOverviewScreen() {
             </p>
           </ProfileCard>
         ) : (
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="hide-scrollbar flex gap-3 overflow-x-auto pb-1">
             {achievements.map((item) => (
               <ProfileCard key={item.id} className="w-[9.5rem] shrink-0 p-4 text-center">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-2xl">
