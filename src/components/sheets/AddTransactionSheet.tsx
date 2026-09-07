@@ -41,6 +41,7 @@ type AddTransactionSheetProps = {
   variant: "income" | "expense";
   editTransaction?: TransactionRowData | null;
   defaultEventId?: Id<"events">;
+  elevated?: boolean;
 };
 
 const CONFIG = {
@@ -115,6 +116,7 @@ export function AddTransactionSheet({
   variant,
   editTransaction = null,
   defaultEventId,
+  elevated = false,
 }: AddTransactionSheetProps) {
   const isEdit = editTransaction !== null;
   const cfg = CONFIG[variant];
@@ -242,7 +244,8 @@ export function AddTransactionSheet({
         open={open}
         onClose={onClose}
         title={sheetTitle}
-      footer={
+        elevated={elevated}
+        footer={
         <div className="space-y-2">
           {error ? <p className="text-center text-[0.8125rem] text-orange-500">{error}</p> : null}
           <button

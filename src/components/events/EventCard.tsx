@@ -5,6 +5,7 @@ import {
   Calendar,
   CreditCard,
   Equal,
+  Eye,
   Pencil,
   Users,
 } from "lucide-react";
@@ -28,6 +29,7 @@ type EventCardProps = {
   monthLabel: string;
   onEdit: () => void;
   onOpen: () => void;
+  onViewItems: () => void;
   onAddIncome: () => void;
   onAddExpense: () => void;
   onAddCredit: () => void;
@@ -101,6 +103,7 @@ export function EventCard({
   monthLabel,
   onEdit,
   onOpen,
+  onViewItems,
   onAddIncome,
   onAddExpense,
   onAddCredit,
@@ -125,14 +128,24 @@ export function EventCard({
           </span>
         </button>
 
-        <button
-          type="button"
-          onClick={onEdit}
-          aria-label={`Edit ${event.name}`}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-surface-border bg-white text-ink-muted shadow-sm transition-colors hover:bg-slate-50 hover:text-ink dark:hover:bg-slate-700"
-        >
-          <Pencil className="h-4 w-4" strokeWidth={2} />
-        </button>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            onClick={onViewItems}
+            aria-label={`View items in ${event.name}`}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white text-ink-muted shadow-sm transition-colors hover:bg-slate-50 hover:text-ink dark:hover:bg-slate-700"
+          >
+            <Eye className="h-4 w-4" strokeWidth={2} />
+          </button>
+          <button
+            type="button"
+            onClick={onEdit}
+            aria-label={`Edit ${event.name}`}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white text-ink-muted shadow-sm transition-colors hover:bg-slate-50 hover:text-ink dark:hover:bg-slate-700"
+          >
+            <Pencil className="h-4 w-4" strokeWidth={2} />
+          </button>
+        </div>
       </div>
 
       <button type="button" onClick={onOpen} className="mt-4 w-full text-left">

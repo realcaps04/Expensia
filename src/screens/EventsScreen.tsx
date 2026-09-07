@@ -12,6 +12,7 @@ import {
   eventToRef,
   type EventRef,
 } from "../components/sheets/EventDetailSheet";
+import { EventItemsSheet } from "../components/sheets/EventItemsSheet";
 import { useAuth } from "../context/AuthProvider";
 import { useQuickAdd } from "../context/QuickAddProvider";
 import { getConvexUserId } from "../lib/session";
@@ -27,6 +28,7 @@ export function EventsScreen() {
   const [editEvent, setEditEvent] = useState<EventRowData | null>(null);
   const [detailEvent, setDetailEvent] = useState<EventRef | null>(null);
   const [detailIsNew, setDetailIsNew] = useState(false);
+  const [itemsEvent, setItemsEvent] = useState<{ id: Id<"events">; name: string } | null>(null);
   const [search, setSearch] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("recent");
 
@@ -64,6 +66,11 @@ export function EventsScreen() {
   const openDetail = (event: NonNullable<typeof events>[number]) => {
     setDetailIsNew(false);
     setDetailEvent(eventToRef(event));
+  };
+
+  const openItems = (event: NonNullable<typeof events>[number]) => {
+    setDetailEvent(null);
+    setItemsEvent({ id: event._id, name: event.name });
   };
 
   const openEntrySheet = (type: "income" | "expense" | "credit", eventId: Id<"events">) => {
@@ -156,6 +163,7 @@ export function EventsScreen() {
                   monthLabel={formatEventMonth(event.createdAt)}
                   onEdit={() => openEdit(event)}
                   onOpen={() => openDetail(event)}
+                  onViewItems={() => openItems(event)}
                   onAddIncome={() => openEntrySheet("income", event._id)}
                   onAddExpense={() => openEntrySheet("expense", event._id)}
                   onAddCredit={() => openEntrySheet("credit", event._id)}
@@ -208,6 +216,15 @@ export function EventsScreen() {
           onAddIncome={() => openEntrySheet("income", detailEvent.eventId)}
           onAddExpense={() => openEntrySheet("expense", detailEvent.eventId)}
           onAddCredit={() => openEntrySheet("credit", detailEvent.eventId)}
+        />
+      ) : null}
+
+      {itemsEvent ? (
+        <EventItemsSheet
+          open
+          onClose={() => setItemsEvent(null)}
+          eventId={itemsEvent.id}
+          eventName={itemsEvent.name}
         />
       ) : null}
     </div>

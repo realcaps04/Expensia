@@ -63,7 +63,7 @@ export function BottomSheet({ open, onClose, title, children, footer, elevated =
               <div className="h-9 w-9" aria-hidden />
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-4 pt-5">
+            <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-4 pt-5">
               {children}
             </div>
 

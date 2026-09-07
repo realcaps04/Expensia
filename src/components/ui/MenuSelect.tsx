@@ -44,11 +44,13 @@ export function MenuSelect({
     const el = wrapRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
+    const width = Math.max(rect.width, variant === "field" ? 220 : rect.width);
+    const left = Math.min(Math.max(12, rect.left), Math.max(12, window.innerWidth - width - 12));
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp = spaceBelow < 224 && rect.top > spaceBelow;
     setCoords({
-      left: rect.left,
-      width: rect.width,
+      left,
+      width,
       top: rect.bottom + 6,
       bottom: window.innerHeight - rect.top + 6,
       openUp,
@@ -129,7 +131,7 @@ export function MenuSelect({
               className={`fixed z-[120] ${PANEL_CLASS}`}
               style={{
                 left: coords.left,
-                width: Math.max(coords.width, variant === "field" ? 220 : coords.width),
+                width: coords.width,
                 ...(coords.openUp ? { bottom: coords.bottom } : { top: coords.top }),
               }}
             >

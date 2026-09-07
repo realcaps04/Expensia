@@ -138,7 +138,7 @@ export function AppSearchBar({ onSelectTransaction, onSelectCredit }: AppSearchB
                 ) : results.length === 0 ? (
                   <p className="px-4 py-3 text-[0.8125rem] text-ink-muted">No results found.</p>
                 ) : (
-                  <ul className="max-h-[min(18rem,50dvh)] overflow-y-auto py-1">
+                  <ul className="hide-scrollbar max-h-[min(18rem,50dvh)] overflow-y-auto py-1">
                     {results.map((result) => {
                       const key =
                         result.kind === "transaction" ? `tx-${result.data.id}` : `cr-${result.data.id}`;

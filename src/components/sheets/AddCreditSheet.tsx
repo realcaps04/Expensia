@@ -16,6 +16,7 @@ type AddCreditSheetProps = {
   userId: Doc<"users">["_id"] | null;
   editCredit?: CreditActivityRowData | null;
   defaultEventId?: Id<"events">;
+  elevated?: boolean;
 };
 
 type CreditMode = "loan" | "credit_card";
@@ -33,7 +34,7 @@ function creditModeFromType(type: CreditActivityRowData["type"]): CreditMode {
   return type === "credit_card" ? "credit_card" : "loan";
 }
 
-export function AddCreditSheet({ open, onClose, userId, editCredit = null, defaultEventId }: AddCreditSheetProps) {
+export function AddCreditSheet({ open, onClose, userId, editCredit = null, defaultEventId, elevated = false }: AddCreditSheetProps) {
   const createCredit = useMutation(api.credits.create);
   const updateCredit = useMutation(api.credits.update);
   const removeCredit = useMutation(api.credits.remove);
@@ -231,6 +232,7 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
         open={open}
         onClose={onClose}
         title={sheetTitle}
+        elevated={elevated}
         footer={
           <div className="space-y-2">
             {error ? <p className="text-center text-[0.8125rem] text-orange-500">{error}</p> : null}
