@@ -3,13 +3,14 @@ import { useMemo, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { categoryColor, DonutChart } from "../components/charts/DonutChart";
-import { TrendAreaChart } from "../components/charts/TrendAreaChart";
+import { TrendAreaChart, type TrendSeriesPoint } from "../components/charts/TrendAreaChart";
 import { useAuth } from "../context/AuthProvider";
 import { categoryLabel, mapCreditRow } from "../lib/convex-mappers";
 import { formatCurrency } from "../lib/format";
 import { getConvexUserId } from "../lib/session";
 
 type Timeframe = "7D" | "30D" | "3M" | "1Y";
+type TrendTone = "income" | "expense";
 
 const TIMEFRAMES: { id: Timeframe; days: number }[] = [
   { id: "7D", days: 7 },
@@ -27,6 +28,77 @@ function rangeForDays(days: number) {
   return { start: start.getTime(), end: end.getTime() };
 }
 
+function vsPriorPercent(current: number, previous: number) {
+  return previous > 0 ? ((current - previous) / previous) * 100 : current > 0 ? 100 : 0;
+}
+
+function TrendCard({
+  title,
+  total,
+  previousTotal,
+  vsPriorLabel,
+  dailyAverage,
+  points,
+  tone,
+}: {
+  title: string;
+  total: number;
+  previousTotal: number;
+  vsPriorLabel: string;
+  dailyAverage: number;
+  points: TrendSeriesPoint[];
+  tone: TrendTone;
+}) {
+  const vsPriorPct = vsPriorPercent(total, previousTotal);
+  const up = vsPriorPct > 0.05;
+  const down = vsPriorPct < -0.05;
+  const changeClass = up
+    ? tone === "expense"
+      ? "text-expense"
+      : "text-income"
+    : down
+      ? tone === "expense"
+        ? "text-income"
+        : "text-expense"
+      : "text-ink-muted";
+  const averageClass = tone === "income" ? "text-income" : "text-expense";
+
+  return (
+    <section className="rounded-card bg-white p-5 shadow-soft">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[0.8125rem] font-medium text-ink-muted">{title}</p>
+          <p className="mt-1 font-display text-[1.5rem] font-bold tracking-tight text-ink">
+            {formatCurrency(total)}
+          </p>
+          {previousTotal > 0 || total > 0 ? (
+            <p className={`mt-1 inline-flex items-center gap-1 text-[0.75rem] font-semibold ${changeClass}`}>
+              {up ? (
+                <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
+              ) : down ? (
+                <ArrowDown className="h-3.5 w-3.5" strokeWidth={2.5} />
+              ) : null}
+              {Math.abs(vsPriorPct).toFixed(1)}% {vsPriorLabel}
+            </p>
+          ) : null}
+        </div>
+        <div className="shrink-0 rounded-[16px] bg-[var(--bg-muted)] px-3 py-2.5">
+          <div className={`flex items-center gap-1.5 text-[0.6875rem] font-medium ${averageClass}`}>
+            <Wallet className="h-3.5 w-3.5" strokeWidth={2.25} />
+            Daily Average
+          </div>
+          <p className="mt-1 text-right font-display text-[0.9375rem] font-bold text-ink">
+            {formatCurrency(dailyAverage)}
+          </p>
+        </div>
+      </div>
+      <div className="mt-5">
+        <TrendAreaChart points={points} tone={tone} height={196} />
+      </div>
+    </section>
+  );
+}
+
 export function InsightsScreen() {
   const { user } = useAuth();
   const userId = getConvexUserId(user);
@@ -42,12 +114,12 @@ export function InsightsScreen() {
     api.finance.getSpendingByCategory,
     userId ? { userId, ...range } : "skip",
   );
-  const dailyTrend = useQuery(
-    api.finance.getDailyExpenseTrend,
+  const dailyTrends = useQuery(
+    api.finance.getDailyTypeTrends,
     userId ? { userId, ...range } : "skip",
   );
-  const prevDailyTrend = useQuery(
-    api.finance.getDailyExpenseTrend,
+  const prevDailyTrends = useQuery(
+    api.finance.getDailyTypeTrends,
     userId ? { userId, ...prevRange } : "skip",
   );
   const creditSummary = useQuery(api.credits.getSummary, userId ? { userId } : "skip");
@@ -56,8 +128,8 @@ export function InsightsScreen() {
   const isLoading =
     userId !== null &&
     (byCategory === undefined ||
-      dailyTrend === undefined ||
-      prevDailyTrend === undefined ||
+      dailyTrends === undefined ||
+      prevDailyTrends === undefined ||
       creditSummary === undefined ||
       creditAccounts === undefined);
 
@@ -89,13 +161,14 @@ export function InsightsScreen() {
 
   const donutSegments = [...expenseSegments, ...creditSegment];
 
-  const trendPoints = (dailyTrend ?? []).map((d) => ({ date: d.date, value: d.amount }));
-  const prevTotal = (prevDailyTrend ?? []).reduce((sum, row) => sum + row.amount, 0);
-  const dailyAverage = days > 0 ? Math.round(totalSpent / days) : 0;
-  const vsPriorPct =
-    prevTotal > 0 ? ((totalSpent - prevTotal) / prevTotal) * 100 : totalSpent > 0 ? 100 : 0;
-  const spendingUp = vsPriorPct > 0.05;
-  const spendingDown = vsPriorPct < -0.05;
+  const expensePoints = (dailyTrends?.expenses ?? []).map((d) => ({ date: d.date, value: d.amount }));
+  const incomePoints = (dailyTrends?.income ?? []).map((d) => ({ date: d.date, value: d.amount }));
+  const totalExpenses = (dailyTrends?.expenses ?? []).reduce((sum, row) => sum + row.amount, 0);
+  const totalIncome = (dailyTrends?.income ?? []).reduce((sum, row) => sum + row.amount, 0);
+  const prevExpenses = (prevDailyTrends?.expenses ?? []).reduce((sum, row) => sum + row.amount, 0);
+  const prevIncome = (prevDailyTrends?.income ?? []).reduce((sum, row) => sum + row.amount, 0);
+  const expenseDailyAverage = days > 0 ? Math.round(totalExpenses / days) : 0;
+  const incomeDailyAverage = days > 0 ? Math.round(totalIncome / days) : 0;
   const vsPriorLabel =
     timeframe === "7D"
       ? "vs last week"
@@ -134,7 +207,7 @@ export function InsightsScreen() {
 
         {isLoading ? (
           <div className="space-y-4">
-            {[1, 2].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-48 animate-pulse rounded-card bg-white/80 shadow-soft" />
             ))}
           </div>
@@ -228,47 +301,24 @@ export function InsightsScreen() {
               </div>
             </section>
 
-            <section className="rounded-card bg-white p-5 shadow-soft">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[0.8125rem] font-medium text-ink-muted">Total Spending</p>
-                  <p className="mt-1 font-display text-[1.5rem] font-bold tracking-tight text-ink">
-                    {formatCurrency(totalSpent)}
-                  </p>
-                  {prevTotal > 0 || totalSpent > 0 ? (
-                    <p
-                      className={`mt-1 inline-flex items-center gap-1 text-[0.75rem] font-semibold ${
-                        spendingUp ? "text-expense" : spendingDown ? "text-income" : "text-ink-muted"
-                      }`}
-                    >
-                      {spendingUp ? (
-                        <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      ) : spendingDown ? (
-                        <ArrowDown className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      ) : null}
-                      {Math.abs(vsPriorPct).toFixed(1)}% {vsPriorLabel}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="shrink-0 rounded-[16px] bg-slate-100 px-3 py-2.5 dark:bg-[#161616]">
-                  <div className="flex items-center gap-1.5 text-[0.6875rem] font-medium text-income">
-                    <Wallet className="h-3.5 w-3.5" strokeWidth={2.25} />
-                    Daily Average
-                  </div>
-                  <p className="mt-1 text-right font-display text-[0.9375rem] font-bold text-ink">
-                    {formatCurrency(dailyAverage)}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-5">
-                <TrendAreaChart
-                  points={trendPoints}
-                  invertTone
-                  expenseLed={spendingUp}
-                  height={196}
-                />
-              </div>
-            </section>
+            <TrendCard
+              title="Total Expenses"
+              total={totalExpenses}
+              previousTotal={prevExpenses}
+              vsPriorLabel={vsPriorLabel}
+              dailyAverage={expenseDailyAverage}
+              points={expensePoints}
+              tone="expense"
+            />
+            <TrendCard
+              title="Total Income"
+              total={totalIncome}
+              previousTotal={prevIncome}
+              vsPriorLabel={vsPriorLabel}
+              dailyAverage={incomeDailyAverage}
+              points={incomePoints}
+              tone="income"
+            />
           </>
         )}
       </div>

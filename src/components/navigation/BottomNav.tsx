@@ -48,7 +48,7 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
       className="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
       aria-label="Main navigation"
     >
-      <div className="pointer-events-auto relative pt-7">
+      <div className="pointer-events-auto relative pt-4">
         <button
           type="button"
           aria-label="Quick add"
@@ -58,8 +58,8 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
           <Plus className="h-7 w-7" strokeWidth={2.5} />
         </button>
 
-        <div className="relative h-[4.75rem] overflow-hidden rounded-[28px] border border-white/70 bg-white/50 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl backdrop-saturate-150">
-          <div className="relative grid h-full grid-cols-5 items-end px-3 pb-1.5 pt-3">
+        <div className="relative h-[4.25rem] overflow-hidden rounded-[28px] border border-white/70 bg-white/50 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl backdrop-saturate-150">
+          <div className="relative grid h-full grid-cols-5 items-center px-3 py-1.5">
             {LEFT_NAV.map((item) => (
               <NavItem key={item.to} {...item} />
             ))}

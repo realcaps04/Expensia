@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { MenuSelect, type MenuSelectOption } from "../ui/MenuSelect";
 
 type SheetFieldRowProps = {
   icon: ReactNode;
@@ -17,7 +18,7 @@ export function SheetFieldRow({ icon, label, children }: SheetFieldRowProps) {
         <p className="text-[0.6875rem] font-medium text-ink-muted">{label}</p>
         <div className="mt-0.5">{children}</div>
       </div>
-      <ChevronRight className="h-4 w-4 shrink-0 text-ink-muted/70" aria-hidden />
+      <ChevronRight className="pointer-events-none h-4 w-4 shrink-0 text-ink-muted/70" aria-hidden />
     </div>
   );
 }
@@ -25,24 +26,21 @@ export function SheetFieldRow({ icon, label, children }: SheetFieldRowProps) {
 type SheetSelectProps = {
   value: string;
   onChange: (value: string) => void;
-  options: readonly { value: string; label: string }[];
+  options: readonly MenuSelectOption[];
   disabled?: boolean;
+  ariaLabel?: string;
 };
 
-export function SheetSelect({ value, onChange, options, disabled }: SheetSelectProps) {
+export function SheetSelect({ value, onChange, options, disabled, ariaLabel }: SheetSelectProps) {
   return (
-    <select
+    <MenuSelect
+      variant="field"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={onChange}
+      options={options}
       disabled={disabled}
-      className="w-full appearance-none bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none disabled:opacity-50"
-    >
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
+      ariaLabel={ariaLabel}
+    />
   );
 }
 

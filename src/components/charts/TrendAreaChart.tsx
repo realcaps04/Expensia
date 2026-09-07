@@ -15,6 +15,8 @@ type TrendAreaChartProps = {
   /** Spending charts: rising values are expense-orange. Balance charts: falling values are orange. */
   invertTone?: boolean;
   expenseLed?: boolean;
+  /** Pin fill and stroke to income teal or expense orange. */
+  tone?: "income" | "expense";
   signed?: boolean;
   height?: number;
   className?: string;
@@ -98,6 +100,7 @@ export function TrendAreaChart({
   points,
   invertTone = false,
   expenseLed = false,
+  tone,
   signed = false,
   height = 196,
   className = "w-full",
@@ -137,10 +140,13 @@ export function TrendAreaChart({
   const last = coords[lastIndex];
   const first = coords[0];
   const trendingDown = last.value < first.value;
+  const pinnedColor = tone === "expense" ? EXPENSE_COLOR : tone === "income" ? INCOME_COLOR : null;
   const fillColor =
-    expenseLed || (invertTone ? !trendingDown : trendingDown) ? EXPENSE_COLOR : INCOME_COLOR;
+    pinnedColor ??
+    (expenseLed || (invertTone ? !trendingDown : trendingDown) ? EXPENSE_COLOR : INCOME_COLOR);
 
   const colorAtIndex = (index: number) => {
+    if (pinnedColor) return pinnedColor;
     if (points.length < 2) return fillColor;
     if (index <= 0) return toneForDelta(points[0].value, points[1].value, invertTone, fillColor);
     return toneForDelta(points[index - 1].value, points[index].value, invertTone, fillColor);
@@ -207,7 +213,7 @@ export function TrendAreaChart({
         preserveAspectRatio="xMidYMid meet"
         shapeRendering="geometricPrecision"
         role="img"
-        aria-label="Trend chart"
+        aria-label={tone === "income" ? "Income trend" : tone === "expense" ? "Expense trend" : "Trend chart"}
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -247,7 +253,7 @@ export function TrendAreaChart({
 
         {coords.slice(0, -1).map((from, index) => {
           const to = coords[index + 1];
-          const color = toneForDelta(from.value, to.value, invertTone, fillColor);
+          const color = pinnedColor ?? toneForDelta(from.value, to.value, invertTone, fillColor);
           return (
             <path
               key={index}

@@ -333,7 +333,33 @@ export const getBalanceTrend = query({
   },
 });
 
-export const getDailyExpenseTrend = query({
+function buildDailyAmountTrend(
+  rows: { type: "income" | "expense"; amount: number; occurredAt: number }[],
+  type: "income" | "expense",
+  start: number,
+  end: number,
+) {
+  const filtered = rows.filter(
+    (tx) => tx.type === type && tx.occurredAt >= start && tx.occurredAt <= end,
+  );
+
+  const totals = new Map<string, number>();
+  const cursor = startOfDayMs(new Date(start));
+  const endDay = startOfDayMs(new Date(end));
+
+  for (let ms = cursor; ms <= endDay; ms = addDays(new Date(ms), 1).getTime()) {
+    totals.set(dateKeyFromMs(ms), 0);
+  }
+
+  for (const tx of filtered) {
+    const key = dateKeyFromMs(tx.occurredAt);
+    totals.set(key, (totals.get(key) ?? 0) + tx.amount);
+  }
+
+  return [...totals.entries()].map(([date, amount]) => ({ date, amount }));
+}
+
+export const getDailyTypeTrends = query({
   args: {
     userId: v.id("users"),
     start: v.number(),
@@ -345,24 +371,10 @@ export const getDailyExpenseTrend = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const expenses = rows.filter(
-      (tx) => tx.type === "expense" && tx.occurredAt >= args.start && tx.occurredAt <= args.end,
-    );
-
-    const totals = new Map<string, number>();
-    const cursor = startOfDayMs(new Date(args.start));
-    const endDay = startOfDayMs(new Date(args.end));
-
-    for (let ms = cursor; ms <= endDay; ms = addDays(new Date(ms), 1).getTime()) {
-      totals.set(dateKeyFromMs(ms), 0);
-    }
-
-    for (const tx of expenses) {
-      const key = dateKeyFromMs(tx.occurredAt);
-      totals.set(key, (totals.get(key) ?? 0) + tx.amount);
-    }
-
-    return [...totals.entries()].map(([date, amount]) => ({ date, amount }));
+    return {
+      expenses: buildDailyAmountTrend(rows, "expense", args.start, args.end),
+      income: buildDailyAmountTrend(rows, "income", args.start, args.end),
+    };
   },
 });
 

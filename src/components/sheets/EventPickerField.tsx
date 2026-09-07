@@ -34,6 +34,7 @@ export function EventPickerField({ userId, value, onChange, enabled = true }: Ev
         onChange={onChange}
         options={options}
         disabled={!userId || events === undefined}
+        ariaLabel="Event (Optional)"
       />
     </SheetFieldRow>
   );

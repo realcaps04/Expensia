@@ -6,6 +6,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../../convex/_generated/api";
 import type { CreditActivityRowData } from "../../lib/activity-types";
 import { parseDateInputToMs, toDateInputValue } from "../../lib/datetime";
+import { MenuSelect } from "../ui/MenuSelect";
 import { BottomSheet } from "./BottomSheet";
 import { ConfirmSheet, deleteItemMessage } from "./ConfirmSheet";
 
@@ -417,19 +418,19 @@ export function AddCreditSheet({ open, onClose, userId, editCredit = null, defau
           </Field>
 
           <Field label="Event (Optional)">
-            <select
+            <MenuSelect
               value={eventId}
-              onChange={(e) => setEventId(e.target.value)}
+              onChange={setEventId}
               disabled={!userId || events === undefined}
-              className={inputClass}
-            >
-              <option value="">No event</option>
-              {(events ?? []).map((event) => (
-                <option key={event._id} value={event._id}>
-                  {event.name}
-                </option>
-              ))}
-            </select>
+              ariaLabel="Event (Optional)"
+              options={[
+                { value: "", label: "No event" },
+                ...(events ?? []).map((event) => ({
+                  value: event._id,
+                  label: event.name,
+                })),
+              ]}
+            />
           </Field>
         </div>
       </BottomSheet>

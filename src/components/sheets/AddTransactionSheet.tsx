@@ -303,7 +303,12 @@ export function AddTransactionSheet({
         </label>
 
         <SheetFieldRow icon={<Briefcase className="h-4 w-4" />} label="Category">
-          <SheetSelect value={category} onChange={setCategory} options={cfg.categories} />
+          <SheetSelect
+            value={category}
+            onChange={setCategory}
+            options={cfg.categories}
+            ariaLabel="Category"
+          />
         </SheetFieldRow>
 
         <SheetFieldRow icon={<Calendar className="h-4 w-4" />} label="Date">
@@ -325,7 +330,12 @@ export function AddTransactionSheet({
         </SheetFieldRow>
 
         <SheetFieldRow icon={<Building2 className="h-4 w-4" />} label="Payment Method">
-          <SheetSelect value={paymentMethod} onChange={setPaymentMethod} options={PAYMENT_METHODS} />
+          <SheetSelect
+            value={paymentMethod}
+            onChange={setPaymentMethod}
+            options={PAYMENT_METHODS}
+            ariaLabel="Payment Method"
+          />
         </SheetFieldRow>
 
         <SheetFieldRow
