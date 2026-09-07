@@ -51,6 +51,8 @@ export function BottomSheet({ open, onClose, title, children, footer, elevated =
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
           >
             <div className="flex shrink-0 items-center justify-between border-b border-surface-border/80 bg-white px-5 py-4">
+              <div className="h-9 w-9" aria-hidden />
+              <h2 className="font-display text-[1rem] font-semibold text-ink">{title}</h2>
               <button
                 type="button"
                 onClick={onClose}
@@ -59,8 +61,6 @@ export function BottomSheet({ open, onClose, title, children, footer, elevated =
               >
                 <X className="h-5 w-5" />
               </button>
-              <h2 className="font-display text-[1rem] font-semibold text-ink">{title}</h2>
-              <div className="h-9 w-9" aria-hidden />
             </div>
 
             <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-4 pt-5">
