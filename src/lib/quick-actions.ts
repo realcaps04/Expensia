@@ -80,3 +80,8 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     to: "/home/purchases",
   },
 ];
+
+/** Home grid keeps the compact 4 shortcuts; Purchases uses its own card below. */
+export const HOME_QUICK_ACTION_ITEMS = QUICK_ACTION_ITEMS.filter(
+  (item) => item.id !== "purchases",
+);

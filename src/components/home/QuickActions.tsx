@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { QUICK_ACTION_ITEMS, type QuickActionSheet } from "../../lib/quick-actions";
+import { HOME_QUICK_ACTION_ITEMS, type QuickActionSheet } from "../../lib/quick-actions";
 import { useQuickAdd } from "../../context/QuickAddProvider";
 
 type QuickActionsProps = {
@@ -19,7 +19,7 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
 
   return (
     <div className="grid grid-cols-4 gap-2">
-      {QUICK_ACTION_ITEMS.map((action) => {
+      {HOME_QUICK_ACTION_ITEMS.map((action) => {
         const { shortLabel, icon: Icon, bg, color } = action;
 
         if (action.kind === "route") {

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { HomeHeader } from "../components/home/HomeHeader";
 import { BalanceCard } from "../components/home/BalanceCard";
 import { QuickActions } from "../components/home/QuickActions";
+import { PurchasesHomeCard } from "../components/home/PurchasesHomeCard";
 import { TodayOverview } from "../components/home/TodayOverview";
 import { RecentTransactions } from "../components/home/RecentTransactions";
 import type { TransactionRowData } from "../lib/transaction-types";
@@ -63,6 +64,7 @@ export function HomeScreen() {
           <>
             <BalanceCard userId={userId} />
             <QuickActions />
+            <PurchasesHomeCard userId={userId} />
             <TodayOverview summary={summary} />
             <RecentTransactions transactions={rows} onEditTransaction={openEditTransaction} />
           </>

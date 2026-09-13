@@ -13,6 +13,7 @@ import type * as events from "../events.js";
 import type * as finance from "../finance.js";
 import type * as lib_helpers from "../lib/helpers.js";
 import type * as passwordReset from "../passwordReset.js";
+import type * as purchases from "../purchases.js";
 import type * as transactions from "../transactions.js";
 import type * as users from "../users.js";
 import type * as validators from "../validators.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   finance: typeof finance;
   "lib/helpers": typeof lib_helpers;
   passwordReset: typeof passwordReset;
+  purchases: typeof purchases;
   transactions: typeof transactions;
   users: typeof users;
   validators: typeof validators;

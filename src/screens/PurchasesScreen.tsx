@@ -6,6 +6,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import {
   formatPurchaseDate,
   PurchaseListCard,
+  type PurchaseListCardData,
 } from "../components/purchases/PurchaseListCard";
 import { PurchasesEmptyFooter } from "../components/purchases/PurchasesEmptyFooter";
 import {
@@ -20,6 +21,44 @@ import { useAuth } from "../context/AuthProvider";
 import { getConvexUserId } from "../lib/session";
 
 type SortMode = "recent" | "name";
+type PurchaseListRow = PurchaseListCardData & {
+  note?: string;
+  items: Array<{
+    _id: Id<"purchaseItems">;
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    note?: string;
+  }>;
+};
+
+function toDetail(list: PurchaseListRow): PurchaseDetailData {
+  return {
+    listId: list._id,
+    name: list.name,
+    note: list.note,
+    purchasedAt: list.purchasedAt,
+    itemCount: list.itemCount,
+    totalQuantity: list.totalQuantity,
+    totalAmount: list.totalAmount,
+    items: list.items,
+  };
+}
+
+function toEdit(list: PurchaseListRow): PurchaseListEditData {
+  return {
+    id: list._id,
+    name: list.name,
+    note: list.note,
+    purchasedAt: list.purchasedAt,
+    items: list.items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      note: item.note,
+    })),
+  };
+}
 
 export function PurchasesScreen() {
   const { user } = useAuth();
@@ -35,7 +74,7 @@ export function PurchasesScreen() {
   const isLoading = userId !== null && lists === undefined;
 
   const filteredLists = useMemo(() => {
-    const rows = lists ?? [];
+    const rows = (lists ?? []) as PurchaseListRow[];
     const query = search.trim().toLowerCase();
     let next = query
       ? rows.filter(
@@ -53,45 +92,25 @@ export function PurchasesScreen() {
     return next;
   }, [lists, search, sortMode]);
 
-  const toDetail = (list: NonNullable<typeof lists>[number]): PurchaseDetailData => ({
-    listId: list._id,
-    name: list.name,
-    note: list.note,
-    purchasedAt: list.purchasedAt,
-    itemCount: list.itemCount,
-    totalQuantity: list.totalQuantity,
-    totalAmount: list.totalAmount,
-    items: list.items,
-  });
-
-  const toEdit = (list: NonNullable<typeof lists>[number]): PurchaseListEditData => ({
-    id: list._id,
-    name: list.name,
-    note: list.note,
-    purchasedAt: list.purchasedAt,
-    items: list.items.map((item) => ({
-      name: item.name,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      note: item.note,
-    })),
-  });
-
   const openCreate = () => {
     setEditList(null);
     setEditSheetOpen(true);
   };
 
-  const openEdit = (list: NonNullable<typeof lists>[number]) => {
+  const openEdit = (list: PurchaseListRow) => {
     setDetailList(null);
     setEditList(toEdit(list));
     setEditSheetOpen(true);
   };
 
-  const openDetail = (list: NonNullable<typeof lists>[number]) => {
+  const openDetail = (list: PurchaseListRow) => {
     setDetailIsNew(false);
     setDetailList(toDetail(list));
   };
+
+  const liveDetail = detailList
+    ? ((lists ?? []) as PurchaseListRow[]).find((row) => row._id === detailList.listId)
+    : undefined;
 
   const toggleSort = () => {
     setSortMode((mode) => (mode === "recent" ? "name" : "recent"));
@@ -197,23 +216,29 @@ export function PurchasesScreen() {
         }}
         userId={userId}
         editList={editList}
-        onSaved={({ listId, isNew }) => {
-          if (!isNew) return;
-          const created = (lists ?? []).find((row) => row._id === listId);
-          if (created) {
-            setDetailIsNew(true);
-            setDetailList(toDetail(created));
-            return;
-          }
+        onSaved={(payload) => {
+          if (!payload.isNew) return;
+          const totalAmount = payload.items.reduce(
+            (sum, item) => sum + item.quantity * item.unitPrice,
+            0,
+          );
+          const totalQuantity = payload.items.reduce((sum, item) => sum + item.quantity, 0);
           setDetailIsNew(true);
           setDetailList({
-            listId,
-            name: "Purchase list",
-            purchasedAt: Date.now(),
-            itemCount: 0,
-            totalQuantity: 0,
-            totalAmount: 0,
-            items: [],
+            listId: payload.listId,
+            name: payload.name,
+            note: payload.note,
+            purchasedAt: payload.purchasedAt,
+            itemCount: payload.items.length,
+            totalQuantity,
+            totalAmount,
+            items: payload.items.map((item, index) => ({
+              _id: `${payload.listId}_${index}` as Id<"purchaseItems">,
+              name: item.name,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              note: item.note,
+            })),
           });
         }}
       />
@@ -225,20 +250,28 @@ export function PurchasesScreen() {
             setDetailList(null);
             setDetailIsNew(false);
           }}
-          list={
-            (lists ?? []).find((row) => row._id === detailList.listId)
-              ? toDetail((lists ?? []).find((row) => row._id === detailList.listId)!)
-              : detailList
-          }
+          list={liveDetail ? toDetail(liveDetail) : detailList}
           isNew={detailIsNew}
           onEdit={() => {
-            const live = (lists ?? []).find((row) => row._id === detailList.listId);
             setDetailList(null);
             setDetailIsNew(false);
-            if (live) {
-              setEditList(toEdit(live));
-              setEditSheetOpen(true);
+            if (liveDetail) {
+              setEditList(toEdit(liveDetail));
+            } else {
+              setEditList({
+                id: detailList.listId,
+                name: detailList.name,
+                note: detailList.note,
+                purchasedAt: detailList.purchasedAt,
+                items: detailList.items.map((item) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  note: item.note,
+                })),
+              });
             }
+            setEditSheetOpen(true);
           }}
         />
       ) : null}

@@ -174,7 +174,14 @@ export function AddPurchaseSheet({
           purchasedAt: parseDateInputToMs(purchasedAt),
           items: parsedItems,
         });
-        onSaved?.({ listId: editList.id as Id<"purchaseLists">, isNew: false });
+        onSaved?.({
+          listId: editList.id as Id<"purchaseLists">,
+          isNew: false,
+          name: name.trim(),
+          note: note.trim() || undefined,
+          purchasedAt: parseDateInputToMs(purchasedAt),
+          items: parsedItems,
+        });
       } else {
         const listId = await createList({
           userId,
@@ -183,7 +190,14 @@ export function AddPurchaseSheet({
           purchasedAt: parseDateInputToMs(purchasedAt),
           items: parsedItems,
         });
-        onSaved?.({ listId, isNew: true });
+        onSaved?.({
+          listId,
+          isNew: true,
+          name: name.trim(),
+          note: note.trim() || undefined,
+          purchasedAt: parseDateInputToMs(purchasedAt),
+          items: parsedItems,
+        });
       }
       onClose();
     } catch (err) {
