@@ -49,6 +49,32 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_and_archived", ["userId", "isArchived"]),
 
+  purchaseLists: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    note: v.optional(v.string()),
+    purchasedAt: v.number(),
+    isArchived: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_archived", ["userId", "isArchived"]),
+
+  purchaseItems: defineTable({
+    userId: v.id("users"),
+    listId: v.id("purchaseLists"),
+    name: v.string(),
+    quantity: v.number(),
+    unitPrice: v.number(),
+    note: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_list", ["listId"])
+    .index("by_user_and_list", ["userId", "listId"]),
+
   budgets: defineTable({
     userId: v.id("users"),
     monthKey: v.string(),

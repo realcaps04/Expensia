@@ -18,7 +18,7 @@ export function QuickActions({ onOpenSheet }: QuickActionsProps) {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
       {QUICK_ACTION_ITEMS.map((action) => {
         const { shortLabel, icon: Icon, bg, color } = action;
 

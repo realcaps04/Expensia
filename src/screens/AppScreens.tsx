@@ -8,6 +8,7 @@ import { ProfileOverviewScreen } from "./profile/ProfileOverviewScreen";
 export { ActivityScreen } from "./ActivityScreen";
 export { EventsScreen } from "./EventsScreen";
 export { InsightsScreen } from "./InsightsScreen";
+export { PurchasesScreen } from "./PurchasesScreen";
 export { ProfileScreen };
 
 export function ProfileRoutes() {

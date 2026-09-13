@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { ArrowDownFromLine, CalendarRange, CreditCard, Wallet } from "lucide-react";
+import { ArrowDownFromLine, CalendarRange, CreditCard, ShoppingBasket, Wallet } from "lucide-react";
 
 export type QuickActionSheet = "income" | "expense" | "credit";
 
@@ -15,7 +15,7 @@ export type QuickActionItem =
       kind: "sheet";
     }
   | {
-      id: "events";
+      id: "events" | "purchases";
       label: string;
       shortLabel: string;
       description: string;
@@ -67,5 +67,16 @@ export const QUICK_ACTION_ITEMS: QuickActionItem[] = [
     bg: "bg-transparent",
     color: "text-violet-brand",
     to: "/home/events",
+  },
+  {
+    id: "purchases",
+    kind: "route",
+    label: "Purchases",
+    shortLabel: "Purchases",
+    description: "Track shopping lists with item name, qty & price",
+    icon: ShoppingBasket,
+    bg: "bg-transparent",
+    color: "text-teal-brand",
+    to: "/home/purchases",
   },
 ];
