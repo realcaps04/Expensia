@@ -35,7 +35,10 @@ export type ActivityGroup = {
 export function filterActivityItems(
   rows: ActivityItem[],
   filters: ActivityFilterState,
+  searchQuery = "",
 ): ActivityItem[] {
+  const query = searchQuery.trim().toLowerCase();
+
   return rows.filter((item) => {
     const type = activityItemType(item);
     if (filters.typeFilter !== "all" && type !== filters.typeFilter) return false;
@@ -48,7 +51,35 @@ export function filterActivityItems(
     ) {
       return false;
     }
-    return true;
+
+    if (!query) return true;
+
+    if (item.kind === "transaction") {
+      const haystack = [
+        item.data.title,
+        item.data.category,
+        item.data.note,
+        item.data.paymentMethod,
+        item.data.type,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    }
+
+    const haystack = [
+      item.data.name,
+      item.data.typeLabel,
+      item.data.issuer,
+      item.data.note,
+      item.data.lastFour,
+      "credit",
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(query);
   });
 }
 

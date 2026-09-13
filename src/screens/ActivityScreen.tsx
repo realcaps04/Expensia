@@ -2,8 +2,13 @@ import { useMutation, useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
 import { api } from "../../convex/_generated/api";
-import { ActivityFilterBar } from "../components/activity/ActivityFilterBar";
+import {
+  ActivityFilterButton,
+  ActivityFilterSheet,
+  hasActiveActivityFilters,
+} from "../components/activity/ActivityFilterSheet";
 import { ActivityListItem } from "../components/activity/ActivityListItem";
+import { ActivitySearchToggle } from "../components/activity/ActivitySearchToggle";
 import { AddTransactionSheet } from "../components/sheets/AddTransactionSheet";
 import { AddCreditSheet } from "../components/sheets/AddCreditSheet";
 import { ConfirmSheet, deleteItemMessage } from "../components/sheets/ConfirmSheet";
@@ -38,6 +43,9 @@ export function ActivityScreen() {
   const [editingTransaction, setEditingTransaction] = useState<TransactionRowData | null>(null);
   const [editingCredit, setEditingCredit] = useState<CreditActivityRowData | null>(null);
   const [filters, setFilters] = useState(DEFAULT_ACTIVITY_FILTERS);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<
     | { kind: "transaction"; item: TransactionRowData }
     | { kind: "credit"; item: CreditActivityRowData }
@@ -65,8 +73,8 @@ export function ActivityScreen() {
   }, [transactions, credits]);
 
   const filteredItems = useMemo(
-    () => filterActivityItems(allItems, filters),
-    [allItems, filters],
+    () => filterActivityItems(allItems, filters, searchQuery),
+    [allItems, filters, searchQuery],
   );
 
   const groups = useMemo(
@@ -78,6 +86,12 @@ export function ActivityScreen() {
   const categories = useMemo(() => getAvailableCategories(allItems), [allItems]);
   const isLoading =
     userId !== null && (transactions === undefined || credits === undefined);
+  const filtersActive = hasActiveActivityFilters(filters);
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
 
   const handleDeleteTransaction = (tx: TransactionRowData) => {
     setDeleteTarget({ kind: "transaction", item: tx });
@@ -125,26 +139,51 @@ export function ActivityScreen() {
     <>
       <div className="px-5 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="mx-auto flex max-w-[390px] flex-col gap-5">
-          <div>
-            <h1 className="font-display text-[1.375rem] font-bold text-ink">Activity</h1>
-            <p className="mt-1 text-[0.8125rem] text-ink-secondary">
-              Browse and manage transactions and credit accounts
-            </p>
+          <div className="flex items-start justify-between gap-3">
+            {searchOpen ? (
+              <div className="min-w-0 flex-1">
+                <ActivitySearchToggle
+                  open
+                  query={searchQuery}
+                  onOpen={() => setSearchOpen(true)}
+                  onClose={closeSearch}
+                  onQueryChange={setSearchQuery}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="min-w-0 flex-1">
+                  <h1 className="font-display text-[1.375rem] font-bold text-ink">Activity</h1>
+                  <p className="mt-1 text-[0.8125rem] text-ink-secondary">
+                    Browse and manage transactions and credit accounts
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {!isLoading && allItems.length > 0 ? (
+                    <ActivityFilterButton
+                      active={filtersActive}
+                      onClick={() => setFilterOpen(true)}
+                    />
+                  ) : null}
+                  <ActivitySearchToggle
+                    open={false}
+                    query={searchQuery}
+                    onOpen={() => setSearchOpen(true)}
+                    onClose={closeSearch}
+                    onQueryChange={setSearchQuery}
+                  />
+                </div>
+              </>
+            )}
           </div>
-
-          {!isLoading && allItems.length > 0 ? (
-            <ActivityFilterBar
-              filters={filters}
-              onChange={setFilters}
-              months={months}
-              categories={categories}
-            />
-          ) : null}
 
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-card bg-slate-200/80 shadow-soft dark:bg-white/10" />
+                <div
+                  key={i}
+                  className="h-28 animate-pulse rounded-card bg-slate-200/80 shadow-soft dark:bg-white/10"
+                />
               ))}
             </div>
           ) : allItems.length === 0 ? (
@@ -158,7 +197,9 @@ export function ActivityScreen() {
             <div className="rounded-card bg-white px-4 py-12 text-center shadow-soft">
               <p className="text-sm font-medium text-ink">No matches</p>
               <p className="mt-1 text-[0.8125rem] text-ink-secondary">
-                Try changing your filters to see more activity.
+                {searchQuery.trim()
+                  ? "Try a different search term or clear filters."
+                  : "Try changing your filters to see more activity."}
               </p>
             </div>
           ) : (
@@ -200,6 +241,15 @@ export function ActivityScreen() {
           )}
         </div>
       </div>
+
+      <ActivityFilterSheet
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        filters={filters}
+        onChange={setFilters}
+        months={months}
+        categories={categories}
+      />
 
       <AddTransactionSheet
         open={editingTransaction !== null}
