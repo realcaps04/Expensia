@@ -95,12 +95,6 @@ export function PurchasesScreen() {
     setEditSheetOpen(true);
   };
 
-  const openEdit = (list: PurchaseListRow) => {
-    setDetailList(null);
-    setEditList(toEdit(list));
-    setEditSheetOpen(true);
-  };
-
   const openDetail = (list: PurchaseListRow) => {
     setDetailIsNew(false);
     setDetailList(toDetail(list));

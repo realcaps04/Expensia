@@ -37,7 +37,7 @@ function NavItem({
       end={end}
       className={({ isActive }) => {
         const active = forceActive || isActive;
-        return `relative z-10 flex h-full flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium no-underline ${
+        return `relative z-10 flex h-full flex-col items-center justify-center gap-0.5 text-[0.625rem] font-medium no-underline ${
           active ? "text-[#E87820]" : "text-ink-muted"
         }`;
       }}
@@ -49,7 +49,7 @@ function NavItem({
             {active ? (
               <motion.span
                 layoutId="bottom-nav-glass"
-                className="absolute inset-x-1 inset-y-1.5 rounded-[20px] bg-[#E87820]/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.28)] dark:bg-[#E87820]/20 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                className="absolute inset-x-1 inset-y-1 rounded-full bg-[#E87820]/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.28)] dark:bg-[#E87820]/20 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
                 transition={{ type: "spring", stiffness: 380, damping: 34 }}
               />
             ) : null}
@@ -58,7 +58,7 @@ function NavItem({
               transition={{ type: "spring", stiffness: 420, damping: 30 }}
               className="relative z-10 flex items-center justify-center"
             >
-              <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.25 : 1.85} />
+              <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.85} />
             </motion.span>
             <span className="relative z-10">{label}</span>
           </>
@@ -74,24 +74,24 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
       className="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
       aria-label="Main navigation"
     >
-      <div className="pointer-events-auto relative pt-4">
+      <div className="pointer-events-auto relative pt-3.5">
         <motion.button
           type="button"
           aria-label="Quick add"
           onClick={onAddClick}
           whileTap={{ scale: 0.94 }}
-          className="absolute left-1/2 top-0 z-10 flex h-[3.75rem] w-[3.75rem] -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-[#E87820] to-[#C45E12] text-white shadow-[0_10px_28px_rgba(232,120,32,0.42)]"
+          className="absolute left-1/2 top-0 z-10 flex h-[3.25rem] w-[3.25rem] -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-[#E87820] to-[#C45E12] text-white shadow-[0_10px_28px_rgba(232,120,32,0.42)]"
         >
-          <Plus className="h-7 w-7" strokeWidth={2.5} />
+          <Plus className="h-6 w-6" strokeWidth={2.5} />
         </motion.button>
 
-        <div className="relative h-[4.25rem] overflow-hidden rounded-[28px] border border-white/70 bg-white/40 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/20 dark:bg-white/10 dark:shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
+        <div className="relative h-[3.5rem] overflow-hidden rounded-full border border-white/70 bg-white/40 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/20 dark:bg-white/10 dark:shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
           <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/35 to-transparent dark:from-white/10"
             aria-hidden
           />
           <LayoutGroup id="bottom-nav">
-            <div className="relative grid h-full grid-cols-5 items-stretch px-2.5 py-1">
+            <div className="relative grid h-full grid-cols-5 items-stretch px-2 py-0.5">
               {LEFT_NAV.map((item) => (
                 <NavItem key={item.to} {...item} />
               ))}
