@@ -1,10 +1,10 @@
 import { LayoutGroup, motion } from "framer-motion";
-import { Home, List, PieChart, Plus, User } from "lucide-react";
+import { Activity, Home, PieChart, Plus, User } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const LEFT_NAV = [
   { to: "/home", label: "Home", icon: Home, end: true, id: "home" },
-  { to: "/home/activity", label: "Activity", icon: List, end: false, id: "activity" },
+  { to: "/home/activity", label: "Activity", icon: Activity, end: false, id: "activity" },
 ] as const;
 
 const RIGHT_NAV = [
@@ -39,7 +39,7 @@ function NavItem({
       className={({ isActive }) => {
         const active = forceActive || isActive;
         return `relative z-10 flex h-full items-center justify-center no-underline ${
-          active ? "text-[#E87820]" : "text-ink-muted"
+          active ? "text-white" : "text-ink-muted"
         }`;
       }}
     >
@@ -50,7 +50,7 @@ function NavItem({
             {active ? (
               <motion.span
                 layoutId="bottom-nav-glass"
-                className="absolute inset-x-1 inset-y-1 rounded-full bg-[#E87820]/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.28)] dark:bg-[#E87820]/20 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                className="absolute inset-x-1 inset-y-1 rounded-full bg-[#E87820] shadow-[0_4px_14px_rgba(232,120,32,0.4)]"
                 transition={{ type: "spring", stiffness: 380, damping: 34 }}
               />
             ) : null}
@@ -71,7 +71,7 @@ function NavItem({
 export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
   return (
     <nav
-      className="pointer-events-none fixed bottom-[max(2.75rem,calc(env(safe-area-inset-bottom)+2rem))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
+      className="pointer-events-none fixed bottom-[max(2rem,calc(env(safe-area-inset-bottom)+1.25rem))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
       aria-label="Main navigation"
     >
       <div className="pointer-events-auto relative pt-3.5">
@@ -85,9 +85,9 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
           <Plus className="h-6 w-6" strokeWidth={2.5} />
         </motion.button>
 
-        <div className="relative h-[3.5rem] overflow-hidden rounded-full border border-white/70 bg-white/40 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/20 dark:bg-white/10 dark:shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
+        <div className="relative h-[3.5rem] overflow-hidden rounded-full border border-white/50 bg-white/20 shadow-[0_8px_32px_rgba(15,23,42,0.1)] backdrop-blur-xl backdrop-saturate-150 dark:border-white/25 dark:bg-white/[0.06] dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
           <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/35 to-transparent dark:from-white/10"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-transparent dark:from-white/[0.08]"
             aria-hidden
           />
           <LayoutGroup id="bottom-nav">
