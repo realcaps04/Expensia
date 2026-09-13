@@ -75,15 +75,17 @@ export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
       aria-label="Main navigation"
     >
       <div className="pointer-events-auto relative pt-3.5">
-        <motion.button
-          type="button"
-          aria-label="Quick add"
-          onClick={onAddClick}
-          whileTap={{ scale: 0.94 }}
-          className="absolute left-1/2 top-0 z-10 flex h-[3.25rem] w-[3.25rem] -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b from-[#E87820] to-[#C45E12] text-white shadow-[0_10px_28px_rgba(232,120,32,0.42)]"
-        >
-          <Plus className="h-6 w-6" strokeWidth={2.5} />
-        </motion.button>
+        <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2">
+          <motion.button
+            type="button"
+            aria-label="Quick add"
+            onClick={onAddClick}
+            whileTap={{ scale: 0.94 }}
+            className="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full bg-gradient-to-b from-[#E87820] to-[#C45E12] text-white shadow-[0_10px_28px_rgba(232,120,32,0.42)]"
+          >
+            <Plus className="h-6 w-6" strokeWidth={2.5} />
+          </motion.button>
+        </div>
 
         <div className="relative h-[3.5rem] overflow-hidden rounded-full border border-white/50 bg-white/20 shadow-[0_8px_32px_rgba(15,23,42,0.1)] backdrop-blur-xl backdrop-saturate-150 dark:border-white/25 dark:bg-white/[0.06] dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
           <div
