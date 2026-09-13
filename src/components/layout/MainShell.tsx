@@ -39,7 +39,7 @@ function MainShellContent() {
   const direction = directionRef.current;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col bg-[#F4F6F8]">
+    <div className="relative flex h-full min-h-0 flex-col bg-surface">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
         <AuthBackground />
       </div>

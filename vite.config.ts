@@ -45,8 +45,8 @@ export default defineConfig(({ mode }) => ({
         short_name: "Expensia",
         description:
           "Track daily income and expenses. Understand your cash flow. Grow your money with clarity.",
-        theme_color: "#FAFAF8",
-        background_color: "#FAFAF8",
+        theme_color: "#0A0A0A",
+        background_color: "#0A0A0A",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",

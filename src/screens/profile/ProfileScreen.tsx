@@ -77,7 +77,7 @@ export function ProfileScreen() {
           {isLoading ? (
             <div className="grid grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-14 animate-pulse rounded-xl bg-slate-100" />
+                <div key={i} className="h-14 animate-pulse rounded-xl bg-slate-100 dark:bg-white/10" />
               ))}
             </div>
           ) : (

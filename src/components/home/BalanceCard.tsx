@@ -139,7 +139,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
 
       <div className="mt-3">
         {isLoading ? (
-          <div className="h-9 w-36 animate-pulse rounded-lg bg-slate-100" />
+          <div className="h-9 w-36 animate-pulse rounded-lg bg-slate-100 dark:bg-white/10" />
         ) : (
           <p
             className={`font-display text-[1.75rem] font-bold tracking-tight ${
@@ -158,7 +158,7 @@ export function BalanceCard({ userId: userIdProp }: BalanceCardProps) {
         )}
 
         {isLoading ? (
-          <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100" />
+          <div className="mt-2 h-4 w-28 animate-pulse rounded bg-slate-100 dark:bg-white/10" />
         ) : !hasActivity ? (
           <p className="mt-1 text-[0.8125rem] text-ink-muted">No activity in this period</p>
         ) : net !== 0 ? (

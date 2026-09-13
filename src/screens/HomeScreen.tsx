@@ -57,7 +57,7 @@ export function HomeScreen() {
         {isLoading ? (
           <div className="space-y-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 animate-pulse rounded-card bg-white/80 shadow-soft" />
+              <div key={i} className="h-32 animate-pulse rounded-card bg-slate-200/80 shadow-soft dark:bg-white/10" />
             ))}
           </div>
         ) : (

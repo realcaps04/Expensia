@@ -144,7 +144,7 @@ export function ActivityScreen() {
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-card bg-white/80 shadow-soft" />
+                <div key={i} className="h-28 animate-pulse rounded-card bg-slate-200/80 shadow-soft dark:bg-white/10" />
               ))}
             </div>
           ) : allItems.length === 0 ? (

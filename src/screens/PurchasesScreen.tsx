@@ -166,7 +166,7 @@ export function PurchasesScreen() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="h-[220px] animate-pulse rounded-[20px] bg-white/80 shadow-soft"
+                className="h-[220px] animate-pulse rounded-[20px] bg-slate-200/80 shadow-soft dark:bg-white/10"
               />
             ))}
           </div>

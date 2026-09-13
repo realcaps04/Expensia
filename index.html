@@ -6,9 +6,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-maskable.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#FAFAF8" />
+    <meta name="theme-color" content="#FAFAF8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Expensia" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta
@@ -16,13 +17,32 @@
       content="Expensia — Track daily income and expenses. Understand your cash flow. Grow your money with clarity."
     />
     <title>Expensia — Track. Understand. Grow.</title>
+    <style>
+      html,
+      body,
+      #root {
+        background-color: #fafaf8;
+      }
+      html.dark,
+      html.dark body,
+      html.dark #root {
+        background-color: #0a0a0a;
+      }
+    </style>
     <script>
       try {
         var theme = localStorage.getItem("expensia-theme");
         var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (theme === "dark" || (theme === "system" && prefersDark)) {
+        var isDark = theme === "dark" || (theme === "system" && prefersDark);
+        if (isDark) {
           document.documentElement.classList.add("dark");
         }
+        var color = isDark ? "#0A0A0A" : "#FAFAF8";
+        document.documentElement.style.backgroundColor = color;
+        document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+        document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+          meta.setAttribute("content", color);
+        });
       } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
