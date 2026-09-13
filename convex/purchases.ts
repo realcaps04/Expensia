@@ -28,9 +28,18 @@ function normalizeItems(
     throw new Error("Add at least one purchase item.");
   }
 
+  const seen = new Set<string>();
+
   return items.map((item, index) => {
     const name = item.name.trim();
     if (!name) throw new Error(`Enter a name for item ${index + 1}.`);
+
+    const key = name.toLowerCase();
+    if (seen.has(key)) {
+      throw new Error(`"${name}" is already on this list. Duplicate items are not allowed.`);
+    }
+    seen.add(key);
+
     if (!Number.isFinite(item.quantity) || item.quantity <= 0) {
       throw new Error(`Enter a valid quantity for "${name}".`);
     }

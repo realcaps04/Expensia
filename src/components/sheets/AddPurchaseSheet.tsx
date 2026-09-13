@@ -65,6 +65,20 @@ function emptyItem(): PurchaseItemFormRow {
   };
 }
 
+function itemNameKey(name: string) {
+  return name.trim().toLowerCase();
+}
+
+function findDuplicateName(
+  rows: PurchaseItemFormRow[],
+  name: string,
+  ignoreKey?: string,
+) {
+  const key = itemNameKey(name);
+  if (!key) return null;
+  return rows.find((row) => row.key !== ignoreKey && itemNameKey(row.name) === key) ?? null;
+}
+
 export function AddPurchaseSheet({
   open,
   onClose,
@@ -84,11 +98,37 @@ export function AddPurchaseSheet({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [highlightedKey, setHighlightedKey] = useState<string | null>(null);
   const lastCardRef = useRef<HTMLDivElement>(null);
   const lastNameInputRef = useRef<HTMLInputElement>(null);
+  const itemCardRefs = useRef(new Map<string, HTMLDivElement>());
   const shouldScrollToLatest = useRef(false);
+  const scrollToKey = useRef<string | null>(null);
+  const highlightTimerRef = useRef<number | null>(null);
+
+  const focusExistingItem = (key: string) => {
+    scrollToKey.current = key;
+    if (highlightTimerRef.current !== null) {
+      window.clearTimeout(highlightTimerRef.current);
+    }
+    setHighlightedKey(key);
+    highlightTimerRef.current = window.setTimeout(() => {
+      setHighlightedKey((current) => (current === key ? null : current));
+      highlightTimerRef.current = null;
+    }, 1800);
+  };
 
   useEffect(() => {
+    if (scrollToKey.current) {
+      const key = scrollToKey.current;
+      scrollToKey.current = null;
+      shouldScrollToLatest.current = false;
+      requestAnimationFrame(() => {
+        itemCardRefs.current.get(key)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      return;
+    }
+
     if (!shouldScrollToLatest.current) return;
     shouldScrollToLatest.current = false;
 
@@ -96,9 +136,26 @@ export function AddPurchaseSheet({
       lastCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       lastNameInputRef.current?.focus({ preventScroll: true });
     });
-  }, [items.length]);
+  }, [items]);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimerRef.current !== null) {
+        window.clearTimeout(highlightTimerRef.current);
+      }
+    };
+  }, []);
 
   const addItem = () => {
+    const last = items[items.length - 1];
+    const duplicate = findDuplicateName(items, last.name, last.key);
+    if (duplicate) {
+      setError(`"${duplicate.name.trim()}" is already on this list.`);
+      focusExistingItem(duplicate.key);
+      return;
+    }
+
+    setError("");
     shouldScrollToLatest.current = true;
     setItems((rows) => [...rows, emptyItem()]);
   };
@@ -127,6 +184,9 @@ export function AddPurchaseSheet({
     }
     setError("");
     setDeleteConfirmOpen(false);
+    setHighlightedKey(null);
+    scrollToKey.current = null;
+    shouldScrollToLatest.current = false;
   }, [open, editList]);
 
   const runningTotal = useMemo(() => {
@@ -139,10 +199,12 @@ export function AddPurchaseSheet({
   }, [items]);
 
   const updateItem = (key: string, patch: Partial<PurchaseItemFormRow>) => {
+    setError("");
     setItems((rows) => rows.map((row) => (row.key === key ? { ...row, ...patch } : row)));
   };
 
   const removeItem = (key: string) => {
+    setError("");
     setItems((rows) => (rows.length <= 1 ? rows : rows.filter((row) => row.key !== key)));
   };
 
@@ -159,11 +221,30 @@ export function AddPurchaseSheet({
     setBusy(true);
     setError("");
     try {
-      const parsedItems = items.map((item, index) => {
+      const filledItems = items.filter(
+        (item) => item.name.trim() || item.quantity.trim() || item.unitPrice.trim(),
+      );
+      if (filledItems.length === 0) {
+        throw new Error("Add at least one purchase item.");
+      }
+
+      const seenNames = new Map<string, { name: string; key: string }>();
+      const parsedItems = filledItems.map((item, index) => {
         const itemName = item.name.trim();
         const quantity = Number(item.quantity);
         const unitPrice = Number(item.unitPrice);
         if (!itemName) throw new Error(`Enter a name for item ${index + 1}.`);
+
+        const key = itemNameKey(itemName);
+        const existing = seenNames.get(key);
+        if (existing) {
+          focusExistingItem(existing.key);
+          throw new Error(
+            `"${existing.name}" is already on this list. Duplicate items are not allowed.`,
+          );
+        }
+        seenNames.set(key, { name: itemName, key: item.key });
+
         if (!Number.isFinite(quantity) || quantity <= 0) {
           throw new Error(`Enter a valid quantity for "${itemName}".`);
         }
@@ -321,17 +402,31 @@ export function AddPurchaseSheet({
 
           {items.map((item, index) => {
             const isLast = index === items.length - 1;
+            const isHighlighted = highlightedKey === item.key;
 
             return (
               <div
                 key={item.key}
-                ref={isLast ? lastCardRef : undefined}
-                className="rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)]"
+                ref={(node) => {
+                  if (node) itemCardRefs.current.set(item.key, node);
+                  else itemCardRefs.current.delete(item.key);
+                  if (isLast) lastCardRef.current = node;
+                }}
+                className={`rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-[box-shadow] duration-300 ${
+                  isHighlighted
+                    ? "ring-2 ring-orange-400 shadow-[0_0_0_4px_rgba(251,146,60,0.18)]"
+                    : ""
+                }`}
               >
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-[0.75rem] font-semibold text-ink-muted">
                     <Package className="h-3.5 w-3.5" strokeWidth={2} />
                     Item {index + 1}
+                    {isHighlighted ? (
+                      <span className="rounded-pill bg-orange-100 px-2 py-0.5 text-[0.6875rem] font-semibold text-orange-600">
+                        Already added
+                      </span>
+                    ) : null}
                   </div>
                   {items.length > 1 ? (
                     <button

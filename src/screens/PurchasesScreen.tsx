@@ -193,7 +193,6 @@ export function PurchasesScreen() {
                   key={list._id}
                   list={list}
                   dateLabel={formatPurchaseDate(list.purchasedAt)}
-                  onEdit={() => openEdit(list)}
                   onOpen={() => openDetail(list)}
                 />
               ))}
