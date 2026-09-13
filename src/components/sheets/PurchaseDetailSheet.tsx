@@ -17,7 +17,6 @@ export type PurchaseDetailData = {
     name: string;
     quantity: number;
     unitPrice: number;
-    note?: string;
   }>;
 };
 
@@ -90,7 +89,6 @@ export function PurchaseDetailSheet({
                   <p className="mt-0.5 text-[0.75rem] text-ink-muted">
                     {item.quantity % 1 === 0 ? item.quantity : item.quantity.toFixed(2)} ×{" "}
                     {formatCurrency(item.unitPrice)}
-                    {item.note ? ` · ${item.note}` : ""}
                   </p>
                 </div>
                 <p className="shrink-0 font-display text-[0.9375rem] font-bold text-ink">

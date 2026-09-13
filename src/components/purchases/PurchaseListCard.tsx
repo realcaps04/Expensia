@@ -15,7 +15,6 @@ export type PurchaseListCardData = {
     name: string;
     quantity: number;
     unitPrice: number;
-    note?: string;
   }>;
 };
 

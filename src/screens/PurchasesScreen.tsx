@@ -28,7 +28,6 @@ type PurchaseListRow = PurchaseListCardData & {
     name: string;
     quantity: number;
     unitPrice: number;
-    note?: string;
   }>;
 };
 
@@ -55,7 +54,6 @@ function toEdit(list: PurchaseListRow): PurchaseListEditData {
       name: item.name,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-      note: item.note,
     })),
   };
 }
@@ -237,7 +235,6 @@ export function PurchasesScreen() {
               name: item.name,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
-              note: item.note,
             })),
           });
         }}
@@ -267,7 +264,6 @@ export function PurchasesScreen() {
                   name: item.name,
                   quantity: item.quantity,
                   unitPrice: item.unitPrice,
-                  note: item.note,
                 })),
               });
             }

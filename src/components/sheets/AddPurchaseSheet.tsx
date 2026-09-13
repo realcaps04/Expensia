@@ -23,7 +23,6 @@ export type PurchaseItemFormRow = {
   name: string;
   quantity: string;
   unitPrice: string;
-  note: string;
 };
 
 export type PurchaseListEditData = {
@@ -35,7 +34,6 @@ export type PurchaseListEditData = {
     name: string;
     quantity: number;
     unitPrice: number;
-    note?: string;
   }>;
 };
 
@@ -54,7 +52,6 @@ type AddPurchaseSheetProps = {
       name: string;
       quantity: number;
       unitPrice: number;
-      note?: string;
     }>;
   }) => void;
 };
@@ -65,7 +62,6 @@ function emptyItem(): PurchaseItemFormRow {
     name: "",
     quantity: "1",
     unitPrice: "",
-    note: "",
   };
 }
 
@@ -102,7 +98,6 @@ export function AddPurchaseSheet({
               name: item.name,
               quantity: String(item.quantity),
               unitPrice: String(item.unitPrice),
-              note: item.note ?? "",
             }))
           : [emptyItem()],
       );
@@ -161,7 +156,6 @@ export function AddPurchaseSheet({
           name: itemName,
           quantity,
           unitPrice,
-          note: item.note.trim() || undefined,
         };
       });
 
@@ -305,91 +299,85 @@ export function AddPurchaseSheet({
         </div>
 
         <div className="mt-4 space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <p className="text-[0.8125rem] font-semibold text-ink">Items</p>
-            <button
-              type="button"
-              onClick={() => setItems((rows) => [...rows, emptyItem()])}
-              className="inline-flex items-center gap-1 text-[0.8125rem] font-semibold text-teal-brand"
-            >
-              <Plus className="h-4 w-4" strokeWidth={2.5} />
-              Add item
-            </button>
-          </div>
+          <p className="px-1 text-[0.8125rem] font-semibold text-ink">Items</p>
 
-          {items.map((item, index) => (
-            <div
-              key={item.key}
-              className="rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)]"
-            >
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[0.75rem] font-semibold text-ink-muted">
-                  <Package className="h-3.5 w-3.5" strokeWidth={2} />
-                  Item {index + 1}
+          {items.map((item, index) => {
+            const isLast = index === items.length - 1;
+
+            return (
+              <div
+                key={item.key}
+                className="rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)]"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[0.75rem] font-semibold text-ink-muted">
+                    <Package className="h-3.5 w-3.5" strokeWidth={2} />
+                    Item {index + 1}
+                  </div>
+                  {items.length > 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => removeItem(item.key)}
+                      aria-label={`Remove item ${index + 1}`}
+                      className="text-ink-muted transition-colors hover:text-orange-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  ) : null}
                 </div>
-                {items.length > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => removeItem(item.key)}
-                    aria-label={`Remove item ${index + 1}`}
-                    className="text-ink-muted transition-colors hover:text-orange-600"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                ) : null}
-              </div>
 
-              <label className="block">
-                <span className="text-[0.6875rem] font-medium text-ink-muted">Item name</span>
-                <input
-                  type="text"
-                  value={item.name}
-                  onChange={(e) => updateItem(item.key, { name: e.target.value })}
-                  placeholder="e.g. Milk"
-                  className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
-                />
-              </label>
-
-              <div className="mt-3 grid grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="text-[0.6875rem] font-medium text-ink-muted">Qty</span>
+                  <span className="text-[0.6875rem] font-medium text-ink-muted">Item name</span>
                   <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="any"
-                    value={item.quantity}
-                    onChange={(e) => updateItem(item.key, { quantity: e.target.value })}
-                    className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[0.6875rem] font-medium text-ink-muted">Unit price</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="any"
-                    value={item.unitPrice}
-                    onChange={(e) => updateItem(item.key, { unitPrice: e.target.value })}
-                    placeholder="0"
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => updateItem(item.key, { name: e.target.value })}
+                    placeholder="e.g. Milk"
                     className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
                   />
                 </label>
-              </div>
 
-              <label className="mt-3 block">
-                <span className="text-[0.6875rem] font-medium text-ink-muted">Note (optional)</span>
-                <input
-                  type="text"
-                  value={item.note}
-                  onChange={(e) => updateItem(item.key, { note: e.target.value })}
-                  placeholder="Brand, size…"
-                  className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
-                />
-              </label>
-            </div>
-          ))}
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <label className="block">
+                    <span className="text-[0.6875rem] font-medium text-ink-muted">Qty</span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="any"
+                      value={item.quantity}
+                      onChange={(e) => updateItem(item.key, { quantity: e.target.value })}
+                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[0.6875rem] font-medium text-ink-muted">Unit price</span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="any"
+                      value={item.unitPrice}
+                      onChange={(e) => updateItem(item.key, { unitPrice: e.target.value })}
+                      placeholder="0"
+                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
+                    />
+                  </label>
+                </div>
+
+                {isLast ? (
+                  <button
+                    type="button"
+                    onClick={() => setItems((rows) => [...rows, emptyItem()])}
+                    className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[14px] border border-dashed border-teal-brand/40 bg-teal-brand/5 py-2.5 text-[0.8125rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/10"
+                  >
+                    <Plus className="h-4 w-4" strokeWidth={2.5} />
+                    Add item
+                  </button>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       </BottomSheet>
 
