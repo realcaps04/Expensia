@@ -9,7 +9,7 @@ import {
   ShoppingBasket,
   Trash2,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../../convex/_generated/api";
 import { parseDateInputToMs, toDateInputValue } from "../../lib/datetime";
@@ -60,7 +60,7 @@ function emptyItem(): PurchaseItemFormRow {
   return {
     key: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name: "",
-    quantity: "1",
+    quantity: "",
     unitPrice: "",
   };
 }
@@ -84,6 +84,24 @@ export function AddPurchaseSheet({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const lastCardRef = useRef<HTMLDivElement>(null);
+  const lastNameInputRef = useRef<HTMLInputElement>(null);
+  const shouldScrollToLatest = useRef(false);
+
+  useEffect(() => {
+    if (!shouldScrollToLatest.current) return;
+    shouldScrollToLatest.current = false;
+
+    requestAnimationFrame(() => {
+      lastCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      lastNameInputRef.current?.focus({ preventScroll: true });
+    });
+  }, [items.length]);
+
+  const addItem = () => {
+    shouldScrollToLatest.current = true;
+    setItems((rows) => [...rows, emptyItem()]);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -307,6 +325,7 @@ export function AddPurchaseSheet({
             return (
               <div
                 key={item.key}
+                ref={isLast ? lastCardRef : undefined}
                 className="rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)]"
               >
                 <div className="mb-2 flex items-center justify-between">
@@ -329,6 +348,7 @@ export function AddPurchaseSheet({
                 <label className="block">
                   <span className="text-[0.6875rem] font-medium text-ink-muted">Item name</span>
                   <input
+                    ref={isLast ? lastNameInputRef : undefined}
                     type="text"
                     value={item.name}
                     onChange={(e) => updateItem(item.key, { name: e.target.value })}
@@ -347,7 +367,8 @@ export function AddPurchaseSheet({
                       step="any"
                       value={item.quantity}
                       onChange={(e) => updateItem(item.key, { quantity: e.target.value })}
-                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink focus:outline-none"
+                      placeholder="1"
+                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
                     />
                   </label>
                   <label className="block">
@@ -368,7 +389,7 @@ export function AddPurchaseSheet({
                 {isLast ? (
                   <button
                     type="button"
-                    onClick={() => setItems((rows) => [...rows, emptyItem()])}
+                    onClick={addItem}
                     className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[14px] border border-dashed border-teal-brand/40 bg-teal-brand/5 py-2.5 text-[0.8125rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/10"
                   >
                     <Plus className="h-4 w-4" strokeWidth={2.5} />
