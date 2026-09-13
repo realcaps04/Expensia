@@ -35,9 +35,10 @@ function NavItem({
     <NavLink
       to={to}
       end={end}
+      aria-label={label}
       className={({ isActive }) => {
         const active = forceActive || isActive;
-        return `relative z-10 flex h-full flex-col items-center justify-center gap-0.5 text-[0.625rem] font-medium no-underline ${
+        return `relative z-10 flex h-full items-center justify-center no-underline ${
           active ? "text-[#E87820]" : "text-ink-muted"
         }`;
       }}
@@ -54,13 +55,12 @@ function NavItem({
               />
             ) : null}
             <motion.span
-              animate={{ scale: active ? 1.05 : 1 }}
+              animate={{ scale: active ? 1.08 : 1 }}
               transition={{ type: "spring", stiffness: 420, damping: 30 }}
               className="relative z-10 flex items-center justify-center"
             >
-              <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.85} />
+              <Icon className="h-5 w-5" strokeWidth={active ? 2.35 : 1.9} />
             </motion.span>
-            <span className="relative z-10">{label}</span>
           </>
         );
       }}
@@ -71,7 +71,7 @@ function NavItem({
 export function BottomNav({ onAddClick }: { onAddClick: () => void }) {
   return (
     <nav
-      className="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
+      className="pointer-events-none fixed bottom-[max(2.75rem,calc(env(safe-area-inset-bottom)+2rem))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-[calc(430px-2rem)] -translate-x-1/2"
       aria-label="Main navigation"
     >
       <div className="pointer-events-auto relative pt-3.5">

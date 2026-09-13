@@ -43,7 +43,7 @@ function MainShellContent() {
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
         <AuthBackground />
       </div>
-      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-[calc(6.25rem+env(safe-area-inset-bottom))]">
+      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-[calc(7.25rem+env(safe-area-inset-bottom))]">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={routeKey}
