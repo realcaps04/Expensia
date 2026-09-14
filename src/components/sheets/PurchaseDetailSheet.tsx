@@ -1,6 +1,7 @@
 import { Pencil } from "lucide-react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { formatCurrency } from "../../lib/format";
+import { formatPurchaseQty, type PurchaseUnit } from "../../lib/purchase-units";
 import { formatPurchaseDate } from "../purchases/PurchaseListCard";
 import { BottomSheet } from "./BottomSheet";
 
@@ -16,6 +17,7 @@ export type PurchaseDetailData = {
     _id: Id<"purchaseItems">;
     name: string;
     quantity: number;
+    unit?: PurchaseUnit;
     unitPrice: number;
   }>;
 };
@@ -87,7 +89,7 @@ export function PurchaseDetailSheet({
                 <div className="min-w-0">
                   <p className="truncate text-[0.875rem] font-semibold text-ink">{item.name}</p>
                   <p className="mt-0.5 text-[0.75rem] text-ink-muted">
-                    {item.quantity % 1 === 0 ? item.quantity : item.quantity.toFixed(2)} ×{" "}
+                    {formatPurchaseQty(item.quantity, item.unit)} ×{" "}
                     {formatCurrency(item.unitPrice)}
                   </p>
                 </div>

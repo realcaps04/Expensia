@@ -1,10 +1,14 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
+import { purchaseUnit } from "./validators";
+
+const DEFAULT_UNIT = "kg" as const;
 
 const purchaseItemInput = v.object({
   name: v.string(),
   quantity: v.number(),
+  unit: v.optional(purchaseUnit),
   unitPrice: v.number(),
   note: v.optional(v.string()),
 });
@@ -22,7 +26,13 @@ async function assertListOwner(
 }
 
 function normalizeItems(
-  items: Array<{ name: string; quantity: number; unitPrice: number; note?: string }>,
+  items: Array<{
+    name: string;
+    quantity: number;
+    unit?: Doc<"purchaseItems">["unit"];
+    unitPrice: number;
+    note?: string;
+  }>,
 ) {
   if (items.length === 0) {
     throw new Error("Add at least one purchase item.");
@@ -49,6 +59,7 @@ function normalizeItems(
     return {
       name,
       quantity: item.quantity,
+      unit: item.unit ?? DEFAULT_UNIT,
       unitPrice: item.unitPrice,
       note: item.note?.trim() || undefined,
     };
@@ -104,6 +115,7 @@ export const create = mutation({
         listId,
         name: item.name,
         quantity: item.quantity,
+        unit: item.unit,
         unitPrice: item.unitPrice,
         note: item.note,
         createdAt: now,
@@ -166,6 +178,7 @@ export const update = mutation({
           listId: args.listId,
           name: item.name,
           quantity: item.quantity,
+          unit: item.unit,
           unitPrice: item.unitPrice,
           note: item.note,
           createdAt: now,

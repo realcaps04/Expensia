@@ -21,15 +21,7 @@ import { useAuth } from "../context/AuthProvider";
 import { getConvexUserId } from "../lib/session";
 
 type SortMode = "recent" | "name";
-type PurchaseListRow = PurchaseListCardData & {
-  note?: string;
-  items: Array<{
-    _id: Id<"purchaseItems">;
-    name: string;
-    quantity: number;
-    unitPrice: number;
-  }>;
-};
+type PurchaseListRow = PurchaseListCardData;
 
 function toDetail(list: PurchaseListRow): PurchaseDetailData {
   return {
@@ -53,6 +45,7 @@ function toEdit(list: PurchaseListRow): PurchaseListEditData {
     items: list.items.map((item) => ({
       name: item.name,
       quantity: item.quantity,
+      unit: item.unit,
       unitPrice: item.unitPrice,
     })),
   };
@@ -227,6 +220,7 @@ export function PurchasesScreen() {
               _id: `${payload.listId}_${index}` as Id<"purchaseItems">,
               name: item.name,
               quantity: item.quantity,
+              unit: item.unit,
               unitPrice: item.unitPrice,
             })),
           });
@@ -256,6 +250,7 @@ export function PurchasesScreen() {
                 items: detailList.items.map((item) => ({
                   name: item.name,
                   quantity: item.quantity,
+                  unit: item.unit,
                   unitPrice: item.unitPrice,
                 })),
               });

@@ -11,7 +11,7 @@ type MenuSelectProps = {
   options: readonly MenuSelectOption[];
   disabled?: boolean;
   ariaLabel?: string;
-  variant?: "input" | "field";
+  variant?: "input" | "field" | "compact";
 };
 
 const PANEL_CLASS =
@@ -44,7 +44,8 @@ export function MenuSelect({
     const el = wrapRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const width = Math.max(rect.width, variant === "field" ? 220 : rect.width);
+    const minWidth = variant === "field" ? 220 : variant === "compact" ? 132 : rect.width;
+    const width = Math.max(rect.width, minWidth);
     const left = Math.min(Math.max(12, rect.left), Math.max(12, window.innerWidth - width - 12));
     const spaceBelow = window.innerHeight - rect.bottom;
     const openUp = spaceBelow < 224 && rect.top > spaceBelow;
@@ -95,10 +96,15 @@ export function MenuSelect({
   const triggerClass =
     variant === "field"
       ? "-mr-8 flex w-full min-w-0 items-center justify-between gap-2 bg-transparent pr-8 text-left text-[0.875rem] font-semibold text-ink focus:outline-none disabled:opacity-50"
-      : "flex w-full items-center justify-between gap-2 rounded-[12px] border border-surface-border bg-white px-3 py-2.5 text-left text-[0.8125rem] font-medium text-ink shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors focus:border-teal-brand/40 focus:outline-none focus:ring-2 focus:ring-teal-brand/15 disabled:opacity-50";
+      : variant === "compact"
+        ? "inline-flex min-w-[3.25rem] items-center justify-center gap-0.5 rounded-[10px] bg-teal-brand/10 px-2 py-1 text-[0.8125rem] font-semibold text-teal-deep transition-colors hover:bg-teal-brand/15 focus:outline-none focus:ring-2 focus:ring-teal-brand/20 disabled:opacity-50"
+        : "flex w-full items-center justify-between gap-2 rounded-[12px] border border-surface-border bg-white px-3 py-2.5 text-left text-[0.8125rem] font-medium text-ink shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors focus:border-teal-brand/40 focus:outline-none focus:ring-2 focus:ring-teal-brand/15 disabled:opacity-50";
+
+  const wrapClass =
+    variant === "compact" ? "relative inline-flex shrink-0" : "relative block";
 
   return (
-    <div ref={wrapRef} className="relative block">
+    <div ref={wrapRef} className={wrapClass}>
       <button
         type="button"
         aria-haspopup="listbox"
@@ -112,9 +118,9 @@ export function MenuSelect({
         className={triggerClass}
       >
         <span className="min-w-0 truncate">{selected?.label ?? "Select"}</span>
-        {variant === "input" ? (
+        {variant === "input" || variant === "compact" ? (
           <ChevronDown
-            className={`h-4 w-4 shrink-0 text-ink-muted transition-transform ${open ? "rotate-180" : ""}`}
+            className={`shrink-0 text-ink-muted transition-transform ${variant === "compact" ? "h-3 w-3" : "h-4 w-4"} ${open ? "rotate-180" : ""}`}
             strokeWidth={2.5}
             aria-hidden
           />

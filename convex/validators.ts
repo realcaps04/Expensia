@@ -31,6 +31,18 @@ export const creditType = v.union(
   v.literal("other"),
 );
 
+export const purchaseUnit = v.union(
+  v.literal("kg"),
+  v.literal("g"),
+  v.literal("L"),
+  v.literal("ml"),
+  v.literal("m"),
+  v.literal("pcs"),
+  v.literal("dozen"),
+  v.literal("packet"),
+  v.literal("box"),
+);
+
 export const userSettings = v.object({
   currency: v.string(),
   theme: v.union(v.literal("light"), v.literal("dark"), v.literal("system")),

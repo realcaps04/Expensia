@@ -4,7 +4,6 @@ import {
   Check,
   Loader2,
   NotebookPen,
-  Package,
   Plus,
   ShoppingBasket,
   Trash2,
@@ -14,6 +13,13 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../../convex/_generated/api";
 import { parseDateInputToMs, toDateInputValue } from "../../lib/datetime";
 import { formatCurrency } from "../../lib/format";
+import {
+  DEFAULT_PURCHASE_UNIT,
+  normalizePurchaseUnit,
+  PURCHASE_UNITS,
+  type PurchaseUnit,
+} from "../../lib/purchase-units";
+import { MenuSelect } from "../ui/MenuSelect";
 import { BottomSheet } from "./BottomSheet";
 import { ConfirmSheet, deleteItemMessage } from "./ConfirmSheet";
 import { SheetFieldRow, SheetNativeInput } from "./SheetFieldRow";
@@ -22,6 +28,7 @@ export type PurchaseItemFormRow = {
   key: string;
   name: string;
   quantity: string;
+  unit: PurchaseUnit;
   unitPrice: string;
 };
 
@@ -33,6 +40,7 @@ export type PurchaseListEditData = {
   items: Array<{
     name: string;
     quantity: number;
+    unit?: PurchaseUnit;
     unitPrice: number;
   }>;
 };
@@ -51,6 +59,7 @@ type AddPurchaseSheetProps = {
     items: Array<{
       name: string;
       quantity: number;
+      unit: PurchaseUnit;
       unitPrice: number;
     }>;
   }) => void;
@@ -61,6 +70,7 @@ function emptyItem(): PurchaseItemFormRow {
     key: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name: "",
     quantity: "",
+    unit: DEFAULT_PURCHASE_UNIT,
     unitPrice: "",
   };
 }
@@ -172,6 +182,7 @@ export function AddPurchaseSheet({
               key: `${item.name}-${item.unitPrice}-${Math.random().toString(36).slice(2, 6)}`,
               name: item.name,
               quantity: String(item.quantity),
+              unit: normalizePurchaseUnit(item.unit),
               unitPrice: String(item.unitPrice),
             }))
           : [emptyItem()],
@@ -254,6 +265,7 @@ export function AddPurchaseSheet({
         return {
           name: itemName,
           quantity,
+          unit: item.unit,
           unitPrice,
         };
       });
@@ -412,80 +424,93 @@ export function AddPurchaseSheet({
                   else itemCardRefs.current.delete(item.key);
                   if (isLast) lastCardRef.current = node;
                 }}
-                className={`rounded-[20px] bg-white px-4 py-3 shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-[box-shadow] duration-300 ${
+                className={`rounded-[16px] bg-white px-3 py-2.5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] transition-[box-shadow] duration-300 ${
                   isHighlighted
                     ? "ring-2 ring-orange-400 shadow-[0_0_0_4px_rgba(251,146,60,0.18)]"
                     : ""
                 }`}
               >
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[0.75rem] font-semibold text-ink-muted">
-                    <Package className="h-3.5 w-3.5" strokeWidth={2} />
-                    Item {index + 1}
-                    {isHighlighted ? (
-                      <span className="rounded-pill bg-orange-100 px-2 py-0.5 text-[0.6875rem] font-semibold text-orange-600">
-                        Already added
-                      </span>
-                    ) : null}
-                  </div>
-                  {items.length > 1 ? (
+                {items.length > 1 ? (
+                  <div className="mb-1.5 flex justify-end">
                     <button
                       type="button"
                       onClick={() => removeItem(item.key)}
                       aria-label={`Remove item ${index + 1}`}
-                      className="text-ink-muted transition-colors hover:text-orange-600"
+                      className="text-red-500 transition-colors hover:text-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
 
-                <label className="block">
-                  <span className="text-[0.6875rem] font-medium text-ink-muted">Item name</span>
+                <div className="grid grid-cols-[minmax(0,1.4fr)_2.75rem_3.5rem_3.25rem] gap-x-2 gap-y-0.5">
+                  <span className="truncate text-[0.6875rem] font-medium text-ink-muted">
+                    Item name
+                  </span>
+                  <span className="text-center text-[0.6875rem] font-medium text-ink-muted">
+                    Qty
+                  </span>
+                  <span className="text-center text-[0.6875rem] font-medium text-ink-muted">
+                    Unit
+                  </span>
+                  <span className="text-center text-[0.6875rem] font-medium text-ink-muted">
+                    Price
+                  </span>
+
                   <input
                     ref={isLast ? lastNameInputRef : undefined}
                     type="text"
                     value={item.name}
                     onChange={(e) => updateItem(item.key, { name: e.target.value })}
                     placeholder="e.g. Milk"
-                    className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
+                    aria-label={`Item ${index + 1} name`}
+                    className="h-8 min-w-0 bg-transparent text-[0.875rem] font-semibold leading-8 text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
                   />
-                </label>
-
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <label className="block">
-                    <span className="text-[0.6875rem] font-medium text-ink-muted">Qty</span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      min="0"
-                      step="any"
-                      value={item.quantity}
-                      onChange={(e) => updateItem(item.key, { quantity: e.target.value })}
-                      placeholder="1"
-                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    step="any"
+                    value={item.quantity}
+                    onChange={(e) => updateItem(item.key, { quantity: e.target.value })}
+                    placeholder="1"
+                    aria-label={`Item ${index + 1} quantity`}
+                    className="h-8 w-full appearance-none bg-transparent text-center text-[0.875rem] font-semibold leading-8 text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <div className="flex h-8 items-center justify-center">
+                    <MenuSelect
+                      variant="compact"
+                      value={item.unit}
+                      onChange={(next) =>
+                        updateItem(item.key, {
+                          unit: normalizePurchaseUnit(next),
+                        })
+                      }
+                      options={PURCHASE_UNITS}
+                      ariaLabel={`Item ${index + 1} unit`}
                     />
-                  </label>
-                  <label className="block">
-                    <span className="text-[0.6875rem] font-medium text-ink-muted">Unit price</span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      min="0"
-                      step="any"
-                      value={item.unitPrice}
-                      onChange={(e) => updateItem(item.key, { unitPrice: e.target.value })}
-                      placeholder="0"
-                      className="mt-0.5 w-full bg-transparent text-[0.875rem] font-semibold text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none"
-                    />
-                  </label>
+                  </div>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    step="any"
+                    value={item.unitPrice}
+                    onChange={(e) => updateItem(item.key, { unitPrice: e.target.value })}
+                    placeholder="0"
+                    aria-label={`Item ${index + 1} unit price`}
+                    className="h-8 w-full appearance-none bg-transparent text-center text-[0.875rem] font-semibold leading-8 text-ink placeholder:font-normal placeholder:text-ink-muted focus:outline-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
                 </div>
+                {isHighlighted ? (
+                  <p className="mt-1 text-[0.6875rem] font-semibold text-orange-600">Already added</p>
+                ) : null}
 
                 {isLast ? (
                   <button
                     type="button"
                     onClick={addItem}
-                    className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[14px] border border-dashed border-teal-brand/40 bg-teal-brand/5 py-2.5 text-[0.8125rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/10"
+                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[12px] border border-dashed border-teal-brand/40 bg-teal-brand/5 py-2 text-[0.8125rem] font-semibold text-teal-brand transition-colors hover:bg-teal-brand/10"
                   >
                     <Plus className="h-4 w-4" strokeWidth={2.5} />
                     Add item

@@ -1,5 +1,6 @@
 import { Calendar, ShoppingBasket } from "lucide-react";
 import type { Id } from "../../../convex/_generated/dataModel";
+import type { PurchaseUnit } from "../../lib/purchase-units";
 
 export type PurchaseListCardData = {
   _id: Id<"purchaseLists">;
@@ -13,6 +14,7 @@ export type PurchaseListCardData = {
     _id: Id<"purchaseItems">;
     name: string;
     quantity: number;
+    unit?: PurchaseUnit;
     unitPrice: number;
   }>;
 };

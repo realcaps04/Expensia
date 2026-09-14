@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { category, creditType, paymentMethod, provider, transactionType, userSettings } from "./validators";
+import { category, creditType, paymentMethod, provider, purchaseUnit, transactionType, userSettings } from "./validators";
 
 export default defineSchema({
   users: defineTable({
@@ -66,6 +66,7 @@ export default defineSchema({
     listId: v.id("purchaseLists"),
     name: v.string(),
     quantity: v.number(),
+    unit: v.optional(purchaseUnit),
     unitPrice: v.number(),
     note: v.optional(v.string()),
     createdAt: v.number(),
